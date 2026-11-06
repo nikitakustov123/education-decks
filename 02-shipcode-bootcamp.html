@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ShipCode Academy — Rewrite Your Career</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06080a;--g:#3dff9a;--c:#2de2e6;--m:#ff2e88;--y:#ffe14d;--dim:#5d6c64;--tx:#d8f5e6}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;overflow:hidden;color:var(--tx);font-family:'JetBrains Mono',monospace}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;overflow:hidden;background:var(--bg)}
+#rain{position:absolute;inset:0;opacity:.16}
+.slide{position:absolute;inset:0;visibility:hidden}
+.slide.active,.slide.leaving{visibility:visible}
+/* glitch transitions */
+.slide.g-out{animation:gOut .6s steps(1,end) forwards;z-index:3}
+.slide.g-in{animation:gIn .7s steps(1,end) both;z-index:4}
+@keyframes gOut{
+ 0%{clip-path:inset(0);transform:none}
+ 12%{clip-path:inset(12% 0 58% 0);transform:translateX(-40px);filter:drop-shadow(8px 0 var(--m)) drop-shadow(-8px 0 var(--c))}
+ 24%{clip-path:inset(46% 0 22% 0);transform:translateX(55px)}
+ 36%{clip-path:inset(70% 0 4% 0);transform:translateX(-20px) skewX(12deg)}
+ 48%{clip-path:inset(4% 0 80% 0);transform:translateX(80px)}
+ 60%{clip-path:inset(30% 0 45% 0);transform:translateX(-90px);filter:hue-rotate(90deg) drop-shadow(10px 0 var(--m))}
+ 80%{clip-path:inset(50% 0 49% 0);transform:scaleX(1.4)}
+ 100%{clip-path:inset(50% 0 50% 0);opacity:0}}
+@keyframes gIn{
+ 0%{opacity:0;clip-path:inset(50% 0 50% 0)}
+ 30%{opacity:1;clip-path:inset(48% 0 46% 0);transform:scaleX(1.6);filter:brightness(3)}
+ 45%{clip-path:inset(20% 0 55% 0);transform:translateX(60px);filter:drop-shadow(-8px 0 var(--m)) drop-shadow(8px 0 var(--c))}
+ 60%{clip-path:inset(0 0 30% 0);transform:translateX(-30px)}
+ 75%{clip-path:inset(10% 0 0 0);transform:translateX(12px);filter:drop-shadow(4px 0 var(--c))}
+ 100%{clip-path:inset(0);transform:none;filter:none;opacity:1}}
+#fx{position:absolute;inset:0;z-index:10;pointer-events:none}
+#fx i{position:absolute;left:0;right:0;mix-blend-mode:screen;animation:bar .5s steps(3) forwards}
+@keyframes bar{0%{transform:translateX(-30%)}50%{transform:translateX(20%)}100%{transform:translateX(110%);opacity:0}}
+#scan{position:absolute;inset:0;z-index:9;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 1px,transparent 1px 3px);mix-blend-mode:multiply}
+#vig{position:absolute;inset:0;z-index:9;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.65))}
+
+/* HUD */
+.hud{position:absolute;inset:28px;border:1px solid rgba(61,255,154,.18);pointer-events:none}
+.hud::before,.hud::after{content:"";position:absolute;width:28px;height:28px;border:2px solid var(--g)}
+.hud::before{left:-2px;top:-2px;border-right:0;border-bottom:0}
+.hud::after{right:-2px;bottom:-2px;border-left:0;border-top:0}
+.tag{position:absolute;left:60px;top:46px;font-size:14px;color:var(--dim);letter-spacing:.12em}
+.tag b{color:var(--g);font-weight:500}
+
+.h{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-.03em;line-height:.95;color:#f2fff8}
+.h .g{color:var(--g)} .h .m{color:var(--m)} .h .c{color:var(--c)}
+.p{font-family:'Space Grotesk',sans-serif;font-size:28px;line-height:1.4;color:#b9d6c7}
+.mono{font-size:18px;color:var(--dim)}
+.prompt::before{content:"$ ";color:var(--m)}
+.cursor{display:inline-block;width:.6em;height:1em;background:var(--g);vertical-align:-.12em;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.glow{text-shadow:0 0 18px rgba(61,255,154,.55)}
+
+/* entrance */
+[data-a]{opacity:0}
+.slide.active.go [data-a]{animation:.7s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d,0) * 1ms)}
+.slide.active.go [data-a=up]{animation-name:up}
+.slide.active.go [data-a=fade]{animation-name:fade}
+.slide.active.go [data-a=boot]{animation-name:boot;animation-timing-function:steps(6)}
+@keyframes up{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes boot{0%{opacity:0;clip-path:inset(0 100% 0 0)}100%{opacity:1;clip-path:inset(0)}}
+
+.term{position:absolute;background:rgba(5,14,10,.85);border:1px solid rgba(61,255,154,.35);box-shadow:0 0 0 1px #000,0 30px 80px rgba(0,0,0,.6),0 0 60px rgba(61,255,154,.08)}
+.term .bar{height:38px;border-bottom:1px solid rgba(61,255,154,.25);display:flex;align-items:center;gap:9px;padding:0 16px;font-size:13px;color:var(--dim)}
+.term .bar i{width:12px;height:12px;border-radius:50%;background:#1d2a24}
+.term .bar i:nth-child(1){background:var(--m)} .term .bar i:nth-child(2){background:var(--y)} .term .bar i:nth-child(3){background:var(--g)}
+.term .body{padding:26px 30px;font-size:21px;line-height:1.75}
+.ok{color:var(--g)} .wr{color:var(--y)} .er{color:var(--m)} .cy{color:var(--c)} .dm{color:var(--dim)}
+
+.img{position:absolute;background-size:cover;background-position:center;filter:grayscale(1) contrast(1.2) brightness(.7)}
+.img::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(61,255,154,.35),rgba(45,226,230,.15));mix-blend-mode:color}
+
+/* slot counter */
+.slot{display:inline-flex;overflow:hidden;height:1em;line-height:1em;vertical-align:top}
+.slot .col{display:flex;flex-direction:column;transition:transform 2.2s cubic-bezier(.2,.9,.1,1)}
+.slot .col span{height:1em}
+
+/* cards */
+.folder{border:1px solid rgba(61,255,154,.3);background:rgba(61,255,154,.04);padding:24px 24px 22px;position:relative;transition:transform .25s,border-color .25s}
+.folder:hover{transform:translate(-4px,-4px);border-color:var(--g);box-shadow:6px 6px 0 var(--m)}
+.folder .fn{font-size:22px;color:var(--c);font-weight:700}
+.folder .fd{font-family:'Space Grotesk',sans-serif;font-size:19px;color:#b9d6c7;margin-top:10px;line-height:1.4}
+.folder .ic{position:absolute;right:18px;top:18px;font-size:13px;color:var(--dim)}
+
+.commit{display:grid;grid-template-columns:150px 210px 1fr;gap:20px;align-items:baseline;padding:13px 0;border-bottom:1px dashed rgba(61,255,154,.15);font-size:22px}
+.commit .hs{color:var(--y)} .commit .wk{color:var(--m)} .commit .ms{font-family:'Space Grotesk',sans-serif;font-size:26px;color:#e9fff3}
+.graph{position:absolute;left:70px;top:0;bottom:0;width:2px;background:var(--g)}
+
+.chk{font-size:26px;padding:14px 0;display:flex;gap:18px;align-items:center;border-bottom:1px solid rgba(61,255,154,.12)}
+.chk .box{color:var(--dim)}
+.slide.active.go .chk .box{animation:tick .1s steps(1) both;animation-delay:calc(var(--d) * 1ms + 400ms)}
+@keyframes tick{to{color:var(--g)}}
+.chk .box::after{content:" "}
+.slide.active.go .chk .box .x{animation:fade .1s both;animation-delay:calc(var(--d) * 1ms + 400ms)}
+.chk .box .x{opacity:0}
+
+.price{border:1px solid rgba(61,255,154,.3);padding:30px 32px;font-size:20px;line-height:1.75;background:rgba(0,0,0,.4);position:relative}
+.price.hot{border-color:var(--m);box-shadow:0 0 0 1px var(--m),0 0 50px rgba(255,46,136,.25)}
+.price .big{font-family:'Space Grotesk',sans-serif;font-size:64px;font-weight:700;color:#fff;line-height:1.1;margin:6px 0 12px}
+.price .k{color:var(--c)} .price .s{color:var(--y)} .price .n{color:var(--m)}
+
+#hint{position:fixed;left:18px;bottom:14px;font-size:12px;color:#3c4a43;z-index:20}
+#counter{position:fixed;right:20px;bottom:14px;font-size:14px;color:var(--g);z-index:20;letter-spacing:.1em}
+#prog{position:fixed;left:0;bottom:0;height:3px;background:var(--g);box-shadow:0 0 12px var(--g);z-index:20;transition:width .6s}
+</style>
+</head>
+<body>
+<div id="stage">
+<canvas id="rain" width="1600" height="900"></canvas>
+
+<!-- 1 BOOT -->
+<section class="slide">
+  <div class="hud"></div><div class="tag">SHIPCODE_ACADEMY <b>// v2027.1</b> &nbsp; [01/08]</div>
+  <div class="term" style="left:90px;top:120px;width:640px" data-a="boot">
+    <div class="bar"><i></i><i></i><i></i>&nbsp; ~/career — zsh</div>
+    <div class="body">
+      <div class="prompt" data-type>whoami</div>
+      <div class="dm" data-type>career_changer</div>
+      <div class="prompt" data-type>./launch --career=software</div>
+      <div data-type><span class="ok">[ok]</span> loading curriculum.......</div>
+      <div data-type><span class="ok">[ok]</span> pairing mentor..........</div>
+      <div data-type><span class="ok">[ok]</span> booking demo day........</div>
+      <div data-type><span class="wr">[!!]</span> old career: deprecated</div>
+      <div><span class="prompt"></span><span class="cursor"></span></div>
+    </div>
+  </div>
+  <div style="position:absolute;left:800px;top:190px;width:720px">
+    <div class="mono" data-a="fade" style="--d:300;color:var(--m)">// 16-week software engineering bootcamp</div>
+    <div class="h glow" style="font-size:132px;margin-top:22px" data-scramble>Rewrite</div>
+    <div class="h" style="font-size:132px" data-scramble><span class="g">your career.</span></div>
+    <p class="p" data-a="up" style="--d:900;margin-top:36px;width:620px">Live online. Built for people starting from zero. Finish with a shipped product, a portfolio and a job-search plan.</p>
+  </div>
+</section>
+
+<!-- 2 MARKET -->
+<section class="slide">
+  <div class="hud"></div><div class="tag">SHIPCODE_ACADEMY <b>// market.json</b> &nbsp; [02/08]</div>
+  <div style="position:absolute;left:90px;top:120px">
+    <div class="mono prompt" data-a="boot">curl bls.gov/ooh/software-developers | jq .median_pay</div>
+    <div class="h" data-a="fade" style="font-size:44px;margin-top:40px;color:#9fbcae;--d:200">Median annual wage, U.S. software developers</div>
+    <div class="h glow" style="font-size:230px;margin-top:10px;color:var(--g)"><span class="slot" data-val="$133,080"></span></div>
+  </div>
+  <div style="position:absolute;left:90px;top:610px;display:flex;gap:28px">
+    <div class="term" data-a="up" style="position:relative;width:440px;--d:900">
+      <div class="bar"><i></i><i></i><i></i>&nbsp; growth.log</div>
+      <div class="body"><span class="h" style="font-size:64px;color:var(--c)">+15%</span><br><span class="dm" style="font-size:17px">projected jobs growth, 2024–34 · all occupations: 3%</span></div>
+    </div>
+    <div class="term" data-a="up" style="position:relative;width:440px;--d:1100">
+      <div class="bar"><i></i><i></i><i></i>&nbsp; openings.log</div>
+      <div class="body"><span class="h" style="font-size:64px;color:var(--m)">129,200</span><br><span class="dm" style="font-size:17px">openings per year, projected (devs, QA &amp; testers)</span></div>
+    </div>
+  </div>
+  <div class="img" data-a="fade" style="--d:400;left:1130px;top:110px;width:400px;height:680px;background-image:url('https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=900&q=80'),linear-gradient(160deg,#0f2a1d,#04100a)"></div>
+  <div class="mono" style="position:absolute;left:90px;bottom:44px;font-size:13px">src: U.S. Bureau of Labor Statistics, Occupational Outlook Handbook (May 2024 wages; 2024–34 projections)</div>
+</section>
+
+<!-- 3 WHO -->
+<section class="slide">
+  <div class="hud"></div><div class="tag">SHIPCODE_ACADEMY <b>// students/</b> &nbsp; [03/08]</div>
+  <div style="position:absolute;left:90px;top:110px;width:1420px">
+    <div class="mono prompt" data-a="boot">ls -la ~/students/</div>
+    <div class="h" style="font-size:96px;margin-top:26px" data-scramble>No CS degree<span class="m">?</span> No problem.</div>
+    <p class="p" data-a="up" style="--d:500;margin-top:18px">Our cohorts are built from people who switched lanes. Here’s who sits next to you:</p>
+  </div>
+  <div style="position:absolute;left:90px;top:440px;width:1420px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+    <div class="folder" data-a="up" style="--d:600"><span class="ic">drwxr-xr-x</span><div class="fn">teachers/</div><div class="fd">You already explain hard things clearly — that’s half of engineering.</div></div>
+    <div class="folder" data-a="up" style="--d:700"><span class="ic">drwxr-xr-x</span><div class="fn">retail_managers/</div><div class="fd">Schedules, inventory, people — you’ve been debugging systems for years.</div></div>
+    <div class="folder" data-a="up" style="--d:800"><span class="ic">drwxr-xr-x</span><div class="fn">veterans/</div><div class="fd">Discipline, teamwork and calm under pressure ship code on time.</div></div>
+    <div class="folder" data-a="up" style="--d:900"><span class="ic">drwxr-xr-x</span><div class="fn">healthcare_workers/</div><div class="fd">Precision and checklists translate directly into testing and QA.</div></div>
+    <div class="folder" data-a="up" style="--d:1000"><span class="ic">drwxr-xr-x</span><div class="fn">returning_parents/</div><div class="fd">Part-time track fits around school pickups and bedtimes.</div></div>
+    <div class="folder" data-a="up" style="--d:1100"><span class="ic">drwxr-xr-x</span><div class="fn">creatives/</div><div class="fd">Designers and musicians bring taste to front-end work.</div></div>
+  </div>
+</section>
+
+<!-- 4 CURRICULUM -->
+<section class="slide">
+  <div class="hud"></div><div class="tag">SHIPCODE_ACADEMY <b>// git log</b> &nbsp; [04/08]</div>
+  <div style="position:absolute;left:90px;top:110px">
+    <div class="mono prompt" data-a="boot">git log --oneline --graph curriculum</div>
+    <div class="h" style="font-size:84px;margin-top:24px" data-scramble>16 weeks. <span class="g">6 commits.</span></div>
+  </div>
+  <div style="position:absolute;left:90px;top:330px;width:1420px">
+    <div class="commit" data-a="boot" style="--d:300"><span class="hs">* a1f3c9e</span><span class="wk">wk 01–02</span><span class="ms">Foundations — HTML, CSS, Git, the command line</span></div>
+    <div class="commit" data-a="boot" style="--d:600"><span class="hs">* 7c2d8b1</span><span class="wk">wk 03–05</span><span class="ms">JavaScript &amp; TypeScript, the deep version</span></div>
+    <div class="commit" data-a="boot" style="--d:900"><span class="hs">* e94b0aa</span><span class="wk">wk 06–08</span><span class="ms">React and modern front-end architecture</span></div>
+    <div class="commit" data-a="boot" style="--d:1200"><span class="hs">* 3fd71c2</span><span class="wk">wk 09–11</span><span class="ms">Node.js, REST APIs and PostgreSQL</span></div>
+    <div class="commit" data-a="boot" style="--d:1500"><span class="hs">* b8e2f6d</span><span class="wk">wk 12–13</span><span class="ms">AI-assisted engineering — LLM APIs, testing, code review</span></div>
+    <div class="commit" data-a="boot" style="--d:1800"><span class="hs">* 0c9a4e7</span><span class="wk">wk 14–16</span><span class="ms">Capstone — ship a real product to production <span class="ok" style="font-family:'JetBrains Mono',monospace;font-size:18px">(HEAD -&gt; new-career)</span></span></div>
+  </div>
+</section>
+
+<!-- 5 DAY -->
+<section class="slide">
+  <div class="hud"></div><div class="tag">SHIPCODE_ACADEMY <b>// cron</b> &nbsp; [05/08]</div>
+  <div style="position:absolute;left:90px;top:120px;width:600px">
+    <div class="mono prompt" data-a="boot">crontab -l  # a day in the bootcamp</div>
+    <div class="h" style="font-size:96px;margin-top:26px" data-scramble>Learn it.<br><span class="c">Build it.</span><br>Ship it.</div>
+    <p class="p" data-a="up" style="--d:600;margin-top:30px">Full-time: 16 weeks, Mon–Fri.<br>Part-time: 32 weeks, evenings + Saturdays.</p>
+  </div>
+  <div class="term" data-a="up" style="left:760px;top:130px;width:750px;--d:300">
+    <div class="bar"><i></i><i></i><i></i>&nbsp; schedule.cron</div>
+    <div class="body" style="font-size:23px;line-height:2.05">
+      <div data-type><span class="cy">09:00</span>  standup .............. <span class="ok">team</span></div>
+      <div data-type><span class="cy">09:30</span>  live lecture ......... <span class="ok">instructor</span></div>
+      <div data-type><span class="cy">11:00</span>  pair programming ..... <span class="ok">peer</span></div>
+      <div data-type><span class="cy">13:00</span>  lunch ................ <span class="dm">offline</span></div>
+      <div data-type><span class="cy">14:00</span>  build lab ............ <span class="ok">project</span></div>
+      <div data-type><span class="cy">16:30</span>  code review .......... <span class="ok">mentor</span></div>
+      <div data-type><span class="cy">17:30</span>  office hours ......... <span class="wr">optional</span></div>
+    </div>
+  </div>
+  <div class="img" data-a="fade" style="--d:700;left:90px;top:640px;width:600px;height:180px;background-image:url('https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=1200&q=80'),linear-gradient(160deg,#0f2a1d,#04100a)"></div>
+</section>
+
+<!-- 6 CAREER -->
+<section class="slide">
+  <div class="hud"></div><div class="tag">SHIPCODE_ACADEMY <b>// npm run career</b> &nbsp; [06/08]</div>
+  <div class="img" data-a="fade" style="left:0;top:0;width:620px;height:900px;background-image:url('https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1000&q=80'),linear-gradient(160deg,#0f2a1d,#04100a)"></div>
+  <div style="position:absolute;left:0;top:0;width:620px;height:900px;background:linear-gradient(90deg,transparent 40%,var(--bg))"></div>
+  <div style="position:absolute;left:700px;top:110px;width:820px">
+    <div class="mono prompt" data-a="boot">npm run career-services</div>
+    <div class="h" style="font-size:84px;margin-top:24px" data-scramble>We don’t stop<br>at <span class="m">graduation.</span></div>
+    <div style="margin-top:40px">
+      <div class="chk" data-a="fade" style="--d:200"><span class="box">[<span class="x">✓</span>]</span>Portfolio review with working engineers</div>
+      <div class="chk" data-a="fade" style="--d:500"><span class="box">[<span class="x">✓</span>]</span>Mock technical &amp; behavioral interviews</div>
+      <div class="chk" data-a="fade" style="--d:800"><span class="box">[<span class="x">✓</span>]</span>Résumé and LinkedIn rewrite</div>
+      <div class="chk" data-a="fade" style="--d:1100"><span class="box">[<span class="x">✓</span>]</span>Demo Day with hiring partners</div>
+      <div class="chk" data-a="fade" style="--d:1400"><span class="box">[<span class="x">✓</span>]</span>6 months of 1:1 career coaching after you finish</div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 TUITION -->
+<section class="slide">
+  <div class="hud"></div><div class="tag">SHIPCODE_ACADEMY <b>// tuition.json</b> &nbsp; [07/08]</div>
+  <div style="position:absolute;left:90px;top:110px">
+    <div class="mono prompt" data-a="boot">cat tuition.json | jq</div>
+    <div class="h" style="font-size:84px;margin-top:24px" data-scramble>Pick your <span class="g">payment plan.</span></div>
+  </div>
+  <div style="position:absolute;left:90px;top:360px;width:1420px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px">
+    <div class="price" data-a="up" style="--d:300">{<br>&nbsp;<span class="k">"plan"</span>: <span class="s">"upfront"</span>,<div class="big">$13,900</div>&nbsp;<span class="k">"save"</span>: <span class="n">1000</span>,<br>&nbsp;<span class="k">"best_for"</span>: <span class="s">"lowest total"</span><br>}</div>
+    <div class="price hot" data-a="up" style="--d:500">{<br>&nbsp;<span class="k">"plan"</span>: <span class="s">"installments"</span>,<div class="big">4 × $3,725</div>&nbsp;<span class="k">"interest"</span>: <span class="n">0</span>,<br>&nbsp;<span class="k">"best_for"</span>: <span class="s">"cash flow"</span><br>}</div>
+    <div class="price" data-a="up" style="--d:700">{<br>&nbsp;<span class="k">"plan"</span>: <span class="s">"scholarship"</span>,<div class="big">up to [$X,XXX]</div>&nbsp;<span class="k">"for"</span>: <span class="s">"veterans, career changers"</span>,<br>&nbsp;<span class="k">"apply"</span>: <span class="n">true</span><br>}</div>
+  </div>
+  <div class="mono" style="position:absolute;left:90px;bottom:60px;font-size:15px">// prices are illustrative — edit before presenting</div>
+</section>
+
+<!-- 8 CTA -->
+<section class="slide">
+  <div class="hud"></div><div class="tag">SHIPCODE_ACADEMY <b>// deploy</b> &nbsp; [08/08]</div>
+  <div style="position:absolute;left:90px;top:150px;width:1420px">
+    <div class="mono prompt" data-a="boot" style="font-size:26px">apply --cohort=next --track=full-stack</div>
+    <div class="h glow" style="font-size:170px;margin-top:40px" data-scramble>git push</div>
+    <div class="h" style="font-size:170px;color:var(--g)" data-scramble>origin future<span class="cursor" style="width:.5em"></span></div>
+    <p class="p" data-a="up" style="--d:900;margin-top:46px">Next cohort starts <span style="color:var(--y)">[Month DD, 2027]</span> · Free 20-minute admissions call</p>
+    <div data-a="up" style="--d:1100;margin-top:22px;font-size:24px;color:var(--c)">[shipcode.yourdomain.com] &nbsp;·&nbsp; [hello@yourdomain.com]</div>
+  </div>
+</section>
+
+<div id="fx"></div><div id="scan"></div><div id="vig"></div>
+</div>
+<div id="prog"></div><div id="counter"></div>
+<div id="hint">← → · click · swipe · F fullscreen</div>
+
+<script>
+(function(){
+const stage=document.getElementById('stage');
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform=`translate(-50%,-50%) scale(${s})`;}
+addEventListener('resize',fit);fit();
+
+// matrix rain
+const cv=document.getElementById('rain'),cx=cv.getContext('2d');const cols=Math.floor(1600/20),drops=Array(cols).fill(0).map(()=>Math.random()*-50);
+const chars='01{}<>/=;()[]$#ABCDEFアイウエオカキクケコ';
+setInterval(()=>{cx.fillStyle='rgba(6,8,10,.12)';cx.fillRect(0,0,1600,900);cx.font='16px JetBrains Mono';
+ drops.forEach((y,i)=>{cx.fillStyle=Math.random()<.04?'#e8fff2':'#3dff9a';cx.fillText(chars[Math.random()*chars.length|0],i*20,y*20);drops[i]=y*20>900&&Math.random()>.975?0:y+1;});},55);
+
+// slot counters
+document.querySelectorAll('.slot').forEach(s=>{[...s.dataset.val].forEach(ch=>{
+ if(/\d/.test(ch)){const c=document.createElement('span');c.className='col';c.dataset.d=ch;let h='';for(let k=0;k<3;k++)for(let n=0;n<10;n++)h+=`<span>${n}</span>`;c.innerHTML=h;s.appendChild(c);}
+ else{const c=document.createElement('span');c.textContent=ch;s.appendChild(c);}});});
+function runSlots(sl){sl.querySelectorAll('.slot .col').forEach((c,i)=>{c.style.transition='none';c.style.transform='translateY(0)';void c.offsetWidth;
+ c.style.transition=`transform ${1.6+i*.25}s cubic-bezier(.2,.9,.1,1) .3s`;c.style.transform=`translateY(-${(20+ +c.dataset.d)}em)`;});}
+
+// scramble
+const glyph='!<>-_\\/[]{}=+*^?#01ABCDEF';
+function scramble(el,delay){const nodes=[];const walk=n=>{n.childNodes.forEach(k=>{if(k.nodeType===3&&k.textContent.trim()){k._t=k._t||k.textContent;nodes.push(k);}else if(k.nodeType===1&&!k.classList.contains('cursor'))walk(k);});};walk(el);
+ nodes.forEach(n=>n.textContent=n._t.replace(/\S/g,' '));el.style.opacity=1;
+ const t0=performance.now()+delay,dur=900;
+ (function f(t){const p=(t-t0)/dur;nodes.forEach(n=>{const L=n._t.length;let o='';for(let i=0;i<L;i++){const r=p*1.3-i/L*.6;o+=n._t[i]===' '?' ':(r>=1||r>0.85?n._t[i]:(r>0?glyph[Math.random()*glyph.length|0]:' '));}n.textContent=o;});
+  if(p<1.4)requestAnimationFrame(f);else nodes.forEach(n=>n.textContent=n._t);})(performance.now());}
+
+// typing
+function typeAll(sl){const els=[...sl.querySelectorAll('[data-type]')];let t=200;
+ els.forEach(el=>{if(!el._h)el._h=el.innerHTML;el.innerHTML='';el.style.visibility='hidden';});
+ els.forEach(el=>{const html=el._h;const txt=el.textContent;const tmp=document.createElement('div');tmp.innerHTML=html;const full=tmp.textContent;const start=t;
+  setTimeout(()=>{el.style.visibility='visible';let i=0;const iv=setInterval(()=>{i+=2;el.textContent=full.slice(0,i);if(i>=full.length){clearInterval(iv);el.innerHTML=html;}},14);},start);
+  t+=full.length*7+120;});}
+
+const fx=document.getElementById('fx');
+function burst(){fx.innerHTML='';const cols=['#ff2e88','#2de2e6','#3dff9a','#ffffff'];
+ for(let i=0;i<14;i++){const b=document.createElement('i');b.style.top=Math.random()*900+'px';b.style.height=(4+Math.random()*50)+'px';b.style.background=cols[i%4];b.style.opacity=.25+Math.random()*.5;b.style.animationDelay=Math.random()*.15+'s';fx.appendChild(b);}
+ setTimeout(()=>fx.innerHTML='',800);}
+
+const slides=[...document.querySelectorAll('.slide')];let cur=-1,busy=false;
+function activate(sl){sl.classList.add('active');sl.classList.remove('go');void sl.offsetWidth;sl.classList.add('go');
+ sl.querySelectorAll('[data-scramble]').forEach((e,i)=>scramble(e,250+i*260));typeAll(sl);runSlots(sl);}
+function go(n){if(busy||n<0||n>=slides.length||n===cur)return;const from=slides[cur],to=slides[n];cur=n;
+ document.getElementById('counter').textContent=String(n+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+ document.getElementById('prog').style.width=((n+1)/slides.length*100)+'%';history.replaceState(null,'','#'+(n+1));
+ if(!from){activate(to);return;}
+ busy=true;burst();from.classList.add('leaving','g-out');from.classList.remove('active');
+ setTimeout(()=>{to.classList.add('g-in');activate(to);},180);
+ setTimeout(()=>{from.classList.remove('leaving','g-out','go');to.classList.remove('g-in');busy=false;},900);}
+const next=()=>go(cur+1),prev=()=>go(cur-1);
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();next();}else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}
+ else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);else if(e.key==='f'||e.key==='F'){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(_){}}});
+document.addEventListener('click',e=>{if(e.target.closest('a,button'))return;(e.clientX<innerWidth*.25)?prev():next();});
+let sx=null;addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)(dx<0?next:prev)();sx=null;});
+const h=parseInt(location.hash.slice(1));go(h>0&&h<=slides.length?h-1:0);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nova — The Study Partner That Never Sleeps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060a1c;--t:#3ef0c8;--v:#7b5cff;--p:#ff6ad5;--b:#4cc9ff;--tx:#eef1ff;--mu:#9aa3c7}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#02040c;font-family:Inter,sans-serif;color:var(--tx)}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;overflow:hidden;background:var(--bg);perspective:2200px}
+/* aurora */
+.aur{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;mix-blend-mode:screen}
+.a1{width:900px;height:600px;left:-200px;top:-200px;background:var(--v);animation:dr1 18s ease-in-out infinite alternate}
+.a2{width:800px;height:600px;right:-200px;top:100px;background:var(--t);opacity:.35;animation:dr2 22s ease-in-out infinite alternate}
+.a3{width:700px;height:500px;left:400px;bottom:-300px;background:var(--p);opacity:.35;animation:dr3 20s ease-in-out infinite alternate}
+@keyframes dr1{to{transform:translate(300px,150px) scale(1.2)}} @keyframes dr2{to{transform:translate(-300px,100px) scale(.9)}} @keyframes dr3{to{transform:translate(-200px,-150px) scale(1.3)}}
+#stars{position:absolute;inset:0}
+#cube{position:absolute;inset:0;transform-style:preserve-3d}
+.slide{position:absolute;inset:0;visibility:hidden;transform-origin:50% 50% -800px;backface-visibility:hidden}
+.slide.active,.slide.leaving{visibility:visible}
+.slide.c-out-f{animation:cOutF 1.1s cubic-bezier(.65,0,.35,1) forwards}
+.slide.c-in-f{animation:cInF 1.1s cubic-bezier(.65,0,.35,1) both}
+.slide.c-out-b{animation:cOutB 1.1s cubic-bezier(.65,0,.35,1) forwards}
+.slide.c-in-b{animation:cInB 1.1s cubic-bezier(.65,0,.35,1) both}
+@keyframes cOutF{to{transform:rotateY(-90deg);opacity:.2}} @keyframes cInF{from{transform:rotateY(90deg);opacity:.2}to{transform:none;opacity:1}}
+@keyframes cOutB{to{transform:rotateY(90deg);opacity:.2}} @keyframes cInB{from{transform:rotateY(-90deg);opacity:.2}to{transform:none;opacity:1}}
+.slide.dive-out{animation:diveOut 1.2s cubic-bezier(.7,0,.3,1) forwards;transform-origin:var(--ox) var(--oy)}
+.slide.dive-in{animation:diveIn 1.2s cubic-bezier(.7,0,.3,1) both;transform-origin:var(--ox) var(--oy)}
+@keyframes diveOut{to{transform:scale(7);opacity:0;filter:blur(10px)}}
+@keyframes diveIn{0%{transform:scale(.05);opacity:0;border-radius:50%;filter:blur(8px)}40%{opacity:1}100%{transform:none;opacity:1;filter:none}}
+.slide.surf-out{animation:surfOut 1.1s cubic-bezier(.7,0,.3,1) forwards;transform-origin:var(--ox) var(--oy)}
+.slide.surf-in{animation:surfIn 1.1s cubic-bezier(.7,0,.3,1) both;transform-origin:var(--ox) var(--oy)}
+@keyframes surfOut{to{transform:scale(.05);opacity:0}} @keyframes surfIn{from{transform:scale(7);opacity:0}to{transform:none;opacity:1}}
+
+.glass{background:linear-gradient(140deg,rgba(255,255,255,.12),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.18);border-radius:30px;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 30px 80px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.25)}
+.h{font-family:Sora,sans-serif;font-weight:700;letter-spacing:-.035em;line-height:1}
+.grad{background:linear-gradient(90deg,var(--t),var(--b) 40%,var(--v) 70%,var(--p));-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:shine 6s linear infinite}
+@keyframes shine{to{background-position:200% 0}}
+.p{font-size:26px;line-height:1.5;color:#c9cfee}
+.pill{display:inline-flex;align-items:center;gap:10px;padding:10px 20px;border-radius:999px;font-size:15px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--t);background:rgba(62,240,200,.08);border:1px solid rgba(62,240,200,.35)}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--t);box-shadow:0 0 12px var(--t)}
+.src{position:absolute;left:90px;bottom:40px;font-size:14px;color:#7b84ad}
+
+[data-a]{opacity:0}
+.slide.active.go [data-a]{animation-duration:1s;animation-fill-mode:both;animation-timing-function:cubic-bezier(.2,.8,.2,1);animation-delay:calc(var(--d,0) * 1ms)}
+.slide.active.go [data-a=up]{animation-name:up} .slide.active.go [data-a=fade]{animation-name:fade} .slide.active.go [data-a=blur]{animation-name:blurIn;animation-duration:1.4s}
+@keyframes up{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes blurIn{from{opacity:0;filter:blur(24px);transform:scale(1.08)}to{opacity:1;filter:none;transform:none}}
+
+/* orb */
+.orb{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#9ff8e4 12%,var(--t) 30%,var(--v) 65%,#1b1150 100%);box-shadow:0 0 120px rgba(62,240,200,.45),0 0 260px rgba(123,92,255,.4),inset -30px -40px 80px rgba(0,0,0,.45);animation:pulse 5s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 160px rgba(62,240,200,.6),0 0 320px rgba(123,92,255,.5),inset -30px -40px 80px rgba(0,0,0,.45)}}
+.ringo{position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.22)}
+
+/* orbit system */
+.sys{position:absolute;left:800px;top:450px;width:0;height:0}
+.orbit{position:absolute;border-radius:50%;border:1px dashed rgba(255,255,255,.2);left:50%;top:50%;transform:translate(-50%,-50%) rotateX(62deg);transform-style:preserve-3d}
+.spin{position:absolute;inset:0;animation:rot linear infinite;transform-style:preserve-3d}
+@keyframes rot{to{transform:rotate(360deg)}}
+.pl{position:absolute;left:50%;top:0;width:0;height:0}
+.pl .bd{position:absolute;left:-34px;top:-34px;width:68px;height:68px;border-radius:50%;transform:rotateX(-62deg);animation:unrot linear infinite;display:grid;place-items:center}
+@keyframes unrot{from{transform:rotate(0) rotateX(-62deg)}to{transform:rotate(-360deg) rotateX(-62deg)}}
+.pl .ball{width:68px;height:68px;border-radius:50%;box-shadow:inset -10px -12px 24px rgba(0,0,0,.45),0 0 30px currentColor}
+.pl .nm{position:absolute;top:76px;white-space:nowrap;font-family:Sora,sans-serif;font-weight:600;font-size:18px;color:#fff;text-shadow:0 2px 10px #000}
+
+/* chat */
+.chat{position:absolute;left:820px;top:90px;width:680px;height:720px;padding:30px;display:flex;flex-direction:column;gap:16px;overflow:hidden}
+.chat .hd{display:flex;align-items:center;gap:14px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.12)}
+.chat .av{width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,var(--t) 30%,var(--v))}
+.msg{max-width:78%;padding:16px 22px;border-radius:22px;font-size:21px;line-height:1.45;opacity:0;transform:translateY(16px) scale(.96);transition:all .45s cubic-bezier(.2,1.3,.4,1)}
+.msg.show{opacity:1;transform:none}
+.msg.me{align-self:flex-end;background:linear-gradient(135deg,var(--v),#5a3fe0);border-bottom-right-radius:6px}
+.msg.ai{align-self:flex-start;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-bottom-left-radius:6px}
+.typing{align-self:flex-start;display:none;gap:6px;padding:16px 20px;border-radius:22px;background:rgba(255,255,255,.1)}
+.typing.show{display:flex}
+.typing i{width:9px;height:9px;border-radius:50%;background:var(--t);animation:bo 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bo{50%{transform:translateY(-7px);opacity:.5}}
+
+.stat{padding:34px}
+.stat .n{font-family:Sora,sans-serif;font-weight:800;font-size:110px;letter-spacing:-.05em;line-height:1}
+
+.dash{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.dc{padding:26px}
+.dc .l{font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);font-weight:600}
+.dc .v{font-family:Sora,sans-serif;font-weight:700;font-size:54px;margin-top:8px}
+.spark{display:flex;align-items:flex-end;gap:8px;height:70px;margin-top:14px}
+.spark i{flex:1;border-radius:6px 6px 0 0;background:linear-gradient(var(--t),var(--v));height:0;transition:height 1s cubic-bezier(.2,1.2,.4,1)}
+.slide.active.go .spark i{height:var(--h);transition-delay:calc(var(--k) * 90ms + 600ms)}
+
+.plan{padding:36px;position:relative}
+.plan .nm{font-family:Sora,sans-serif;font-weight:600;font-size:30px}
+.plan .pr{font-family:Sora,sans-serif;font-weight:800;font-size:84px;letter-spacing:-.05em;margin:12px 0}
+.plan .pr small{font-size:22px;color:var(--mu);letter-spacing:0;font-weight:400}
+.plan ul{list-style:none;font-size:20px;line-height:1.5;color:#d3d8f5}
+.plan li{padding:9px 0;border-top:1px solid rgba(255,255,255,.1)}
+.plan li::before{content:"✦ ";color:var(--t)}
+.plan.hot{background:linear-gradient(160deg,rgba(123,92,255,.45),rgba(62,240,200,.15));border-color:rgba(62,240,200,.6)}
+
+.feat{padding:30px;display:flex;gap:22px;align-items:flex-start}
+.feat .ic{font-size:40px;width:70px;height:70px;border-radius:20px;display:grid;place-items:center;background:rgba(255,255,255,.08);flex:none}
+.feat b{font-family:Sora,sans-serif;font-size:26px;display:block;margin-bottom:6px}
+.feat span{font-size:19px;color:#c3c9e8;line-height:1.45}
+
+#dots{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:10px;z-index:30}
+#dots i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.25);transition:all .4s}
+#dots i.on{width:34px;border-radius:6px;background:linear-gradient(90deg,var(--t),var(--v))}
+#hint{position:fixed;left:18px;bottom:16px;font-size:12px;color:#4a5378;z-index:30}
+</style>
+</head>
+<body>
+<div id="stage">
+<div class="aur a1"></div><div class="aur a2"></div><div class="aur a3"></div>
+<canvas id="stars" width="1600" height="900"></canvas>
+<div id="cube">
+
+<!-- 1 COVER -->
+<section class="slide">
+  <div style="position:absolute;left:90px;top:150px;width:900px">
+    <div class="pill" data-a="fade">Nova · AI study companion · Grades 9–12</div>
+    <div class="h" data-a="blur" style="--d:300;font-size:100px;margin-top:36px">The study partner<br>that <span class="grad">never sleeps.</span></div>
+    <p class="p" data-a="up" style="--d:900;margin-top:36px;width:640px">24/7 AI practice that coaches instead of cheats — plus real human tutors when it matters most.</p>
+  </div>
+  <div data-a="blur" style="--d:200">
+    <div class="ringo" style="left:930px;top:120px;width:620px;height:620px;transform:rotateX(70deg) rotateZ(20deg);border-color:rgba(62,240,200,.4)"></div>
+    <div class="ringo" style="left:980px;top:170px;width:520px;height:520px;transform:rotateX(70deg) rotateZ(-30deg);border-color:rgba(255,106,213,.35)"></div>
+    <div class="orb" style="left:1090px;top:280px;width:300px;height:300px"></div>
+  </div>
+  <div class="glass" data-a="up" style="--d:1200;position:absolute;left:1080px;top:640px;padding:16px 22px;font-size:18px;border-radius:20px">✨ “Want a hint, or want to try one more step?”</div>
+</section>
+
+<!-- 2 PROBLEM -->
+<section class="slide">
+  <div style="position:absolute;left:90px;top:100px;width:1420px">
+    <div class="pill" data-a="fade">The problem</div>
+    <div class="h" data-a="blur" style="--d:200;font-size:86px;margin-top:30px">Homework gets hard at 10 p.m.<br><span class="grad">Teachers aren’t there at 10 p.m.</span></div>
+  </div>
+  <div style="position:absolute;left:90px;top:440px;width:1420px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px">
+    <div class="glass stat" data-a="up" style="--d:500"><div class="n grad">~40%</div><p class="p" style="font-size:22px;margin-top:12px">of U.S. 8th graders scored below NAEP Basic in math in 2024.</p></div>
+    <div class="glass stat" data-a="up" style="--d:700"><div class="n grad">31%</div><p class="p" style="font-size:22px;margin-top:12px">of 4th graders read at or above NAEP Proficient — down 4 points since 2019.</p></div>
+    <div class="glass stat" data-a="up" style="--d:900"><div class="n grad">1 : 1</div><p class="p" style="font-size:22px;margin-top:12px">is how students learn fastest — and what most families can’t afford every night.</p></div>
+  </div>
+  <div class="src">Sources: National Assessment Governing Board and NCES, 2024 NAEP results.</div>
+</section>
+
+<!-- 3 ORBIT -->
+<section class="slide" id="orbitSlide">
+  <div style="position:absolute;left:90px;top:80px;width:600px;z-index:2">
+    <div class="pill" data-a="fade">One universe</div>
+    <div class="h" data-a="blur" style="--d:200;font-size:80px;margin-top:26px">Every subject.<br><span class="grad">One orbit.</span></div>
+    <p class="p" data-a="up" style="--d:700;margin-top:24px;width:460px">From Algebra I to AP Physics, aligned to the courses U.S. high schoolers actually take.</p>
+  </div>
+  <div class="sys" data-a="blur" style="--d:300;left:1060px;top:500px">
+    <div class="orb" style="left:-90px;top:-90px;width:180px;height:180px"></div>
+    <div class="orbit" style="width:440px;height:440px"><div class="spin" style="animation-duration:26s">
+      <div class="pl" style="transform:rotate(0deg) translateY(0)"><div class="bd" style="animation-duration:26s"><div class="ball" style="background:var(--t);color:var(--t)"></div><div class="nm">Algebra</div></div></div>
+    </div></div>
+  </div>
+</section>
+
+<!-- 4 CHAT (dive target) -->
+<section class="slide" data-dive>
+  <div style="position:absolute;left:90px;top:150px;width:660px">
+    <div class="pill" data-a="fade">Inside a session · Algebra</div>
+    <div class="h" data-a="blur" style="--d:200;font-size:80px;margin-top:30px">No answers handed out.<br><span class="grad">Just the next right question.</span></div>
+    <p class="p" data-a="up" style="--d:700;margin-top:30px;width:600px">Nova walks students through each step, checks their reasoning and only reveals worked solutions after they try.</p>
+  </div>
+  <div class="glass chat" data-a="up" style="--d:300">
+    <div class="hd"><div class="av"></div><div><div style="font-family:Sora,sans-serif;font-weight:600;font-size:20px">Nova</div><div style="font-size:14px;color:var(--t)">● online · Algebra I</div></div></div>
+    <div class="msg me">I don’t get how to solve 2x + 5 = 17 😩</div>
+    <div class="msg ai">Let’s do it together. What could we do first to get <b>2x</b> by itself?</div>
+    <div class="msg me">subtract 5?</div>
+    <div class="msg ai">Exactly ✨ So what’s 17 − 5?</div>
+    <div class="msg me">12 → 2x = 12</div>
+    <div class="msg ai">You’re one step away. What do we do with the 2?</div>
+    <div class="typing"><i></i><i></i><i></i></div>
+  </div>
+</section>
+
+<!-- 5 HUMAN + AI -->
+<section class="slide">
+  <div style="position:absolute;left:90px;top:100px;width:1420px">
+    <div class="pill" data-a="fade">Human + AI</div>
+    <div class="h" data-a="blur" style="--d:200;font-size:86px;margin-top:30px">AI for practice.<br><span class="grad">Humans for breakthroughs.</span></div>
+  </div>
+  <div style="position:absolute;left:90px;top:420px;width:1420px;display:grid;grid-template-columns:1fr 1fr;gap:28px">
+    <div class="glass feat" data-a="up" style="--d:500"><div class="ic">🤖</div><div><b>Nova, every night</b><span>Unlimited step-by-step practice, quizzes built from the student’s own class topics, and instant feedback.</span></div></div>
+    <div class="glass feat" data-a="up" style="--d:650"><div class="ic">🧑‍🏫</div><div><b>A real coach, every week</b><span>A live 1:1 video session with a vetted tutor who sees exactly where Nova noticed the student getting stuck.</span></div></div>
+  </div>
+  <div class="glass" data-a="up" style="--d:900;position:absolute;left:90px;top:660px;width:1420px;padding:26px 34px;font-size:21px;line-height:1.5;color:#d3d8f5">
+    <b style="color:var(--t)">Why both?</b> A large University of Chicago randomized study found virtual tutoring was as effective as in-person tutoring — and researchers note the strongest results still come from models with human tutors.
+  </div>
+  <div class="src">Source: Bhatt et al., Personalized Learning Initiative interim report 2023–24 (University of Chicago Education Lab).</div>
+</section>
+
+<!-- 6 PARENTS -->
+<section class="slide">
+  <div style="position:absolute;left:90px;top:150px;width:560px">
+    <div class="pill" data-a="fade">For parents</div>
+    <div class="h" data-a="blur" style="--d:200;font-size:76px;margin-top:30px">Know what’s<br>happening —<br><span class="grad">without nagging.</span></div>
+    <p class="p" data-a="up" style="--d:700;margin-top:30px">A Sunday summary of time spent, skills mastered, upcoming tests and notes from the coach.</p>
+  </div>
+  <div class="dash" style="position:absolute;left:740px;top:130px;width:770px">
+    <div class="glass dc" data-a="up" style="--d:300"><div class="l">Study time · this week</div><div class="v">4h 20m</div><div class="spark"><i style="--h:40%;--k:0"></i><i style="--h:65%;--k:1"></i><i style="--h:30%;--k:2"></i><i style="--h:80%;--k:3"></i><i style="--h:55%;--k:4"></i><i style="--h:90%;--k:5"></i><i style="--h:20%;--k:6"></i></div></div>
+    <div class="glass dc" data-a="up" style="--d:420"><div class="l">Skills mastered</div><div class="v grad">+7</div><div style="font-size:17px;color:#c3c9e8;margin-top:12px;line-height:1.5">Linear equations · Slope · Cell structure · Thesis statements…</div></div>
+    <div class="glass dc" data-a="up" style="--d:540"><div class="l">Next test</div><div class="v" style="font-size:40px">Chem · Thu</div><div style="font-size:17px;color:#c3c9e8;margin-top:12px">Nova built a 20-min review plan</div></div>
+    <div class="glass dc" data-a="up" style="--d:660"><div class="l">Coach note</div><div style="font-size:19px;line-height:1.5;margin-top:12px;color:#e2e6ff">“Great persistence on word problems. Next: setting up equations from text.”</div></div>
+  </div>
+  <div style="position:absolute;left:740px;top:780px;font-size:14px;color:#7b84ad">Sample dashboard for illustration.</div>
+</section>
+
+<!-- 7 TRUST -->
+<section class="slide">
+  <div style="position:absolute;left:90px;top:100px;width:1420px">
+    <div class="pill" data-a="fade">Trust &amp; safety</div>
+    <div class="h" data-a="blur" style="--d:200;font-size:86px;margin-top:30px">Built for teens.<br><span class="grad">Designed for parents.</span></div>
+  </div>
+  <div style="position:absolute;left:90px;top:420px;width:1420px;display:grid;grid-template-columns:repeat(2,1fr);gap:24px">
+    <div class="glass feat" data-a="up" style="--d:400"><div class="ic">🛡️</div><div><b>No ads. Ever.</b><span>Student data is never sold or used for advertising.</span></div></div>
+    <div class="glass feat" data-a="up" style="--d:520"><div class="ic">🎛️</div><div><b>Parent controls</b><span>Set study hours, subjects and how much help Nova can give.</span></div></div>
+    <div class="glass feat" data-a="up" style="--d:640"><div class="ic">✍️</div><div><b>Academic-integrity mode</b><span>Essay coaching gives feedback — it doesn’t write the essay.</span></div></div>
+    <div class="glass feat" data-a="up" style="--d:760"><div class="ic">🔒</div><div><b>[Privacy &amp; compliance details]</b><span>Add your COPPA / FERPA and security statements here.</span></div></div>
+  </div>
+</section>
+
+<!-- 8 PRICING -->
+<section class="slide">
+  <div style="position:absolute;left:90px;top:80px">
+    <div class="pill" data-a="fade">Plans</div>
+    <div class="h" data-a="blur" style="--d:200;font-size:80px;margin-top:26px">Start free. <span class="grad">Level up anytime.</span></div>
+  </div>
+  <div style="position:absolute;left:90px;top:320px;width:1420px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px">
+    <div class="glass plan" data-a="up" style="--d:400"><div class="nm">Nova Free</div><div class="pr">$0</div><ul><li>20 guided questions / day</li><li>Algebra &amp; Biology</li><li>Weekly parent email</li></ul></div>
+    <div class="glass plan hot" data-a="up" style="--d:550"><div class="nm">Nova Plus</div><div class="pr">$19<small> / month</small></div><ul><li>Unlimited practice, all subjects</li><li>SAT / ACT prep</li><li>Parent dashboard</li></ul></div>
+    <div class="glass plan" data-a="up" style="--d:700"><div class="nm">Nova + Coach</div><div class="pr">$129<small> / month</small></div><ul><li>Everything in Plus</li><li>4 live 1:1 coach sessions</li><li>Test-week sprint plans</li></ul></div>
+  </div>
+  <div class="src">Illustrative pricing — adjust before presenting.</div>
+</section>
+
+<!-- 9 CTA -->
+<section class="slide">
+  <div data-a="blur">
+    <div class="ringo" style="left:500px;top:-60px;width:600px;height:600px;transform:rotateX(72deg);border-color:rgba(62,240,200,.45)"></div>
+    <div class="orb" style="left:700px;top:140px;width:200px;height:200px"></div>
+  </div>
+  <div style="position:absolute;left:0;right:0;top:420px;text-align:center">
+    <div class="h" data-a="blur" style="--d:400;font-size:110px">Launch your <span class="grad">14-day free trial.</span></div>
+    <p class="p" data-a="up" style="--d:900;margin-top:26px">No credit card. Cancel in two taps.</p>
+    <div class="glass" data-a="up" style="--d:1100;display:inline-block;margin-top:40px;padding:22px 40px;font-size:26px;font-weight:600">[nova.yourdomain.com] &nbsp;·&nbsp; [App Store / Google Play]</div>
+  </div>
+</section>
+
+</div>
+</div>
+<div id="dots"></div>
+<div id="hint">← → · click · swipe · F fullscreen</div>
+
+<script>
+(function(){
+const stage=document.getElementById('stage');
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform=`translate(-50%,-50%) scale(${s})`;}
+addEventListener('resize',fit);fit();
+// stars
+const cv=document.getElementById('stars'),cx=cv.getContext('2d');const st=Array.from({length:220},()=>({x:Math.random()*1600,y:Math.random()*900,r:Math.random()*1.4+.2,p:Math.random()*6}));
+(function tw(t){cx.clearRect(0,0,1600,900);st.forEach(s=>{cx.globalAlpha=.3+.7*Math.abs(Math.sin(t/1400+s.p));cx.fillStyle='#fff';cx.beginPath();cx.arc(s.x,s.y,s.r,0,7);cx.fill();});requestAnimationFrame(tw);})(0);
+
+// build orbit planets (2D ellipses animated in JS, depth-sorted)
+const planets=[['Algebra','#3ef0c8',0],['Geometry','#4cc9ff',0],['Biology','#7cf07b',0],
+ ['Chemistry','#ff6ad5',1],['Physics','#7b5cff',1],['English','#ffd166',1],['U.S. History','#ff8a5c',1],
+ ['SAT / ACT','#ffffff',2],['AP CS','#3ef0c8',2],['Spanish','#4cc9ff',2]];
+const sys=document.querySelector('#orbitSlide .sys');
+const R=[[200,70],[320,112],[440,152]],SP=[.00032,.00021,.00014];
+sys.innerHTML='';
+R.forEach(([a,b])=>{const e=document.createElement('div');e.style.cssText=`position:absolute;left:${-a}px;top:${-b}px;width:${2*a}px;height:${2*b}px;border-radius:50%;border:1px dashed rgba(255,255,255,.22)`;sys.appendChild(e);});
+const core=document.createElement('div');core.className='orb';core.style.cssText='left:-80px;top:-80px;width:160px;height:160px;z-index:50';sys.appendChild(core);
+const cnt=[3,4,3],idx=[0,0,0];
+const P=planets.map(p=>{const r=p[2],k=idx[r]++;const el=document.createElement('div');
+ el.style.cssText='position:absolute;width:0;height:0';
+ el.innerHTML=`<div class="ball" style="position:absolute;left:-30px;top:-30px;width:60px;height:60px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,${p[1]} 40%,#111);box-shadow:inset -8px -10px 20px rgba(0,0,0,.45),0 0 30px ${p[1]}"></div><div style="position:absolute;left:-80px;width:160px;top:36px;text-align:center;font-family:Sora,sans-serif;font-weight:600;font-size:17px;color:#fff;text-shadow:0 2px 10px #000;white-space:nowrap">${p[0]}</div>`;
+ sys.appendChild(el);return {el,r,ph:k*2*Math.PI/cnt[r]+r*.6};});
+(function orbit(t){P.forEach(o=>{const [a,b]=R[o.r];const th=o.ph+t*SP[o.r];const x=a*Math.cos(th),y=b*Math.sin(th);const d=(Math.sin(th)+1)/2;
+ o.el.style.transform=`translate(${x}px,${y}px) scale(${.7+.45*d})`;o.el.style.zIndex=Math.sin(th)>0?60:10;o.el.style.opacity=.55+.45*d;});requestAnimationFrame(orbit);})(0);
+
+// chat sequence
+let chatTimers=[];
+function chat(sl){chatTimers.forEach(clearTimeout);chatTimers=[];const ms=[...sl.querySelectorAll('.msg')],ty=sl.querySelector('.typing');
+ ms.forEach(m=>m.classList.remove('show'));ty.classList.remove('show');let t=1300;
+ ms.forEach((m,i)=>{if(m.classList.contains('ai')){chatTimers.push(setTimeout(()=>ty.classList.add('show'),t));t+=900;chatTimers.push(setTimeout(()=>{ty.classList.remove('show');m.classList.add('show');m.parentNode.insertBefore(ty,m.nextSibling);},t));}
+  else chatTimers.push(setTimeout(()=>m.classList.add('show'),t));t+=1100;});
+ chatTimers.push(setTimeout(()=>{ms[ms.length-1].after(ty);ty.classList.add('show');},t));}
+
+const slides=[...document.querySelectorAll('.slide')];let cur=-1,busy=false;
+const dots=document.getElementById('dots');slides.forEach(()=>dots.appendChild(document.createElement('i')));
+function activate(sl){sl.classList.add('active');sl.classList.remove('go');void sl.offsetWidth;sl.classList.add('go');if(sl.querySelector('.chat'))chat(sl);}
+function planetPos(){const b=document.querySelector('#orbitSlide .sys .ball');const r=b.getBoundingClientRect(),s=stage.getBoundingClientRect(),k=s.width/1600;
+ return [((r.left+r.width/2-s.left)/k)+'px',((r.top+r.height/2-s.top)/k)+'px'];}
+function go(n){if(busy||n<0||n>=slides.length||n===cur)return;const from=slides[cur],to=slides[n],fwd=n>cur;cur=n;
+ [...dots.children].forEach((d,i)=>d.classList.toggle('on',i===n));history.replaceState(null,'','#'+(n+1));
+ if(!from){activate(to);return;}
+ busy=true;let a,b;
+ if(fwd&&to.hasAttribute('data-dive')&&from.id==='orbitSlide'){const [x,y]=planetPos();from.style.setProperty('--ox',x);from.style.setProperty('--oy',y);to.style.setProperty('--ox',x);to.style.setProperty('--oy',y);a='dive-out';b='dive-in';}
+ else if(!fwd&&from.hasAttribute('data-dive')&&to.id==='orbitSlide'){from.style.setProperty('--ox','1060px');from.style.setProperty('--oy','500px');to.style.setProperty('--ox','1060px');to.style.setProperty('--oy','500px');a='surf-out';b='surf-in';}
+ else{a=fwd?'c-out-f':'c-out-b';b=fwd?'c-in-f':'c-in-b';}
+ from.classList.add('leaving',a);from.classList.remove('active');to.classList.add(b);activate(to);
+ setTimeout(()=>{from.classList.remove('leaving',a,'go');to.classList.remove(b);busy=false;},1220);}
+const next=()=>go(cur+1),prev=()=>go(cur-1);
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();next();}else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}
+ else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);else if(e.key==='f'||e.key==='F'){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(_){}}});
+document.addEventListener('click',e=>{if(e.target.closest('a,button'))return;(e.clientX<innerWidth*.25)?prev():next();});
+let sx=null;addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)(dx<0?next:prev)();sx=null;});
+const h=parseInt(location.hash.slice(1));go(h>0&&h<=slides.length?h-1:0);
+})();
+</script>
+</body>
+</html>

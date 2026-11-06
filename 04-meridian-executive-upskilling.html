@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meridian — Executive Upskilling</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f1efe9;--ink:#111111;--red:#e63312;--gray:#8c8a84;--line:#d6d3cb}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#d9d6ce;font-family:'Inter Tight',Helvetica,Arial,sans-serif;color:var(--ink)}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;overflow:hidden;background:var(--paper)}
+.slide{position:absolute;inset:0;visibility:hidden;background:var(--paper)}
+.slide.active{visibility:visible}
+.slide.dark{background:var(--ink);color:var(--paper)}
+.slide.red{background:var(--red);color:var(--paper)}
+
+/* Swiss grid */
+.grid{position:absolute;inset:0;pointer-events:none}
+.grid i{position:absolute;top:0;bottom:0;width:1px;background:var(--line);transform:scaleY(0);transform-origin:top}
+.dark .grid i{background:#2a2a2a} .red .grid i{background:rgba(255,255,255,.18)}
+.slide.active.go .grid i{transition:transform 1.2s cubic-bezier(.7,0,.2,1);transition-delay:calc(var(--d) * 1ms);transform:scaleY(1)}
+
+.meta{position:absolute;left:64px;right:64px;top:40px;display:flex;justify-content:space-between;font-size:14px;font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+.meta span:nth-child(2){color:var(--red)}
+.dark .meta span:nth-child(2),.red .meta span:nth-child(2){color:inherit;opacity:.6}
+.foot{position:absolute;left:64px;bottom:36px;font-size:13px;color:var(--gray)}
+.red .foot,.dark .foot{color:rgba(241,239,233,.6)}
+
+.k{font-weight:800;letter-spacing:-.055em;line-height:.86}
+.t{font-weight:300;font-size:30px;line-height:1.3;letter-spacing:-.01em}
+.lab{font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.r{color:var(--red)}
+
+/* kinetic words */
+.kin .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.06em}
+.kin .w>span{display:inline-block;transform:translateY(105%)}
+.slide.active.go .kin .w>span{transition:transform .9s cubic-bezier(.7,0,.15,1);transition-delay:calc(var(--d,0) * 1ms + var(--i) * 70ms);transform:none}
+
+[data-a]{opacity:0}
+.slide.active.go [data-a]{animation:.9s cubic-bezier(.7,0,.2,1) both;animation-delay:calc(var(--d,0) * 1ms)}
+.slide.active.go [data-a=up]{animation-name:up}
+.slide.active.go [data-a=fade]{animation-name:fade}
+.slide.active.go [data-a=wipe]{animation-name:wipe;animation-duration:1.1s}
+.slide.active.go [data-a=wipeV]{animation-name:wipeV;animation-duration:1.1s}
+@keyframes up{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes wipe{from{opacity:1;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes wipeV{from{opacity:1;clip-path:inset(100% 0 0 0)}to{opacity:1;clip-path:inset(0)}}
+
+.img{position:absolute;background-size:cover;background-position:center;filter:grayscale(1) contrast(1.15)}
+.img.duo::after{content:"";position:absolute;inset:0;background:var(--red);mix-blend-mode:multiply;opacity:.85}
+
+/* blinds transition */
+#blinds{position:absolute;inset:0;z-index:50;display:flex;pointer-events:none}
+#blinds i{flex:1;background:var(--red);transform:scaleY(0);transform-origin:top}
+#blinds i:nth-child(even){background:var(--ink)}
+#blinds.close i{animation:bClose .5s cubic-bezier(.7,0,.3,1) both;animation-delay:calc(var(--n) * 35ms)}
+#blinds.open i{transform:scaleY(1);transform-origin:bottom;animation:bOpen .55s cubic-bezier(.7,0,.3,1) both;animation-delay:calc(var(--n) * 35ms)}
+@keyframes bClose{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes bOpen{from{transform:scaleY(1)}to{transform:scaleY(0)}}
+#blinds.rev i{transform-origin:bottom}
+#blinds.rev.open i{transform-origin:top}
+
+/* bars */
+.hbar{height:84px;background:var(--ink);transform:scaleX(0);transform-origin:left;position:relative}
+.hbar.rd{background:var(--red)}
+.slide.active.go .hbar{transition:transform 1.4s cubic-bezier(.7,0,.2,1);transition-delay:calc(var(--d) * 1ms);transform:scaleX(var(--s))}
+.ring circle{fill:none;stroke-width:18}
+.ring .bg{stroke:#2a2a2a}
+.ring .fg{stroke:var(--red);stroke-linecap:butt;stroke-dasharray:565.5;stroke-dashoffset:565.5;transform:rotate(-90deg);transform-origin:center}
+.slide.active.go .ring .fg{transition:stroke-dashoffset 1.8s cubic-bezier(.7,0,.2,1);transition-delay:calc(var(--d) * 1ms);stroke-dashoffset:calc(565.5 - 565.5 * var(--p) / 100)}
+
+.track{border-top:2px solid var(--ink);padding-top:18px}
+.track .n{font-size:110px;font-weight:800;letter-spacing:-.06em;line-height:.9;color:var(--red)}
+.track .h{font-size:34px;font-weight:700;letter-spacing:-.02em;margin:18px 0 10px;line-height:1.05}
+.track .d{font-size:18px;line-height:1.45;color:#4a4944}
+
+.wk{position:relative;height:120px;border-left:1px solid #333}
+.wk .blk{position:absolute;left:0;right:0;top:0;bottom:0;background:var(--red);transform:scaleX(0);transform-origin:left}
+.slide.active.go .wk .blk{transition:transform .7s cubic-bezier(.7,0,.2,1);transition-delay:calc(var(--d) * 1ms);transform:scaleX(1)}
+.wk .tx{position:absolute;left:16px;top:14px;right:10px;font-size:17px;line-height:1.3;z-index:2}
+.wk .tx b{display:block;font-size:30px;font-weight:800;letter-spacing:-.03em}
+
+.kpi{display:grid;grid-template-columns:90px 1fr 340px;align-items:baseline;border-top:1px solid var(--ink);padding:20px 0}
+.kpi .no{font-weight:800;font-size:22px;color:var(--red)} .kpi .nm{font-size:34px;font-weight:500;letter-spacing:-.02em} .kpi .wh{font-size:17px;color:#55534e}
+
+.tier{border-top:6px solid var(--ink);padding-top:26px}
+.tier.rd{border-color:var(--red)}
+.tier .pr{font-size:96px;font-weight:800;letter-spacing:-.06em;line-height:1}
+.tier .pr small{font-size:22px;letter-spacing:0;font-weight:500}
+.tier ul{list-style:none;margin-top:24px;font-size:20px;line-height:1.6}
+.tier li{border-bottom:1px solid var(--line);padding:8px 0}
+
+#pg{position:fixed;right:22px;bottom:18px;font-family:'Inter Tight',sans-serif;font-weight:800;font-size:16px;z-index:60;mix-blend-mode:difference;color:#fff}
+#bar{position:fixed;left:0;top:0;height:4px;background:var(--red);z-index:60;transition:width .7s cubic-bezier(.7,0,.2,1)}
+#hint{position:fixed;left:18px;bottom:18px;font-size:12px;color:#9a978f;z-index:60}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- 1 COVER -->
+<section class="slide">
+  <div class="grid"></div>
+  <div class="meta"><span>Meridian — Executive Upskilling</span><span>Corporate L&amp;D · 2027</span><span>01</span></div>
+  <div style="position:absolute;left:64px;top:160px;width:760px">
+    <div class="k kin" style="font-size:118px">Upskill before the market does.</div>
+    <p class="t" data-a="up" style="--d:900;margin-top:46px;width:600px">Cohort-based AI, data and leadership programs for U.S. managers — designed around your business problems, measured like an investment.</p>
+  </div>
+  <div data-a="wipeV" style="position:absolute;left:880px;top:110px;width:660px;height:700px;background:var(--red);color:var(--paper);padding:48px;--d:200">
+    <div class="lab">World Economic Forum · Future of Jobs 2025</div>
+    <div class="k" style="font-size:300px;margin-top:50px;letter-spacing:-.08em"><span class="count" data-to="39">0</span>%</div>
+    <div class="t" style="font-size:34px;font-weight:500;margin-top:20px">of workers’ core skills are expected to change by 2030.</div>
+  </div>
+</section>
+
+<!-- 2 DISRUPTION -->
+<section class="slide dark">
+  <div class="grid"></div>
+  <div class="meta"><span>Meridian</span><span>The shift</span><span>02</span></div>
+  <div style="position:absolute;left:64px;top:130px;width:1470px">
+    <div class="k kin" style="font-size:96px">Jobs aren’t vanishing. They’re rotating.</div>
+  </div>
+  <div style="position:absolute;left:64px;top:390px;width:1470px">
+    <div style="display:grid;grid-template-columns:240px 1fr;align-items:center;gap:24px;margin-bottom:26px">
+      <div><div class="k" style="font-size:72px">170M</div><div class="lab" style="opacity:.6">jobs created</div></div>
+      <div class="hbar rd" style="--s:1;--d:500"></div></div>
+    <div style="display:grid;grid-template-columns:240px 1fr;align-items:center;gap:24px;margin-bottom:26px">
+      <div><div class="k" style="font-size:72px">92M</div><div class="lab" style="opacity:.6">jobs displaced</div></div>
+      <div class="hbar" style="--s:.541;--d:750;background:#f1efe9"></div></div>
+    <div data-a="up" style="display:flex;gap:120px;margin-top:40px;--d:1200">
+      <div><span class="k r" style="font-size:96px">+78M</span><div class="lab" style="opacity:.6;margin-top:6px">net new jobs by 2030</div></div>
+      <div><span class="k" style="font-size:96px">22%</span><div class="lab" style="opacity:.6;margin-top:6px">of today’s jobs touched by churn</div></div>
+    </div>
+  </div>
+  <div class="foot">Source: World Economic Forum, Future of Jobs Report 2025 (global, 2025–2030).</div>
+</section>
+
+<!-- 3 EMPLOYERS -->
+<section class="slide dark">
+  <div class="grid"></div>
+  <div class="meta"><span>Meridian</span><span>What employers plan</span><span>03</span></div>
+  <div style="position:absolute;left:64px;top:130px;width:1470px">
+    <div class="k kin" style="font-size:96px">Your competitors are already training.</div>
+  </div>
+  <div style="position:absolute;left:64px;top:400px;width:1470px;display:grid;grid-template-columns:repeat(3,1fr);gap:40px">
+    <div><svg class="ring" width="220" height="220" viewBox="0 0 220 220"><circle class="bg" cx="110" cy="110" r="90"/><circle class="fg" cx="110" cy="110" r="90" style="--p:77;--d:400"/><text x="110" y="128" text-anchor="middle" font-family="Inter Tight, Helvetica, Arial, sans-serif" font-weight="800" font-size="56" fill="#f1efe9">77%</text></svg>
+      <p class="t" data-a="up" style="--d:700;font-size:24px;margin-top:20px;width:380px">of employers plan to upskill their existing workforce.</p></div>
+    <div><svg class="ring" width="220" height="220" viewBox="0 0 220 220"><circle class="bg" cx="110" cy="110" r="90"/><circle class="fg" cx="110" cy="110" r="90" style="--p:63;--d:600"/><text x="110" y="128" text-anchor="middle" font-family="Inter Tight, Helvetica, Arial, sans-serif" font-weight="800" font-size="56" fill="#f1efe9">63%</text></svg>
+      <p class="t" data-a="up" style="--d:900;font-size:24px;margin-top:20px;width:380px">say skills gaps are the biggest barrier to transformation.</p></div>
+    <div><svg class="ring" width="220" height="220" viewBox="0 0 220 220"><circle class="bg" cx="110" cy="110" r="90"/><circle class="fg" cx="110" cy="110" r="90" style="--p:41;--d:800"/><text x="110" y="128" text-anchor="middle" font-family="Inter Tight, Helvetica, Arial, sans-serif" font-weight="800" font-size="56" fill="#f1efe9">41%</text></svg>
+      <p class="t" data-a="up" style="--d:1100;font-size:24px;margin-top:20px;width:380px">expect to reduce headcount as AI automates tasks.</p></div>
+  </div>
+  <div class="foot">Source: World Economic Forum, Future of Jobs Report 2025 — survey of 1,000+ employers.</div>
+</section>
+
+<!-- 4 TRACKS -->
+<section class="slide">
+  <div class="grid"></div>
+  <div class="meta"><span>Meridian</span><span>Curriculum</span><span>04</span></div>
+  <div style="position:absolute;left:64px;top:120px;width:1470px">
+    <div class="k kin" style="font-size:96px">Four tracks. One operating system.</div>
+  </div>
+  <div style="position:absolute;left:64px;top:380px;width:1470px;display:grid;grid-template-columns:repeat(4,1fr);gap:36px">
+    <div class="track" data-a="up" style="--d:300"><div class="n">01</div><div class="h">AI Fluency for Managers</div><div class="d">Prompting, workflow redesign and responsible-use policy your legal team can sign.</div></div>
+    <div class="track" data-a="up" style="--d:450"><div class="n">02</div><div class="h">Data-Driven Decisions</div><div class="d">Reading dashboards, testing assumptions, asking analysts the right questions.</div></div>
+    <div class="track" data-a="up" style="--d:600"><div class="n">03</div><div class="h">Leading Hybrid Teams</div><div class="d">Feedback, accountability and culture across offices, time zones and screens.</div></div>
+    <div class="track" data-a="up" style="--d:750"><div class="n">04</div><div class="h">Change &amp; Resilience</div><div class="d">Running transformation without burning out the people who make it happen.</div></div>
+  </div>
+</section>
+
+<!-- 5 FORMAT -->
+<section class="slide red">
+  <div class="grid"></div>
+  <div class="meta"><span>Meridian</span><span>Format</span><span>05</span></div>
+  <div style="position:absolute;left:64px;top:120px;width:1470px">
+    <div class="k kin" style="font-size:112px">6 weeks. 3 hours a week.<br>1 real business problem.</div>
+  </div>
+  <div style="position:absolute;left:64px;top:560px;width:1470px;display:grid;grid-template-columns:repeat(6,1fr);color:var(--paper)">
+    <div class="wk" style="border-color:rgba(255,255,255,.5)"><div class="blk" style="--d:500;background:var(--ink)"></div><div class="tx"><b>W1</b>Diagnose</div></div>
+    <div class="wk" style="border-color:rgba(255,255,255,.5)"><div class="blk" style="--d:650;background:var(--ink)"></div><div class="tx"><b>W2</b>Frameworks</div></div>
+    <div class="wk" style="border-color:rgba(255,255,255,.5)"><div class="blk" style="--d:800;background:var(--ink)"></div><div class="tx"><b>W3</b>Apply</div></div>
+    <div class="wk" style="border-color:rgba(255,255,255,.5)"><div class="blk" style="--d:950;background:var(--ink)"></div><div class="tx"><b>W4</b>Peer review</div></div>
+    <div class="wk" style="border-color:rgba(255,255,255,.5)"><div class="blk" style="--d:1100;background:var(--ink)"></div><div class="tx"><b>W5</b>Pilot</div></div>
+    <div class="wk" style="border-color:rgba(255,255,255,.5)"><div class="blk" style="--d:1250;background:var(--paper)"></div><div class="tx" style="color:var(--red)"><b>W6</b>Present to execs</div></div>
+  </div>
+  <p class="t" data-a="up" style="--d:1500;position:absolute;left:64px;top:730px;width:1000px;font-size:26px">Live online cohorts of 20–30 · Weekly 90-min workshop + 90-min applied sprint · Capstone presented to your leadership.</p>
+</section>
+
+<!-- 6 MEASURE -->
+<section class="slide">
+  <div class="grid"></div>
+  <div class="meta"><span>Meridian</span><span>Measurement</span><span>06</span></div>
+  <div class="img duo" data-a="wipe" style="--d:200;left:1060px;top:0;width:540px;height:900px;background-image:url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1000&q=80'),linear-gradient(#777,#333)"></div>
+  <div style="position:absolute;left:64px;top:120px;width:940px">
+    <div class="k kin" style="font-size:88px">What gets measured gets funded.</div>
+    <div style="margin-top:46px">
+      <div class="kpi" data-a="up" style="--d:500"><span class="no">A</span><span class="nm">Skills delta</span><span class="wh">Pre/post assessment per track</span></div>
+      <div class="kpi" data-a="up" style="--d:620"><span class="no">B</span><span class="nm">Capstone value</span><span class="wh">Finance-reviewed impact estimate</span></div>
+      <div class="kpi" data-a="up" style="--d:740"><span class="no">C</span><span class="nm">Manager 360</span><span class="wh">Team feedback at 0 and 90 days</span></div>
+      <div class="kpi" data-a="up" style="--d:860;border-bottom:1px solid var(--ink)"><span class="no">D</span><span class="nm">Retention &amp; mobility</span><span class="wh">Participants tracked for 12 months</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 PRICING -->
+<section class="slide">
+  <div class="grid"></div>
+  <div class="meta"><span>Meridian</span><span>Investment</span><span>07</span></div>
+  <div style="position:absolute;left:64px;top:120px;width:1470px">
+    <div class="k kin" style="font-size:96px">Priced per seat. Built to scale.</div>
+  </div>
+  <div style="position:absolute;left:64px;top:360px;width:1470px;display:grid;grid-template-columns:repeat(3,1fr);gap:48px">
+    <div class="tier" data-a="up" style="--d:300"><div class="lab">Pilot · 25 seats</div><div class="pr" style="margin-top:14px">$1,450<small> /seat</small></div><ul><li>One track, one cohort</li><li>Impact report at week 8</li><li>Credit toward Scale</li></ul></div>
+    <div class="tier rd" data-a="up" style="--d:450"><div class="lab r">Scale · 100+ seats</div><div class="pr r" style="margin-top:14px">$1,150<small> /seat</small></div><ul><li>All four tracks</li><li>Custom capstone briefs</li><li>Quarterly exec review</li></ul></div>
+    <div class="tier" data-a="up" style="--d:600"><div class="lab">Enterprise · 500+</div><div class="pr" style="margin-top:14px">Custom</div><ul><li>Branded academy</li><li>LMS / HRIS integration</li><li>Dedicated success lead</li></ul></div>
+  </div>
+  <div class="foot">Illustrative pricing — adjust before presenting.</div>
+</section>
+
+<!-- 8 CTA -->
+<section class="slide red">
+  <div class="grid"></div>
+  <div class="meta"><span>Meridian</span><span>Next step</span><span>08</span></div>
+  <div class="img" data-a="fade" style="--d:300;left:1000px;top:0;width:600px;height:900px;background-image:url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80'),linear-gradient(#a52510,#5a1206);mix-blend-mode:multiply;opacity:.9"></div>
+  <div style="position:absolute;left:64px;top:170px;width:900px">
+    <div class="k kin" style="font-size:150px">Start with 25 seats.</div>
+    <p class="t" data-a="up" style="--d:900;margin-top:46px;font-size:34px;width:760px">A six-week pilot, an impact report in week eight, and a decision your CFO can defend.</p>
+    <div data-a="wipe" style="--d:1200;margin-top:56px;display:inline-block;background:var(--ink);color:var(--paper);padding:24px 34px;font-size:26px;font-weight:700">[meridian.yourdomain.com] → Book a scoping call</div>
+  </div>
+</section>
+
+<div id="blinds"></div>
+</div>
+<div id="bar"></div><div id="pg"></div>
+<div id="hint">← → · click · swipe · F fullscreen</div>
+
+<script>
+(function(){
+const stage=document.getElementById('stage');
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform=`translate(-50%,-50%) scale(${s})`;}
+addEventListener('resize',fit);fit();
+// grid lines
+document.querySelectorAll('.grid').forEach(g=>{for(let i=1;i<12;i++){const l=document.createElement('i');l.style.left=(64+i*(1472/12))+'px';l.style.setProperty('--d',i*40);g.appendChild(l);}});
+// kinetic split
+document.querySelectorAll('.kin').forEach(el=>{let i=0;const walk=n=>{[...n.childNodes].forEach(k=>{if(k.nodeType===3){const frag=document.createDocumentFragment();k.textContent.split(/(\s+)/).forEach(w=>{if(!w)return;if(/^\s+$/.test(w)){frag.appendChild(document.createTextNode(' '));return;}const o=document.createElement('span');o.className='w';const s=document.createElement('span');s.textContent=w;s.style.setProperty('--i',i++);o.appendChild(s);frag.appendChild(o);});k.replaceWith(frag);}else if(k.nodeType===1&&k.tagName!=='BR')walk(k);});};walk(el);});
+// blinds
+const bl=document.getElementById('blinds');for(let i=0;i<10;i++){const b=document.createElement('i');b.style.setProperty('--n',i);bl.appendChild(b);}
+
+const slides=[...document.querySelectorAll('.slide')];let cur=-1,busy=false;
+function countUp(sl){sl.querySelectorAll('.count').forEach(c=>{const to=+c.dataset.to,t0=performance.now()+500,dur=1500;(function f(t){let p=Math.min(Math.max((t-t0)/dur,0),1);p=1-Math.pow(1-p,4);c.textContent=Math.round(to*p);if(p<1)requestAnimationFrame(f);})(performance.now());});}
+function activate(sl){sl.classList.add('active');sl.classList.remove('go');void sl.offsetWidth;sl.classList.add('go');countUp(sl);}
+function go(n){if(busy||n<0||n>=slides.length||n===cur)return;const from=slides[cur],to=slides[n],fwd=n>cur;cur=n;
+ document.getElementById('pg').textContent=String(n+1).padStart(2,'0')+' — '+String(slides.length).padStart(2,'0');document.getElementById('bar').style.width=((n+1)/slides.length*100)+'%';history.replaceState(null,'','#'+(n+1));
+ if(!from){activate(to);return;}
+ busy=true;bl.className=fwd?'close':'close rev';
+ [...bl.children].forEach((b,i)=>b.style.setProperty('--n',fwd?i:9-i));
+ setTimeout(()=>{from.classList.remove('active','go');activate(to);bl.className=fwd?'open':'open rev';},820);
+ setTimeout(()=>{bl.className='';busy=false;},1700);}
+const next=()=>go(cur+1),prev=()=>go(cur-1);
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();next();}else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}
+ else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);else if(e.key==='f'||e.key==='F'){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(_){}}});
+document.addEventListener('click',e=>{if(e.target.closest('a,button'))return;(e.clientX<innerWidth*.25)?prev():next();});
+let sx=null;addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)(dx<0?next:prev)();sx=null;});
+const h=parseInt(location.hash.slice(1));go(h>0&&h<=slides.length?h-1:0);
+})();
+</script>
+</body>
+</html>
