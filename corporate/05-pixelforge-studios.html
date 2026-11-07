@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pixelforge Studios — Press Start</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--k:#1a1c2c;--pu:#5d275d;--r:#b13e53;--o:#ef7d57;--y:#ffcd75;--lg:#a7f070;--g:#38b764;--t:#257179;--nb:#29366f;--b:#3b5dc9;--lb:#41a6f6;--c:#73eff7;--w:#f4f4f4;--gr:#94b0c2;--dg:#566c86;--dk:#333c57}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#0d0e17;color:var(--w);font-family:VT323,monospace;image-rendering:pixelated}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;overflow:hidden;background:var(--k)}
+.slide{position:absolute;inset:0;visibility:hidden;overflow:hidden;background:var(--k)}
+.slide.active{visibility:visible}
+.px{font-family:'Press Start 2P',monospace;line-height:1.35;text-transform:uppercase}
+.vt{font-family:VT323,monospace;font-size:32px;line-height:1.2}
+#fx{position:absolute;inset:0;z-index:40;pointer-events:none;image-rendering:pixelated}
+#crt{position:absolute;inset:0;z-index:45;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 2px,transparent 2px 4px);mix-blend-mode:multiply}
+#vig{position:absolute;inset:0;z-index:46;pointer-events:none;background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.55))}
+.hud{position:absolute;left:0;right:0;top:0;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;font-family:'Press Start 2P';font-size:16px;color:var(--w);z-index:5;background:linear-gradient(var(--k),transparent)}
+.hud .y{color:var(--y)} .hud .h{color:var(--r);letter-spacing:6px}
+.box{background:var(--k);border:6px solid var(--w);box-shadow:0 0 0 6px var(--k),0 0 0 12px var(--dg),12px 12px 0 12px rgba(0,0,0,.4);padding:28px;position:relative}
+.box.blue{border-color:var(--lb)} .box.y{border-color:var(--y)} .box.g{border-color:var(--lg)} .box.r{border-color:var(--o)}
+.title{font-family:'Press Start 2P';text-transform:uppercase;line-height:1.3;text-shadow:6px 6px 0 var(--pu)}
+.blink{animation:blink 1s steps(1) infinite} @keyframes blink{50%{opacity:0}}
+.stars i{position:absolute;width:6px;height:6px;background:var(--w);animation:tw 2s steps(2) infinite}
+@keyframes tw{50%{opacity:.2}}
+.slot{width:150px;height:150px;border:6px solid var(--gr);background:var(--dk);display:grid;place-items:center;position:relative;box-shadow:inset -8px -8px 0 rgba(0,0,0,.35),inset 8px 8px 0 rgba(255,255,255,.08)}
+.slot canvas{width:96px;height:96px}
+.bar8{height:22px;background:var(--dk);border:4px solid var(--w);position:relative;overflow:hidden}
+.bar8 i{position:absolute;left:0;top:0;bottom:0;width:0;background:repeating-linear-gradient(90deg,var(--lg) 0 18px,transparent 18px 22px)}
+.slide.go .bar8 i{transition:width 1.2s steps(12);transition-delay:calc(var(--d) * 1ms);width:var(--w)}
+.cart{width:100%;background:var(--dg);border:6px solid var(--w);box-shadow:12px 12px 0 rgba(0,0,0,.4);padding:16px 16px 22px;position:relative}
+.cart::before{content:"";position:absolute;left:30%;right:30%;top:-6px;height:22px;background:var(--k);border:6px solid var(--w);border-top:0}
+.cart canvas{width:100%;height:240px;display:block;border:4px solid var(--k)}
+.ach{display:flex;gap:20px;align-items:center;background:#262a40;border:4px solid var(--y);padding:16px 22px;box-shadow:8px 8px 0 rgba(0,0,0,.4)}
+.ach .ic{width:64px;height:64px;background:var(--y);display:grid;place-items:center;font-family:'Press Start 2P';font-size:26px;color:var(--k);flex:none}
+
+[data-a]{opacity:0}
+.slide.go [data-a]{animation:.6s steps(6) both;animation-delay:calc(var(--d,0) * 1ms)}
+.slide.go [data-a=up]{animation-name:up} .slide.go [data-a=fade]{animation-name:fade}
+.slide.go [data-a=pop]{animation-name:pop;animation-timing-function:steps(4)}
+.slide.go [data-a=slide]{animation-name:sl;animation-timing-function:steps(8)}
+@keyframes up{from{opacity:0;transform:translateY(48px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{opacity:0;transform:scale(.2)}70%{opacity:1;transform:scale(1.15)}100%{opacity:1;transform:none}}
+@keyframes sl{from{opacity:1;transform:translateX(-700px)}to{opacity:1;transform:none}}
+#hint{position:fixed;left:16px;bottom:12px;font-size:18px;color:#566c86;z-index:60}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- 1 TITLE -->
+<section class="slide" data-lvl="TITLE">
+  <div class="stars" id="stars1"></div>
+  <canvas id="logoSky" width="160" height="90" style="position:absolute;inset:0;width:1600px;height:900px;image-rendering:pixelated"></canvas>
+  <div style="position:absolute;left:0;right:0;top:170px;text-align:center">
+    <div class="title" data-a="pop" style="font-size:96px;color:var(--y);text-shadow:8px 8px 0 var(--r),16px 16px 0 var(--pu)">PIXEL</div>
+    <div class="title" data-a="pop" style="--d:250;font-size:96px;color:var(--c);margin-top:10px;text-shadow:8px 8px 0 var(--b),16px 16px 0 var(--nb)">FORGE</div>
+    <div class="px" data-a="fade" style="--d:600;font-size:22px;letter-spacing:12px;margin-top:40px;color:var(--w)">STUDIOS</div>
+    <div class="px blink" style="font-size:26px;margin-top:80px;color:var(--w)">PRESS START</div>
+    <div class="vt" data-a="fade" style="--d:900;margin-top:40px;color:var(--gr);font-size:30px">© 2014 PIXELFORGE STUDIOS · SEATTLE, WA · INDEPENDENT GAME DEVELOPER</div>
+  </div>
+</section>
+
+<!-- 2 STORY -->
+<section class="slide" data-lvl="STORY MODE">
+  <div class="stars" id="stars2"></div>
+  <div style="position:absolute;left:100px;top:120px"><div class="title" data-a="slide" style="font-size:44px;color:var(--y)">WHO WE ARE</div></div>
+  <canvas class="sprite" data-seed="founders" data-size="12" style="position:absolute;left:150px;top:300px;width:240px;height:240px"></canvas>
+  <div class="box" data-a="up" style="--d:300;position:absolute;left:470px;top:250px;width:1030px;min-height:420px">
+    <div class="px" style="font-size:18px;color:var(--c);margin-bottom:22px">▶ STUDIO LOG · 2014</div>
+    <div class="vt type" style="font-size:38px;line-height:1.35">Four friends quit their jobs, rented a garage in Ballard and shipped a tiny puzzle game. It found an audience. Ten years later we are 48 developers making games that feel handmade — and run like clockwork.</div>
+    <div class="px blink" style="position:absolute;right:28px;bottom:22px;font-size:18px;color:var(--y)">▼</div>
+  </div>
+</section>
+
+<!-- 3 INVENTORY -->
+<section class="slide" data-lvl="INVENTORY">
+  <div style="position:absolute;left:100px;top:110px"><div class="title" data-a="slide" style="font-size:44px;color:var(--lg)">WHAT WE DO</div><div class="vt" data-a="fade" style="--d:300;color:var(--gr);margin-top:20px">Select an item to inspect.</div></div>
+  <div style="position:absolute;left:100px;top:300px;width:1400px;display:grid;grid-template-columns:repeat(4,1fr);gap:30px">
+    <div class="box blue" data-a="pop" style="--d:300;text-align:center"><div class="slot" style="margin:0 auto"><canvas class="item" data-item="sword" width="16" height="16"></canvas></div><div class="px" style="font-size:18px;margin:26px 0 14px;color:var(--c)">ORIGINAL GAMES</div><div class="vt" style="font-size:28px;color:var(--gr)">Our own IP, from first sketch to launch day.</div></div>
+    <div class="box y" data-a="pop" style="--d:450;text-align:center"><div class="slot" style="margin:0 auto"><canvas class="item" data-item="shield" width="16" height="16"></canvas></div><div class="px" style="font-size:18px;margin:26px 0 14px;color:var(--y)">CO-DEVELOPMENT</div><div class="vt" style="font-size:28px;color:var(--gr)">Extra hands for publishers’ biggest titles.</div></div>
+    <div class="box g" data-a="pop" style="--d:600;text-align:center"><div class="slot" style="margin:0 auto"><canvas class="item" data-item="potion" width="16" height="16"></canvas></div><div class="px" style="font-size:18px;margin:26px 0 14px;color:var(--lg)">LIVE OPS</div><div class="vt" style="font-size:28px;color:var(--gr)">Seasons, events and balance patches that keep players.</div></div>
+    <div class="box r" data-a="pop" style="--d:750;text-align:center"><div class="slot" style="margin:0 auto"><canvas class="item" data-item="key" width="16" height="16"></canvas></div><div class="px" style="font-size:18px;margin:26px 0 14px;color:var(--o)">PORTING</div><div class="vt" style="font-size:28px;color:var(--gr)">PC, console and mobile — 60 fps everywhere.</div></div>
+  </div>
+</section>
+
+<!-- 4 GAMES -->
+<section class="slide" data-lvl="GAME LIBRARY">
+  <div style="position:absolute;left:100px;top:110px"><div class="title" data-a="slide" style="font-size:44px;color:var(--c)">OUR GAMES</div></div>
+  <div style="position:absolute;left:100px;top:260px;width:1400px;display:grid;grid-template-columns:repeat(3,1fr);gap:50px">
+    <div data-a="up" style="--d:300"><div class="cart"><canvas class="scene" data-scene="moss" width="96" height="60"></canvas><div class="px" style="font-size:20px;margin-top:18px;color:var(--y)">MOSS &amp; MORTAR</div><div class="vt" style="font-size:26px;color:var(--w);margin-top:8px">Cozy village builder · 2019</div></div></div>
+    <div data-a="up" style="--d:500"><div class="cart" style="background:var(--nb)"><canvas class="scene" data-scene="neon" width="96" height="60"></canvas><div class="px" style="font-size:20px;margin-top:18px;color:var(--c)">NEON DRIFT</div><div class="vt" style="font-size:26px;color:var(--w);margin-top:8px">Arcade racer · 2022</div></div></div>
+    <div data-a="up" style="--d:700"><div class="cart" style="background:var(--pu)"><canvas class="scene" data-scene="hollow" width="96" height="60"></canvas><div class="px" style="font-size:20px;margin-top:18px;color:var(--o)">HOLLOW LANTERNS</div><div class="vt" style="font-size:26px;color:var(--w);margin-top:8px">Roguelike adventure · 2025</div></div></div>
+  </div>
+</section>
+
+<!-- 5 WORLD MAP -->
+<section class="slide" data-lvl="WORLD MAP">
+  <div style="position:absolute;left:100px;top:110px"><div class="title" data-a="slide" style="font-size:44px;color:var(--y)">HOW WE WORK</div></div>
+  <canvas id="map" width="160" height="70" style="position:absolute;left:0;top:220px;width:1600px;height:700px;image-rendering:pixelated"></canvas>
+  <div id="nodes"></div>
+  <canvas id="hero" width="8" height="8" style="position:absolute;width:64px;height:64px;image-rendering:pixelated;z-index:4"></canvas>
+</section>
+
+<!-- 6 POWER-UPS -->
+<section class="slide" data-lvl="POWER-UPS">
+  <div style="position:absolute;left:100px;top:110px"><div class="title" data-a="slide" style="font-size:44px;color:var(--lg)">OUR TECH</div></div>
+  <div style="position:absolute;left:100px;top:270px;width:1400px;display:grid;grid-template-columns:1fr 1fr;gap:34px">
+    <div class="box" data-a="up" style="--d:300;display:flex;gap:28px;align-items:center"><div class="slot" style="width:120px;height:120px;flex:none"><canvas class="item" data-item="star" width="16" height="16" style="width:80px;height:80px"></canvas></div><div><div class="px" style="font-size:20px;color:var(--y)">UNREAL + UNITY</div><div class="vt" style="font-size:28px;color:var(--gr);margin-top:12px">Fluent in both engines; we pick what suits the game.</div></div></div>
+    <div class="box" data-a="up" style="--d:450;display:flex;gap:28px;align-items:center"><div class="slot" style="width:120px;height:120px;flex:none"><canvas class="item" data-item="bolt" width="16" height="16" style="width:80px;height:80px"></canvas></div><div><div class="px" style="font-size:20px;color:var(--c)">CUSTOM NETCODE</div><div class="vt" style="font-size:28px;color:var(--gr);margin-top:12px">Rollback multiplayer that feels local online.</div></div></div>
+    <div class="box" data-a="up" style="--d:600;display:flex;gap:28px;align-items:center"><div class="slot" style="width:120px;height:120px;flex:none"><canvas class="item" data-item="mush" width="16" height="16" style="width:80px;height:80px"></canvas></div><div><div class="px" style="font-size:20px;color:var(--lg)">AUTO-PLAYTEST BOTS</div><div class="vt" style="font-size:28px;color:var(--gr);margin-top:12px">Thousands of overnight runs catch bugs before players do.</div></div></div>
+    <div class="box" data-a="up" style="--d:750;display:flex;gap:28px;align-items:center"><div class="slot" style="width:120px;height:120px;flex:none"><canvas class="item" data-item="heart" width="16" height="16" style="width:80px;height:80px"></canvas></div><div><div class="px" style="font-size:20px;color:var(--o)">ONE-CLICK BUILDS</div><div class="vt" style="font-size:28px;color:var(--gr);margin-top:12px">Every platform built and certified from one pipeline.</div></div></div>
+  </div>
+</section>
+
+<!-- 7 CHARACTER SELECT -->
+<section class="slide" data-lvl="CHARACTER SELECT">
+  <div style="position:absolute;left:0;right:0;top:100px;text-align:center"><div class="title" data-a="pop" style="font-size:44px;color:var(--c)">CHOOSE YOUR LEADER</div></div>
+  <div class="team" style="position:absolute;left:100px;top:230px;width:1400px;display:grid;grid-template-columns:repeat(4,1fr);gap:28px"></div>
+</section>
+
+<!-- 8 ACHIEVEMENTS -->
+<section class="slide" data-lvl="ACHIEVEMENTS">
+  <div style="position:absolute;left:100px;top:110px"><div class="title" data-a="slide" style="font-size:44px;color:var(--y)">RESULTS</div></div>
+  <div style="position:absolute;left:100px;top:260px;width:1400px;display:grid;grid-template-columns:1fr 1fr;gap:26px">
+    <div class="ach" data-a="slide" style="--d:300"><div class="ic">★</div><div><div class="px" style="font-size:14px;color:var(--y)">ACHIEVEMENT UNLOCKED</div><div class="px" style="font-size:30px;margin-top:10px">12M PLAYERS</div><div class="vt" style="font-size:26px;color:var(--gr)">across our four original titles</div></div></div>
+    <div class="ach" data-a="slide" style="--d:600"><div class="ic">4</div><div><div class="px" style="font-size:14px;color:var(--y)">ACHIEVEMENT UNLOCKED</div><div class="px" style="font-size:30px;margin-top:10px">4 GAMES SHIPPED</div><div class="vt" style="font-size:26px;color:var(--gr)">plus 9 co-development credits</div></div></div>
+    <div class="ach" data-a="slide" style="--d:900"><div class="ic">♥</div><div><div class="px" style="font-size:14px;color:var(--y)">ACHIEVEMENT UNLOCKED</div><div class="px" style="font-size:30px;margin-top:10px">92% POSITIVE</div><div class="vt" style="font-size:26px;color:var(--gr)">average player review score</div></div></div>
+    <div class="ach" data-a="slide" style="--d:1200"><div class="ic">6</div><div><div class="px" style="font-size:14px;color:var(--y)">ACHIEVEMENT UNLOCKED</div><div class="px" style="font-size:30px;margin-top:10px">6 PLATFORMS</div><div class="vt" style="font-size:26px;color:var(--gr)">PC, consoles, iOS and Android</div></div></div>
+  </div>
+  <div class="vt" data-a="fade" style="--d:1600;position:absolute;left:100px;top:760px;color:var(--dg);font-size:24px">* Illustrative stats · fictional studio</div>
+</section>
+
+<!-- 9 SIDE QUESTS -->
+<section class="slide" data-lvl="SIDE QUESTS">
+  <div style="position:absolute;left:100px;top:110px"><div class="title" data-a="slide" style="font-size:44px;color:var(--o)">OUR CULTURE</div></div>
+  <div style="position:absolute;left:100px;top:260px;width:1400px;display:grid;gap:22px">
+    <div class="box" data-a="up" style="--d:300;display:flex;gap:26px;align-items:center;padding:22px 28px"><div class="px" style="font-size:24px;color:var(--lg)">[✓]</div><div><div class="px" style="font-size:20px">NO-CRUNCH POLICY</div><div class="vt" style="font-size:28px;color:var(--gr);margin-top:6px">40-hour weeks. Deadlines move before people break.</div></div></div>
+    <div class="box" data-a="up" style="--d:500;display:flex;gap:26px;align-items:center;padding:22px 28px"><div class="px" style="font-size:24px;color:var(--lg)">[✓]</div><div><div class="px" style="font-size:20px">GAME-JAM FRIDAYS</div><div class="vt" style="font-size:28px;color:var(--gr);margin-top:6px">One Friday a month to build anything. Two of our games started this way.</div></div></div>
+    <div class="box" data-a="up" style="--d:700;display:flex;gap:26px;align-items:center;padding:22px 28px"><div class="px" style="font-size:24px;color:var(--lg)">[✓]</div><div><div class="px" style="font-size:20px">ACCESSIBILITY FIRST</div><div class="vt" style="font-size:28px;color:var(--gr);margin-top:6px">Remappable controls, color-blind modes and subtitles in every build.</div></div></div>
+    <div class="box" data-a="up" style="--d:900;display:flex;gap:26px;align-items:center;padding:22px 28px"><div class="px" style="font-size:24px;color:var(--lg)">[✓]</div><div><div class="px" style="font-size:20px">REMOTE-FRIENDLY</div><div class="vt" style="font-size:28px;color:var(--gr);margin-top:6px">A Seattle studio with teammates in 11 states.</div></div></div>
+  </div>
+</section>
+
+<!-- 10 CO-OP -->
+<section class="slide" data-lvl="CO-OP MODE">
+  <div class="stars" id="stars3"></div>
+  <div style="position:absolute;left:100px;top:110px"><div class="title" data-a="slide" style="font-size:44px;color:var(--c)">WORK WITH US</div></div>
+  <div style="position:absolute;left:100px;top:270px;width:1400px;display:grid;grid-template-columns:repeat(3,1fr);gap:34px">
+    <div class="box blue" data-a="pop" style="--d:300;min-height:380px"><div class="px" style="font-size:16px;color:var(--c)">PLAYER 2</div><div class="px" style="font-size:24px;margin:22px 0">PUBLISHERS</div><div class="vt" style="font-size:28px;color:var(--gr)">Full-game development or a strike team for your next release.</div></div>
+    <div class="box y" data-a="pop" style="--d:500;min-height:380px"><div class="px" style="font-size:16px;color:var(--y)">PLAYER 3</div><div class="px" style="font-size:24px;margin:22px 0">BRANDS</div><div class="vt" style="font-size:28px;color:var(--gr)">Playable experiences that people actually want to play.</div></div>
+    <div class="box g" data-a="pop" style="--d:700;min-height:380px"><div class="px" style="font-size:16px;color:var(--lg)">PLAYER 4</div><div class="px" style="font-size:24px;margin:22px 0">PLATFORMS</div><div class="vt" style="font-size:28px;color:var(--gr)">Launch titles, ports and showcase demos for new hardware.</div></div>
+  </div>
+</section>
+
+<!-- 11 CONTINUE -->
+<section class="slide" data-lvl="CONTINUE?">
+  <div class="stars" id="stars4"></div>
+  <div style="position:absolute;left:0;right:0;top:150px;text-align:center">
+    <div class="title" data-a="pop" style="font-size:64px;color:var(--y)">CONTINUE?</div>
+    <div class="title" id="countdown" style="font-size:150px;color:var(--r);margin-top:40px;text-shadow:8px 8px 0 var(--pu)">9</div>
+    <div class="px blink" style="font-size:24px;margin-top:40px">INSERT COIN TO START A PROJECT</div>
+    <div class="vt" data-a="fade" style="--d:800;font-size:36px;margin-top:50px;color:var(--c)">[hello@pixelforge.games] · [pixelforge.games] · Seattle, WA</div>
+    <div class="vt" style="font-size:22px;margin-top:30px;color:var(--dg)">Concept deck · fictional studio</div>
+  </div>
+</section>
+
+<canvas id="fx" width="32" height="18"></canvas>
+<div class="hud" id="hud"><span>SCORE <span class="y" id="score">000000</span></span><span id="lvl" class="y"></span><span>LIVES <span class="h">♥♥♥</span></span></div>
+<div id="crt"></div><div id="vig"></div>
+</div>
+<div id="hint">← → · CLICK · SWIPE · F FULLSCREEN</div>
+
+<script>
+(function(){
+const stage=document.getElementById('stage');
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform=`translate(-50%,-50%) scale(${s})`;}
+addEventListener('resize',fit);fit();
+const PAL=['#1a1c2c','#5d275d','#b13e53','#ef7d57','#ffcd75','#a7f070','#38b764','#257179','#29366f','#3b5dc9','#41a6f6','#73eff7','#f4f4f4','#94b0c2','#566c86','#333c57'];
+function rng(seed){let h=2166136261;for(const c of seed)h=Math.imul(h^c.charCodeAt(0),16777619);return ()=>{h^=h<<13;h^=h>>>17;h^=h<<5;return ((h>>>0)%10000)/10000;};}
+// stars
+document.querySelectorAll('.stars').forEach(s=>{for(let i=0;i<70;i++){const e=document.createElement('i');e.style.left=Math.floor(Math.random()*266)*6+'px';e.style.top=Math.floor(Math.random()*150)*6+'px';e.style.animationDelay=-Math.random()*2+'s';e.style.opacity=Math.random()*.8+.2;s.appendChild(e);}});
+// title sky: pixel mountains
+(function(){const c=document.getElementById('logoSky'),x=c.getContext('2d');x.fillStyle='#1a1c2c';x.fillRect(0,0,160,90);
+ const layers=[['#29366f',62,10],['#333c57',70,7],['#257179',78,5]];layers.forEach(([col,base,amp],li)=>{x.fillStyle=col;for(let i=0;i<160;i++){const h=base-Math.abs(Math.sin(i/(9+li*3)+li)*amp)-Math.abs(Math.sin(i/4.3+li*2))*amp*.4;x.fillRect(i,Math.floor(h),1,90);}});
+ x.fillStyle='#ffcd75';x.fillRect(128,14,8,8);x.fillStyle='#1a1c2c';x.fillRect(131,14,5,5);})();
+// sprites (identicon heroes)
+function sprite(c,seed,size=8){c.width=size;c.height=size;const x=c.getContext('2d'),r=rng(seed);const main=PAL[2+Math.floor(r()*11)],acc=PAL[2+Math.floor(r()*11)];
+ for(let j=0;j<size;j++)for(let i=0;i<Math.ceil(size/2);i++){const v=r();if(v<.45)continue;x.fillStyle=v>.85?acc:main;x.fillRect(i,j,1,1);x.fillRect(size-1-i,j,1,1);}
+ x.fillStyle='#f4f4f4';const ey=Math.floor(size*.35);x.fillRect(Math.floor(size*.25),ey,1,1);x.fillRect(size-1-Math.floor(size*.25),ey,1,1);}
+document.querySelectorAll('canvas.sprite').forEach(c=>sprite(c,c.dataset.seed,+c.dataset.size||8));
+// items
+const ITEMS={
+ sword:["......c........","......cc.......",".....ccw.......","....ccw........","...ccw.........","..ccw..........",".ccw...........","yyy............",".y.............","y.y............"],
+ shield:["..bbbbbbbbbb..",".bwwwwbbbbbbb.",".bwbbbbbbbbbb.",".bwbbbyybbbbb.",".bbbbyyyybbbb.",".bbbbbyybbbbb.","..bbbbbbbbbb..","...bbbbbbbb...","....bbbbbb....",".....bbbb.....","......bb......"],
+ potion:[".....kk.....","....kwwk....",".....ww.....","....gggg....","...gwgggg...","..gwgggggg..","..gggggggg..","..gggggggg..","...gggggg...","....gggg...."],
+ key:["...yyyy.......","..y....y......","..y....yyyyyyy","..y....y..y.y.","...yyyy.......",],
+ star:[".....y.....","....yyy....","yyyyyyyyyyy",".yyyyyyyyy.","..yyyyyyy..","..yyy.yyy..",".yy.....yy."],
+ bolt:["....cccc..","...cccc...","..cccc....",".cccccccc.","....cccc..","...cccc...","..ccc.....",".cc.......","c........."],
+ mush:["...rrrrrr...","..rrwwrrrr..",".rrrwwrrwwr.",".rrrrrrrwwr.","rrwwrrrrrrrr","rrwwrrrwwrrr","...wwwwww...","...wwkwkww..","...wwwwww..."],
+ heart:[".rr...rr.","rrrr.rrrr","rwrrrrrrr","rrrrrrrrr",".rrrrrrr.","..rrrrr..","...rrr...","....r...."]};
+const IC={c:'#73eff7',w:'#f4f4f4',y:'#ffcd75',b:'#3b5dc9',k:'#94b0c2',g:'#a7f070',r:'#b13e53'};
+document.querySelectorAll('canvas.item').forEach(c=>{const m=ITEMS[c.dataset.item];const h=m.length,w=Math.max(...m.map(r=>r.length));c.width=Math.max(w,h);c.height=Math.max(w,h);const x=c.getContext('2d');const ox=Math.floor((c.width-w)/2),oy=Math.floor((c.height-h)/2);
+ m.forEach((row,j)=>[...row].forEach((ch,i)=>{if(IC[ch]){x.fillStyle=IC[ch];x.fillRect(ox+i,oy+j,1,1);}}));});
+// cartridge scenes
+document.querySelectorAll('canvas.scene').forEach(c=>{const x=c.getContext('2d'),t=c.dataset.scene,r=rng(t);
+ if(t==='moss'){x.fillStyle='#41a6f6';x.fillRect(0,0,96,60);x.fillStyle='#f4f4f4';x.fillRect(10,8,14,4);x.fillRect(60,12,18,4);x.fillStyle='#38b764';x.fillRect(0,40,96,20);x.fillStyle='#a7f070';for(let i=0;i<96;i+=2)x.fillRect(i,39+Math.floor(r()*2),1,1);
+  [[14,28],[40,24],[66,30]].forEach(([hx,hy])=>{x.fillStyle='#b13e53';x.fillRect(hx-2,hy,16,4);x.fillRect(hx,hy-3,12,3);x.fillStyle='#ef7d57';x.fillRect(hx,hy+4,12,9);x.fillStyle='#1a1c2c';x.fillRect(hx+4,hy+8,4,5);});}
+ if(t==='neon'){x.fillStyle='#1a1c2c';x.fillRect(0,0,96,60);x.fillStyle='#5d275d';x.fillRect(0,20,96,10);x.fillStyle='#ef7d57';x.fillRect(38,8,20,20);x.fillStyle='#1a1c2c';for(let y=12;y<28;y+=3)x.fillRect(38,y,20,1);
+  x.fillStyle='#29366f';x.fillRect(0,30,96,30);x.strokeStyle='#73eff7';x.lineWidth=1;for(let i=-6;i<=6;i++){x.beginPath();x.moveTo(48,30);x.lineTo(48+i*16,60);x.stroke();}for(let y=32;y<60;y+=(y-28)/3+1){x.fillStyle='#73eff7';x.fillRect(0,Math.floor(y),96,1);}
+  x.fillStyle='#b13e53';x.fillRect(42,48,12,6);x.fillStyle='#ffcd75';x.fillRect(43,52,2,2);x.fillRect(51,52,2,2);}
+ if(t==='hollow'){x.fillStyle='#333c57';x.fillRect(0,0,96,60);x.fillStyle='#1a1c2c';for(let i=0;i<96;i+=8){x.fillRect(i,0,4,60-Math.floor(r()*20));}x.fillStyle='#566c86';x.fillRect(0,48,96,12);
+  [[20,30],[50,22],[76,34]].forEach(([lx,ly])=>{x.fillStyle='rgba(255,205,117,.25)';x.fillRect(lx-5,ly-5,14,14);x.fillStyle='#ffcd75';x.fillRect(lx,ly,4,5);x.fillStyle='#ef7d57';x.fillRect(lx+1,ly+1,2,3);x.fillStyle='#94b0c2';x.fillRect(lx+1,ly-3,2,3);});
+  x.fillStyle='#f4f4f4';x.fillRect(44,40,6,8);x.fillStyle='#1a1c2c';x.fillRect(45,42,1,1);x.fillRect(48,42,1,1);}
+});
+// team: character select
+const team=[['Maya Chen','CREATIVE DIRECTOR','DESIGN',95,'STORY',80,'CODE',40],['Leo Park','TECHNICAL DIRECTOR','CODE',98,'NETCODE',92,'ART',30],['Jules Romero','ART DIRECTOR','ART',97,'ANIM',85,'CODE',35],['Priya Shah','HEAD OF LIVE OPS','DATA',90,'COMMUNITY',95,'DESIGN',70]];
+document.querySelector('.team').innerHTML=team.map((t,i)=>`<div class="box ${['blue','y','g','r'][i]}" data-a="pop" style="--d:${300+i*180};text-align:center;padding:24px">
+<div class="px" style="font-size:14px;color:var(--gr)">P${i+1}</div><canvas class="sprite" data-seed="${t[0]}" style="width:176px;height:176px;margin:16px auto;display:block;image-rendering:pixelated"></canvas>
+<div class="px" style="font-size:16px;margin-top:6px">${t[0].toUpperCase()}</div><div class="vt" style="font-size:24px;color:var(--y);margin:8px 0 16px">${t[1]}</div>
+${[[t[2],t[3]],[t[4],t[5]],[t[6],t[7]]].map((s,k)=>`<div style="display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center;margin-top:10px;text-align:left"><span class="px" style="font-size:11px">${s[0]}</span><div class="bar8"><i style="--w:${s[1]}%;--d:${700+i*180+k*150}"></i></div></div>`).join('')}</div>`).join('');
+document.querySelectorAll('.team canvas.sprite').forEach(c=>sprite(c,c.dataset.seed,10));
+// world map
+const stages=[['1-1','PROTOTYPE','Find the fun in 6 weeks'],['1-2','VERTICAL SLICE','One polished level'],['1-3','PRODUCTION','Build it out, test weekly'],['1-4','LAUNCH','Certify and ship'],['1-5','LIVE OPS','Seasons and updates']];
+const NP=[[200,620],[480,460],[800,600],[1110,440],[1400,560]];
+(function(){const c=document.getElementById('map'),x=c.getContext('2d');x.fillStyle='#38b764';x.fillRect(0,0,160,70);
+ const r=rng('map');for(let i=0;i<260;i++){x.fillStyle=r()<.5?'#257179':'#a7f070';x.fillRect(Math.floor(r()*160),Math.floor(r()*70),1,1);}
+ x.fillStyle='#41a6f6';x.fillRect(0,58,40,12);x.fillRect(120,0,40,10);
+ [[30,10],[70,14],[140,30],[100,60],[60,52]].forEach(([tx,ty])=>{x.fillStyle='#257179';x.fillRect(tx-2,ty,5,4);x.fillRect(tx-1,ty-2,3,2);x.fillStyle='#5d275d';x.fillRect(tx,ty+4,1,2);});
+ x.fillStyle='#ffcd75';for(let k=0;k<NP.length-1;k++){const [a,b]=[NP[k],NP[k+1]];for(let s=0;s<=1;s+=.01){const px=(a[0]+(b[0]-a[0])*s)/10,py=(a[1]-220+(b[1]-a[1])*s)/10;x.fillRect(Math.floor(px),Math.floor(py),1,1);}}})();
+document.getElementById('nodes').innerHTML=NP.map((p,i)=>`<div data-a="pop" style="--d:${300+i*200};position:absolute;left:${p[0]-36}px;top:${p[1]-36}px;width:72px;height:72px;background:${i===4?'#ef7d57':'#b13e53'};border:6px solid #f4f4f4;box-shadow:6px 6px 0 rgba(0,0,0,.4);display:grid;place-items:center" class="px"><span style="font-size:14px">${stages[i][0]}</span></div>
+<div data-a="up" style="--d:${400+i*200};position:absolute;left:${p[0]-130}px;top:${p[1]+52}px;width:260px;text-align:center"><div class="px" style="font-size:15px;text-shadow:3px 3px 0 #1a1c2c">${stages[i][1]}</div><div class="vt" style="font-size:24px;color:#1a1c2c;background:rgba(244,244,244,.85);margin-top:8px;padding:2px 6px">${stages[i][2]}</div></div>`).join('');
+const hero=document.getElementById('hero');sprite(hero,'hero-walker',8);
+let walkT=null;function walk(){clearInterval(walkT);let seg=0,s=0;hero.style.left=NP[0][0]-32+'px';hero.style.top=NP[0][1]-100+'px';
+ walkT=setInterval(()=>{s+=.05;if(s>=1){s=0;seg++;if(seg>=NP.length-1){clearInterval(walkT);return;}}const a=NP[seg],b=NP[seg+1];hero.style.left=(a[0]+(b[0]-a[0])*s-32)+'px';hero.style.top=(a[1]+(b[1]-a[1])*s-100-(Math.floor(s*20)%2)*8)+'px';},70);}
+
+// pixel dissolve transition
+const fx=document.getElementById('fx'),fc=fx.getContext('2d');fx.style.width='1600px';fx.style.height='900px';
+const cells=[];for(let y=0;y<18;y++)for(let x=0;x<32;x++)cells.push([x,y]);
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function dissolve(mid,done){shuffle(cells);const cols=cells.map(()=>PAL[Math.floor(Math.random()*4)===0?[2,9,5,4][Math.floor(Math.random()*4)]:Math.random()<.5?0:15]);
+ fc.clearRect(0,0,32,18);let i=0;const per=36;
+ (function fill(){for(let k=0;k<per&&i<cells.length;k++,i++){fc.fillStyle=cols[i];fc.fillRect(cells[i][0],cells[i][1],1,1);}
+  if(i<cells.length)requestAnimationFrame(fill);else{mid();shuffle(cells);let j=0;(function clear(){for(let k=0;k<per&&j<cells.length;k++,j++)fc.clearRect(cells[j][0],cells[j][1],1,1);if(j<cells.length)requestAnimationFrame(clear);else done();})();}})();}
+
+const slides=[...document.querySelectorAll('.slide')];let cur=-1,busy=false,cd=null;
+function hud(n){document.getElementById('score').textContent=String((n+1)*1250).padStart(6,'0');document.getElementById('lvl').textContent=`LV ${String(n+1).padStart(2,'0')} · ${slides[n].dataset.lvl}`;}
+function typeText(sl){sl.querySelectorAll('.type').forEach(el=>{if(!el._t)el._t=el.textContent;el.textContent='';let i=0;const iv=setInterval(()=>{i+=2;el.textContent=el._t.slice(0,i);if(i>=el._t.length)clearInterval(iv);},22);});}
+function activate(sl){sl.classList.add('active');sl.classList.remove('go');void sl.offsetWidth;sl.classList.add('go');typeText(sl);
+ if(sl.querySelector('#map'))setTimeout(walk,900);
+ clearInterval(cd);if(sl.querySelector('#countdown')){let v=9;const e=document.getElementById('countdown');e.textContent=v;cd=setInterval(()=>{v=v>0?v-1:9;e.textContent=v;},1000);}}
+function go(n){if(busy||n<0||n>=slides.length||n===cur)return;const from=slides[cur],to=slides[n];cur=n;hud(n);history.replaceState(null,'','#'+(n+1));
+ if(!from){activate(to);return;}
+ busy=true;dissolve(()=>{from.classList.remove('active','go');activate(to);},()=>{busy=false;});}
+const next=()=>go(cur+1),prev=()=>go(cur-1);
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();next();}else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}
+ else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);else if(e.key==='f'||e.key==='F'){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(_){}}});
+document.addEventListener('click',e=>{if(e.target.closest('a,button'))return;(e.clientX<innerWidth*.25)?prev():next();});
+let sx=null;addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)(dx<0?next:prev)();sx=null;});
+const h=parseInt(location.hash.slice(1));go(h>0&&h<=slides.length?h-1:0);
+})();
+</script>
+</body>
+</html>

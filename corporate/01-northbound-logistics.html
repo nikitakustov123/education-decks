@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Northbound Logistics — Company Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a2342;--bg2:#0d2b52;--line:rgba(120,200,255,.14);--c:#5ce1ff;--w:#eaf6ff;--a:#ffb703;--mu:#8fb3d9}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#061629;color:var(--w);font-family:'IBM Plex Mono',monospace}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;overflow:hidden;background:var(--bg)}
+#world{position:absolute;left:0;top:0;width:9000px;height:5200px;transform-origin:0 0;will-change:transform;
+ background:
+  linear-gradient(var(--line) 1px,transparent 1px) 0 0/40px 40px,
+  linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/40px 40px,
+  linear-gradient(rgba(120,200,255,.22) 1px,transparent 1px) 0 0/200px 200px,
+  linear-gradient(90deg,rgba(120,200,255,.22) 1px,transparent 1px) 0 0/200px 200px,
+  radial-gradient(ellipse at 50% 50%,#0f3360,#0a2342 70%)}
+#route{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+#route .base{fill:none;stroke:rgba(92,225,255,.35);stroke-width:6;stroke-dasharray:18 14}
+#route .done{fill:none;stroke:var(--a);stroke-width:7;stroke-linecap:round}
+#truck{position:absolute;left:0;top:0;width:120px;height:120px;margin:-60px 0 0 -60px;z-index:50;pointer-events:none;filter:drop-shadow(0 0 18px rgba(255,183,3,.7))}
+.pin{position:absolute;width:44px;height:44px;margin:-22px;border-radius:50%;border:3px solid var(--c);background:var(--bg);display:grid;place-items:center;font-size:16px;color:var(--c);font-weight:600}
+.pin.on{border-color:var(--a);color:var(--a);box-shadow:0 0 30px rgba(255,183,3,.6)}
+
+.panel{position:absolute;width:1600px;height:900px;background:rgba(10,35,66,.94);border:2px solid rgba(92,225,255,.55);box-shadow:0 0 0 10px rgba(10,35,66,.6),0 0 0 11px rgba(92,225,255,.18),0 40px 120px rgba(0,0,0,.5);overflow:hidden}
+.panel::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/40px 40px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/40px 40px;opacity:.6}
+.tb{position:absolute;left:0;right:0;bottom:0;height:48px;border-top:1.5px solid rgba(92,225,255,.5);display:grid;grid-template-columns:2fr 1fr 1fr 1fr;font-size:13px;letter-spacing:.12em;color:var(--mu)}
+.tb div{border-left:1.5px solid rgba(92,225,255,.35);padding:15px 20px}
+.tb div:first-child{border-left:0;color:var(--w)}
+.tb b{color:var(--c);font-weight:500}
+.corner{position:absolute;width:30px;height:30px;border:2px solid var(--c)}
+.c1{left:24px;top:24px;border-right:0;border-bottom:0}.c2{right:24px;top:24px;border-left:0;border-bottom:0}
+.h{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.01em;line-height:.92;color:var(--w)}
+.h .c{color:var(--c)} .h .a{color:var(--a)}
+.lab{font-size:15px;letter-spacing:.24em;color:var(--c);text-transform:uppercase}
+.p{font-family:'IBM Plex Mono',monospace;font-size:22px;line-height:1.55;color:#c4daf0}
+.dim{position:absolute;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mu);letter-spacing:.1em}
+.dim::before,.dim::after{content:"";flex:1;height:1px;background:var(--mu)}
+.photo{position:absolute;background-size:cover;background-position:center;filter:grayscale(1) contrast(1.1) brightness(.85)}
+.photo::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(92,225,255,.35),rgba(10,35,66,.6));mix-blend-mode:multiply}
+.photo .frame{position:absolute;inset:12px;border:1.5px solid rgba(234,246,255,.6)}
+.box{border:1.5px solid rgba(92,225,255,.55);background:rgba(13,43,82,.7);padding:26px;position:relative}
+.box .no{position:absolute;right:16px;top:12px;font-size:13px;color:var(--mu)}
+.box h3{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:700;text-transform:uppercase;margin:16px 0 10px;line-height:1}
+.box p{font-size:17px;line-height:1.55;color:#c4daf0}
+.big{font-family:'Barlow Condensed',sans-serif;font-weight:800;line-height:.9;color:var(--a)}
+
+[data-a]{opacity:0}
+.panel.go [data-a]{animation:.8s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d,0) * 1ms)}
+.panel.go [data-a=up]{animation-name:up} .panel.go [data-a=fade]{animation-name:fade} .panel.go [data-a=draw]{animation-name:draw;animation-duration:1.2s}
+@keyframes up{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes draw{from{opacity:1;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0)}}
+.panel svg .dr{stroke-dasharray:var(--len,2000);stroke-dashoffset:var(--len,2000)}
+.panel.go svg .dr{transition:stroke-dashoffset 1.6s cubic-bezier(.6,.1,.2,1);transition-delay:calc(var(--d,0) * 1ms);stroke-dashoffset:0}
+.panel svg .city{opacity:0;transform-box:fill-box;transform-origin:center}
+.panel.go svg .city{animation:pop .5s cubic-bezier(.3,1.6,.4,1) both;animation-delay:calc(var(--d,0) * 1ms)}
+@keyframes pop{from{opacity:0;transform:scale(0)}to{opacity:1;transform:none}}
+.bar{height:34px;background:var(--a);transform-origin:left;transform:scaleX(0)}
+.panel.go .bar{transition:transform 1.4s cubic-bezier(.6,.1,.2,1);transition-delay:calc(var(--d) * 1ms);transform:scaleX(var(--s))}
+
+#hud{position:fixed;left:0;right:0;bottom:0;height:0;z-index:20}
+#mini{position:fixed;right:16px;top:14px;z-index:30;font-size:13px;color:var(--c);letter-spacing:.12em;background:rgba(10,35,66,.85);border:1px solid rgba(92,225,255,.5);padding:8px 14px}
+#hint{position:fixed;left:16px;top:16px;font-size:12px;color:#4d6f94;z-index:30}
+</style>
+</head>
+<body>
+<div id="stage"><div id="world">
+<svg id="route" width="9000" height="5200"><path class="base" id="rbase"/><path class="done" id="rdone"/></svg>
+<div id="pins"></div>
+<svg id="truck" viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="#0a2342" stroke="#ffb703" stroke-width="4"/><g transform="translate(22 38)" fill="none" stroke="#ffb703" stroke-width="4" stroke-linejoin="round"><rect x="0" y="4" width="48" height="30" fill="#ffb703" fill-opacity=".15"/><path d="M48 14 h16 l12 12 v8 h-28z"/><circle cx="14" cy="40" r="6" fill="#0a2342"/><circle cx="62" cy="40" r="6" fill="#0a2342"/></g></svg>
+
+<!-- 1 COVER -->
+<section class="panel" data-x="400" data-y="400">
+  <div class="corner c1"></div><div class="corner c2"></div>
+  <div class="photo" data-a="fade" style="left:880px;top:70px;width:650px;height:740px;background-image:url('https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1200&q=80'),linear-gradient(#123,#012)"><div class="frame"></div></div>
+  <div class="dim" data-a="fade" style="--d:600;left:880px;top:830px;width:650px">650 × 740 · PORT OF ENTRY</div>
+  <div style="position:absolute;left:90px;top:120px;width:780px">
+    <div class="lab" data-a="fade">Company overview · 2027</div>
+    <div class="h" data-a="draw" style="--d:200;font-size:108px;margin-top:30px">North<span class="c">bound</span></div>
+    <div class="h" data-a="draw" style="--d:500;font-size:66px;margin-top:6px;color:var(--mu)">Logistics</div>
+    <p class="p" data-a="up" style="--d:1000;margin-top:44px;width:700px;font-size:26px">Freight that never loses its way. Ocean, road and warehouse — engineered as one network from Chicago to every U.S. zip code.</p>
+    <div data-a="up" style="--d:1300;margin-top:40px;display:flex;gap:16px;font-size:15px;letter-spacing:.14em"><span style="border:1.5px solid var(--a);color:var(--a);padding:10px 16px">EST. 2009</span><span style="border:1.5px solid var(--c);color:var(--c);padding:10px 16px">CHICAGO, IL</span></div>
+  </div>
+  <div class="tb"><div>NORTHBOUND LOGISTICS — COMPANY OVERVIEW</div><div>SHEET <b>01</b> / 11</div><div>DWG <b>NB-01</b></div><div>SCALE 1:1</div></div>
+</section>
+
+<!-- 2 WHO WE ARE -->
+<section class="panel" data-x="2600" data-y="400">
+  <div class="corner c1"></div><div class="corner c2"></div>
+  <div style="position:absolute;left:90px;top:100px;width:820px">
+    <div class="lab" data-a="fade">01 — Who we are</div>
+    <div class="h" data-a="draw" style="--d:200;font-size:110px;margin-top:26px">We move what <span class="c">America</span> makes.</div>
+    <p class="p" data-a="up" style="--d:900;margin-top:40px;width:760px">Northbound started in 2009 with three trucks and one promise: every shipment tracked, every customer answered by a human. Today we run a coast-to-coast network for manufacturers, retailers and fast-growing brands.</p>
+  </div>
+  <div style="position:absolute;left:990px;top:130px;width:520px;display:grid;gap:22px">
+    <div class="box" data-a="up" style="--d:500"><span class="no">REF A</span><div class="big" style="font-size:96px">14</div><p>distribution hubs across the U.S.</p></div>
+    <div class="box" data-a="up" style="--d:700"><span class="no">REF B</span><div class="big" style="font-size:96px">1,200</div><p>logistics specialists, drivers and engineers</p></div>
+    <div class="box" data-a="up" style="--d:900"><span class="no">REF C</span><div class="big" style="font-size:96px">24/7</div><p>live operations desk — real people, every hour</p></div>
+  </div>
+  <div class="tb"><div>NORTHBOUND LOGISTICS — WHO WE ARE</div><div>SHEET <b>02</b> / 11</div><div>DWG <b>NB-02</b></div><div>SCALE 1:1</div></div>
+</section>
+
+<!-- 3 SERVICES -->
+<section class="panel" data-x="4800" data-y="400">
+  <div class="corner c1"></div><div class="corner c2"></div>
+  <div style="position:absolute;left:90px;top:90px">
+    <div class="lab" data-a="fade">02 — What we do</div>
+    <div class="h" data-a="draw" style="--d:200;font-size:96px;margin-top:22px">Four services. <span class="c">One network.</span></div>
+  </div>
+  <div style="position:absolute;left:90px;top:330px;width:1420px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px">
+    <div class="box" data-a="up" style="--d:400;min-height:430px"><span class="no">S-01</span>
+      <svg width="90" height="90" viewBox="0 0 90 90" fill="none" stroke="#5ce1ff" stroke-width="3"><path class="dr" style="--len:300;--d:500" d="M8 58 h74 l-10 16 h-54z M20 58 v-16 h50 v16 M30 42 v-14 h30 v14 M45 28 v-16"/></svg>
+      <h3>Ocean &amp; Air</h3><p>Port-to-door freight through every major U.S. gateway, with consolidated and full-container options.</p></div>
+    <div class="box" data-a="up" style="--d:550;min-height:430px"><span class="no">S-02</span>
+      <svg width="90" height="90" viewBox="0 0 90 90" fill="none" stroke="#5ce1ff" stroke-width="3"><path class="dr" style="--len:320;--d:650" d="M6 30 h46 v30 h-46z M52 40 h18 l12 12 v8 h-30 M20 68 a6 6 0 1 0 0.1 0 M66 68 a6 6 0 1 0 0.1 0"/></svg>
+      <h3>Truckload &amp; LTL</h3><p>Dedicated and shared capacity with 98%+ on-time pickup and live GPS on every load.</p></div>
+    <div class="box" data-a="up" style="--d:700;min-height:430px"><span class="no">S-03</span>
+      <svg width="90" height="90" viewBox="0 0 90 90" fill="none" stroke="#5ce1ff" stroke-width="3"><path class="dr" style="--len:360;--d:800" d="M8 36 l37 -22 l37 22 v44 h-74z M22 80 v-30 h46 v30 M22 60 h46 M22 70 h46"/></svg>
+      <h3>Warehousing</h3><p>2.1M sq ft of climate-controlled space, pick-and-pack fulfillment and returns handling.</p></div>
+    <div class="box" data-a="up" style="--d:850;min-height:430px"><span class="no">S-04</span>
+      <svg width="90" height="90" viewBox="0 0 90 90" fill="none" stroke="#5ce1ff" stroke-width="3"><path class="dr" style="--len:330;--d:950" d="M20 10 h36 l14 14 v56 h-50z M56 10 v14 h14 M30 44 l8 8 l16 -18 M30 66 h30"/></svg>
+      <h3>Customs</h3><p>Licensed brokers who clear entries, classify goods and keep your paperwork audit-ready.</p></div>
+  </div>
+  <div class="tb"><div>NORTHBOUND LOGISTICS — SERVICES</div><div>SHEET <b>03</b> / 11</div><div>DWG <b>NB-03</b></div><div>SCALE 1:1</div></div>
+</section>
+
+<!-- 4 NETWORK -->
+<section class="panel" data-x="7000" data-y="400">
+  <div class="corner c1"></div><div class="corner c2"></div>
+  <div style="position:absolute;left:90px;top:90px;width:460px">
+    <div class="lab" data-a="fade">03 — Our network</div>
+    <div class="h" data-a="draw" style="--d:200;font-size:80px;margin-top:22px">Coast to <span class="c">coast</span> in 48 hrs.</div>
+    <div style="margin-top:40px;display:grid;gap:18px">
+      <div data-a="up" style="--d:900"><div class="big" style="font-size:72px">14</div><div class="lab" style="color:var(--mu)">hubs</div></div>
+      <div data-a="up" style="--d:1100"><div class="big" style="font-size:72px">48</div><div class="lab" style="color:var(--mu)">states served</div></div>
+      <div data-a="up" style="--d:1300"><div class="big" style="font-size:72px">2.1M</div><div class="lab" style="color:var(--mu)">sq ft of storage</div></div>
+    </div>
+  </div>
+  <svg style="position:absolute;left:560px;top:110px" width="980" height="660" viewBox="0 0 980 660" id="netmap"></svg>
+  <div class="tb"><div>NORTHBOUND LOGISTICS — NETWORK</div><div>SHEET <b>04</b> / 11</div><div>DWG <b>NB-04</b></div><div>SCALE 1:4,000,000</div></div>
+</section>
+
+<!-- 5 PROCESS -->
+<section class="panel" data-x="7000" data-y="2200">
+  <div class="corner c1"></div><div class="corner c2"></div>
+  <div style="position:absolute;left:90px;top:90px">
+    <div class="lab" data-a="fade">04 — How we work</div>
+    <div class="h" data-a="draw" style="--d:200;font-size:96px;margin-top:22px">From quote to <span class="c">proof of delivery</span></div>
+  </div>
+  <svg style="position:absolute;left:90px;top:330px" width="1420" height="420" viewBox="0 0 1420 420">
+    <path class="dr" style="--len:1300;--d:300" d="M60 110 H1360" stroke="#5ce1ff" stroke-width="3" fill="none" stroke-dasharray="1300"/>
+  </svg>
+  <div style="position:absolute;left:90px;top:360px;width:1420px;display:grid;grid-template-columns:repeat(5,1fr);gap:20px;text-align:center">
+    <div data-a="up" style="--d:500"><div class="pin on" style="position:relative;margin:30px auto 0;width:110px;height:110px;font-size:40px;font-family:'Barlow Condensed';font-weight:800">01</div><div class="h" style="font-size:38px;margin-top:30px">Quote</div><p class="p" style="font-size:16px;margin-top:10px">Price and transit plan in 15 minutes.</p></div>
+    <div data-a="up" style="--d:750"><div class="pin" style="position:relative;margin:30px auto 0;width:110px;height:110px;font-size:40px;font-family:'Barlow Condensed';font-weight:800">02</div><div class="h" style="font-size:38px;margin-top:30px">Plan</div><p class="p" style="font-size:16px;margin-top:10px">Mode, route and carrier optimized by our engine.</p></div>
+    <div data-a="up" style="--d:1000"><div class="pin" style="position:relative;margin:30px auto 0;width:110px;height:110px;font-size:40px;font-family:'Barlow Condensed';font-weight:800">03</div><div class="h" style="font-size:38px;margin-top:30px">Pickup</div><p class="p" style="font-size:16px;margin-top:10px">Scheduled windows, photo-verified loading.</p></div>
+    <div data-a="up" style="--d:1250"><div class="pin" style="position:relative;margin:30px auto 0;width:110px;height:110px;font-size:40px;font-family:'Barlow Condensed';font-weight:800">04</div><div class="h" style="font-size:38px;margin-top:30px">Track</div><p class="p" style="font-size:16px;margin-top:10px">Live GPS and proactive delay alerts.</p></div>
+    <div data-a="up" style="--d:1500"><div class="pin on" style="position:relative;margin:30px auto 0;width:110px;height:110px;font-size:40px;font-family:'Barlow Condensed';font-weight:800">05</div><div class="h" style="font-size:38px;margin-top:30px">Deliver</div><p class="p" style="font-size:16px;margin-top:10px">e-POD and a cost report within the hour.</p></div>
+  </div>
+  <div class="tb"><div>NORTHBOUND LOGISTICS — PROCESS</div><div>SHEET <b>05</b> / 11</div><div>DWG <b>NB-05</b></div><div>SCALE 1:1</div></div>
+</section>
+
+<!-- 6 TECHNOLOGY -->
+<section class="panel" data-x="4800" data-y="2200">
+  <div class="corner c1"></div><div class="corner c2"></div>
+  <div style="position:absolute;left:90px;top:100px;width:560px">
+    <div class="lab" data-a="fade">05 — Technology</div>
+    <div class="h" data-a="draw" style="--d:200;font-size:96px;margin-top:22px">Meet <span class="a">Northstar.</span></div>
+    <p class="p" data-a="up" style="--d:800;margin-top:30px">Our in-house platform shows every shipment, invoice and carbon number in one screen — and plugs into your ERP in days, not months.</p>
+    <div data-a="up" style="--d:1100;margin-top:34px;display:flex;flex-wrap:wrap;gap:12px;font-size:14px;letter-spacing:.12em"><span style="border:1.5px solid var(--c);padding:8px 14px">LIVE GPS</span><span style="border:1.5px solid var(--c);padding:8px 14px">API / EDI</span><span style="border:1.5px solid var(--c);padding:8px 14px">ETA PREDICTION</span><span style="border:1.5px solid var(--c);padding:8px 14px">CO₂ REPORTS</span></div>
+  </div>
+  <div data-a="up" style="--d:400;position:absolute;left:720px;top:110px;width:800px;height:640px;border:2px solid var(--c);background:#081d38;box-shadow:0 30px 80px rgba(0,0,0,.4)">
+    <div style="height:46px;border-bottom:1.5px solid rgba(92,225,255,.4);display:flex;align-items:center;padding:0 20px;gap:10px;font-size:14px;color:var(--mu)"><span style="color:var(--a)">■</span> NORTHSTAR · SHIPMENTS <span style="margin-left:auto">● LIVE</span></div>
+    <div style="padding:20px 22px;font-size:16px">
+      <div style="display:grid;grid-template-columns:1.1fr 1.3fr 1fr .8fr;gap:10px;color:var(--mu);font-size:13px;letter-spacing:.12em;padding-bottom:10px;border-bottom:1px solid rgba(92,225,255,.25)"><span>LOAD</span><span>LANE</span><span>STATUS</span><span>ETA</span></div>
+      <div class="rows"></div>
+    </div>
+    <div style="position:absolute;left:22px;right:22px;bottom:22px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+      <div class="box" style="padding:16px"><div class="lab" style="font-size:12px">On-time</div><div class="big" style="font-size:52px">98.4%</div></div>
+      <div class="box" style="padding:16px"><div class="lab" style="font-size:12px">In transit</div><div class="big" style="font-size:52px;color:var(--c)">1,284</div></div>
+      <div class="box" style="padding:16px"><div class="lab" style="font-size:12px">CO₂ saved</div><div class="big" style="font-size:52px;color:#7dffa8">312 t</div></div>
+    </div>
+  </div>
+  <div class="tb"><div>NORTHBOUND LOGISTICS — TECHNOLOGY</div><div>SHEET <b>06</b> / 11</div><div>DWG <b>NB-06</b></div><div>SCALE 1:1</div></div>
+</section>
+
+<!-- 7 INDUSTRIES -->
+<section class="panel" data-x="2600" data-y="2200">
+  <div class="corner c1"></div><div class="corner c2"></div>
+  <div class="photo" data-a="fade" style="left:0;top:0;width:560px;height:852px;background-image:url('https://images.unsplash.com/photo-1590497008432-598f04441de8?auto=format&fit=crop&w=1000&q=80'),linear-gradient(#123,#012)"></div>
+  <div style="position:absolute;left:640px;top:90px;width:880px">
+    <div class="lab" data-a="fade">06 — Industries</div>
+    <div class="h" data-a="draw" style="--d:200;font-size:72px;margin-top:22px">Built for the <span class="c">shelf</span>, the line and the doorstep.</div>
+  </div>
+  <div style="position:absolute;left:640px;top:420px;width:880px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+    <div class="box" data-a="up" style="--d:500;padding:20px"><h3 style="font-size:30px;margin:0">Retail</h3><p>Store replenishment</p></div>
+    <div class="box" data-a="up" style="--d:600;padding:20px"><h3 style="font-size:30px;margin:0">Automotive</h3><p>Just-in-time parts</p></div>
+    <div class="box" data-a="up" style="--d:700;padding:20px"><h3 style="font-size:30px;margin:0">Food &amp; Bev</h3><p>Cold chain, FSMA-ready</p></div>
+    <div class="box" data-a="up" style="--d:800;padding:20px"><h3 style="font-size:30px;margin:0">Healthcare</h3><p>Temperature-logged</p></div>
+    <div class="box" data-a="up" style="--d:900;padding:20px"><h3 style="font-size:30px;margin:0">E-commerce</h3><p>2-day fulfillment</p></div>
+    <div class="box" data-a="up" style="--d:1000;padding:20px"><h3 style="font-size:30px;margin:0">Industrial</h3><p>Oversize &amp; heavy haul</p></div>
+  </div>
+  <div class="tb"><div>NORTHBOUND LOGISTICS — INDUSTRIES</div><div>SHEET <b>07</b> / 11</div><div>DWG <b>NB-07</b></div><div>SCALE 1:1</div></div>
+</section>
+
+<!-- 8 TEAM -->
+<section class="panel" data-x="400" data-y="2200">
+  <div class="corner c1"></div><div class="corner c2"></div>
+  <div style="position:absolute;left:90px;top:90px">
+    <div class="lab" data-a="fade">07 — Leadership</div>
+    <div class="h" data-a="draw" style="--d:200;font-size:96px;margin-top:22px">The crew <span class="c">at the controls</span></div>
+  </div>
+  <div class="team" style="position:absolute;left:90px;top:330px;width:1420px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px"></div>
+  <div class="tb"><div>NORTHBOUND LOGISTICS — LEADERSHIP</div><div>SHEET <b>08</b> / 11</div><div>DWG <b>NB-08</b></div><div>SCALE 1:1</div></div>
+</section>
+
+<!-- 9 RESULTS -->
+<section class="panel" data-x="400" data-y="4000">
+  <div class="corner c1"></div><div class="corner c2"></div>
+  <div style="position:absolute;left:90px;top:90px;width:620px">
+    <div class="lab" data-a="fade">08 — Results · case study</div>
+    <div class="h" data-a="draw" style="--d:200;font-size:88px;margin-top:22px">A Midwest retailer, <span class="a">re-routed.</span></div>
+    <p class="p" data-a="up" style="--d:800;margin-top:30px">A 300-store home-goods chain moved its inbound freight and two DCs to Northbound. Twelve months later:</p>
+  </div>
+  <div style="position:absolute;left:780px;top:130px;width:740px;display:grid;gap:34px">
+    <div data-a="up" style="--d:500"><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lab">On-time delivery</span><span class="big" style="font-size:64px">87% → 98.6%</span></div><div style="display:grid;gap:8px;margin-top:10px"><div class="bar" style="--s:.87;--d:700;background:#4b6e93"></div><div class="bar" style="--s:.986;--d:900"></div></div></div>
+    <div data-a="up" style="--d:700"><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lab">Freight cost per unit</span><span class="big" style="font-size:64px">−14%</span></div><div style="display:grid;gap:8px;margin-top:10px"><div class="bar" style="--s:1;--d:1000;background:#4b6e93"></div><div class="bar" style="--s:.86;--d:1200"></div></div></div>
+    <div data-a="up" style="--d:900"><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lab">Inbound lead time</span><span class="big" style="font-size:64px">21 → 9 days</span></div><div style="display:grid;gap:8px;margin-top:10px"><div class="bar" style="--s:1;--d:1300;background:#4b6e93"></div><div class="bar" style="--s:.43;--d:1500"></div></div></div>
+    <div data-a="fade" style="--d:1700;display:flex;gap:24px;font-size:13px;color:var(--mu);letter-spacing:.12em"><span><span style="display:inline-block;width:14px;height:14px;background:#4b6e93;vertical-align:-2px"></span> BEFORE</span><span><span style="display:inline-block;width:14px;height:14px;background:var(--a);vertical-align:-2px"></span> AFTER 12 MONTHS</span></div>
+  </div>
+  <div class="tb"><div>NORTHBOUND LOGISTICS — RESULTS</div><div>SHEET <b>09</b> / 11</div><div>DWG <b>NB-09</b></div><div>ILLUSTRATIVE</div></div>
+</section>
+
+<!-- 10 SUSTAINABILITY -->
+<section class="panel" data-x="2600" data-y="4000">
+  <div class="corner c1"></div><div class="corner c2"></div>
+  <div style="position:absolute;left:90px;top:90px;width:760px">
+    <div class="lab" data-a="fade" style="color:#7dffa8">09 — Sustainability</div>
+    <div class="h" data-a="draw" style="--d:200;font-size:96px;margin-top:22px">Fewer empty miles. <span style="color:#7dffa8">Cleaner ones.</span></div>
+    <p class="p" data-a="up" style="--d:800;margin-top:30px;width:700px">Smart routing fills trucks before they leave the yard. Electric yard tractors move trailers at our busiest hubs. Every customer gets a quarterly carbon report.</p>
+  </div>
+  <div style="position:absolute;left:900px;top:120px;width:620px;display:grid;grid-template-columns:1fr 1fr;gap:22px">
+    <div class="box" data-a="up" style="--d:500;border-color:#7dffa8"><div class="big" style="font-size:88px;color:#7dffa8">−18%</div><p>empty miles since 2023</p></div>
+    <div class="box" data-a="up" style="--d:650;border-color:#7dffa8"><div class="big" style="font-size:88px;color:#7dffa8">6</div><p>hubs with electric yard trucks</p></div>
+    <div class="box" data-a="up" style="--d:800;border-color:#7dffa8"><div class="big" style="font-size:88px;color:#7dffa8">40%</div><p>low-emission fleet target, 2028</p></div>
+    <div class="box" data-a="up" style="--d:950;border-color:#7dffa8"><div class="big" style="font-size:88px;color:#7dffa8">100%</div><p>shipments with CO₂ reporting</p></div>
+  </div>
+  <div class="tb"><div>NORTHBOUND LOGISTICS — SUSTAINABILITY</div><div>SHEET <b>10</b> / 11</div><div>DWG <b>NB-10</b></div><div>ILLUSTRATIVE</div></div>
+</section>
+
+<!-- 11 CONTACT -->
+<section class="panel" data-x="4800" data-y="4000">
+  <div class="corner c1"></div><div class="corner c2"></div>
+  <div class="photo" data-a="fade" style="left:880px;top:70px;width:650px;height:740px;background-image:url('https://images.unsplash.com/photo-1605745341112-85968b19335b?auto=format&fit=crop&w=1200&q=80'),linear-gradient(#123,#012)"><div class="frame"></div></div>
+  <div style="position:absolute;left:90px;top:150px;width:760px">
+    <div class="lab" data-a="fade">10 — Next stop</div>
+    <div class="h" data-a="draw" style="--d:200;font-size:128px;margin-top:26px">Let’s map your <span class="a">next move.</span></div>
+    <p class="p" data-a="up" style="--d:900;margin-top:40px">Send us one lane. We’ll send back a route, a price and a plan in 15 minutes.</p>
+    <div data-a="up" style="--d:1200;margin-top:40px;font-size:22px;line-height:2;color:var(--c)">[sales@northbound-logistics.com]<br>[(312) 000-0000] · [northbound-logistics.com]</div>
+  </div>
+  <div class="tb"><div>NORTHBOUND LOGISTICS — CONTACT</div><div>SHEET <b>11</b> / 11</div><div>DWG <b>NB-11</b></div><div>END OF SET</div></div>
+</section>
+</div></div>
+<div id="mini"></div>
+<div id="hint">← → · click · swipe · F fullscreen · concept deck, fictional company</div>
+
+<script>
+(function(){
+const stage=document.getElementById('stage'),world=document.getElementById('world');
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform=`translate(-50%,-50%) scale(${s})`;}
+addEventListener('resize',fit);fit();
+const panels=[...document.querySelectorAll('.panel')];
+panels.forEach(p=>{p.style.left=p.dataset.x+'px';p.style.top=p.dataset.y+'px';});
+const C=panels.map(p=>[+p.dataset.x+800,+p.dataset.y+450]);
+const RP=panels.map(p=>[+p.dataset.x+800,+p.dataset.y-70]);
+// route path through panel centers with rounded corners via straight segments
+const d='M'+RP.map(c=>c.join(' ')).join(' L');
+document.getElementById('rbase').setAttribute('d',d);
+const done=document.getElementById('rdone');
+// pins
+const pins=document.getElementById('pins');
+RP.forEach((c,i)=>{const e=document.createElement('div');e.className='pin';e.textContent=String(i+1).padStart(2,'0');e.style.left=c[0]+'px';e.style.top=c[1]+'px';pins.appendChild(e);});
+// network map
+const net=document.getElementById('netmap');
+const cities=[['SEA',90,80],['PDX',75,150],['SFO',50,320],['LAX',90,430],['PHX',220,470],['DEN',360,300],['DAL',520,500],['HOU',560,580],['CHI',650,220],['MEM',650,420],['ATL',760,470],['MIA',860,620],['CMH',760,250],['NYC',900,200]];
+const hub=cities[8];let h='';
+h+=`<g stroke="#5ce1ff" stroke-opacity=".25" fill="none">`;for(let x=0;x<=980;x+=70)h+=`<line x1="${x}" y1="0" x2="${x}" y2="660"/>`;for(let y=0;y<=660;y+=70)h+=`<line x1="0" y1="${y}" x2="980" y2="${y}"/>`;h+='</g>';
+cities.forEach((c,i)=>{if(c[0]!=='CHI'){const len=Math.hypot(c[1]-hub[1],c[2]-hub[2])*1.15;const mx=(c[1]+hub[1])/2,my=(c[2]+hub[2])/2-60;h+=`<path class="dr" style="--len:${len.toFixed(0)};--d:${600+i*90}" d="M${hub[1]} ${hub[2]} Q${mx} ${my} ${c[1]} ${c[2]}" stroke="#ffb703" stroke-width="2.5" fill="none" stroke-dasharray="${len.toFixed(0)}"/>`;}});
+cities.forEach((c,i)=>{const isH=c[0]==='CHI';h+=`<g class="city" style="--d:${400+i*90}"><circle cx="${c[1]}" cy="${c[2]}" r="${isH?18:10}" fill="${isH?'#ffb703':'#0a2342'}" stroke="${isH?'#ffb703':'#5ce1ff'}" stroke-width="3"/><text x="${c[1]+16}" y="${c[2]-14}" font-family="IBM Plex Mono" font-size="16" fill="${isH?'#ffb703':'#eaf6ff'}">${c[0]}</text></g>`;});
+net.innerHTML=h;
+// dashboard rows
+const rows=[['NB-48213','CHI → ATL','In transit','14:20'],['NB-48219','LAX → DAL','Loading','Tue'],['NB-48230','NYC → CMH','Delivered','✓'],['NB-48244','SEA → DEN','In transit','09:05'],['NB-48251','MIA → MEM','At hub','Wed'],['NB-48262','HOU → CHI','In transit','18:40']];
+document.querySelector('.rows').innerHTML=rows.map((r,i)=>`<div style="display:grid;grid-template-columns:1.1fr 1.3fr 1fr .8fr;gap:10px;padding:13px 0;border-bottom:1px solid rgba(92,225,255,.12)"><span style="color:#5ce1ff">${r[0]}</span><span>${r[1]}</span><span style="color:${r[2]==='Delivered'?'#7dffa8':r[2]==='In transit'?'#ffb703':'#8fb3d9'}">● ${r[2]}</span><span>${r[3]}</span></div>`).join('');
+// team
+const team=[['DW','Dana Whitfield','Chief Executive Officer','25 years in freight; built our first Chicago hub.'],['MR','Marcus Reyes','Chief Operating Officer','Runs the 24/7 ops desk and 14-hub network.'],['PR','Priya Raman','Chief Technology Officer','Architect of the Northstar platform.'],['OB','Owen Brooks','VP, Sustainability','Leads fleet electrification and carbon reporting.']];
+document.querySelector('.team').innerHTML=team.map((t,i)=>`<div class="box" data-a="up" style="--d:${400+i*180};text-align:center;padding:30px 24px"><span class="no">ID-0${i+1}</span>
+<svg width="170" height="170" viewBox="0 0 170 170" style="margin:10px auto 0;display:block"><circle cx="85" cy="85" r="76" fill="none" stroke="#5ce1ff" stroke-width="2"/><circle cx="85" cy="85" r="60" fill="#0d2b52" stroke="#5ce1ff" stroke-width="1" stroke-dasharray="4 6"/><line x1="85" y1="0" x2="85" y2="22" stroke="#5ce1ff"/><line x1="85" y1="148" x2="85" y2="170" stroke="#5ce1ff"/><line x1="0" y1="85" x2="22" y2="85" stroke="#5ce1ff"/><line x1="148" y1="85" x2="170" y2="85" stroke="#5ce1ff"/><text x="85" y="102" text-anchor="middle" font-family="Barlow Condensed" font-weight="800" font-size="52" fill="#ffb703">${t[0]}</text></svg>
+<h3 style="font-size:32px">${t[1]}</h3><div class="lab" style="font-size:13px;letter-spacing:.14em">${t[2]}</div><p style="margin-top:14px">${t[3]}</p></div>`).join('');
+
+// camera
+let cur=-1,busy=false;const truck=document.getElementById('truck');
+let cam={x:0,y:0,s:1};
+function camT(c){world.style.transform=`translate(${800-c.x*c.s}px,${450-c.y*c.s}px) scale(${c.s})`;}
+function ease(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
+const segLen=[];let total=0;const pathEl=document.getElementById('rbase');
+// cumulative lengths at each panel center
+const cum=[0];for(let i=1;i<RP.length;i++){cum.push(cum[i-1]+Math.hypot(RP[i][0]-RP[i-1][0],RP[i][1]-RP[i-1][1]));}
+function pointAt(L){for(let i=1;i<RP.length;i++){if(L<=cum[i]){const t=(L-cum[i-1])/(cum[i]-cum[i-1]);return [RP[i-1][0]+(RP[i][0]-RP[i-1][0])*t,RP[i-1][1]+(RP[i][1]-RP[i-1][1])*t];}}return RP[RP.length-1];}
+function setDone(L){const pts=[RP[0]];for(let i=1;i<RP.length;i++){if(L>=cum[i])pts.push(RP[i]);else{pts.push(pointAt(L));break;}}done.setAttribute('d','M'+pts.map(p=>p.join(' ')).join(' L'));}
+function placeTruck(L){const p=pointAt(L);truck.style.left=p[0]+'px';truck.style.top=p[1]+'px';}
+function activate(i){const p=panels[i];p.classList.remove('go');void p.offsetWidth;p.classList.add('go');
+ [...pins.children].forEach((e,k)=>e.classList.toggle('on',k<=i));
+ document.getElementById('mini').textContent=`SHEET ${String(i+1).padStart(2,'0')} / ${panels.length}`;history.replaceState(null,'','#'+(i+1));}
+function go(n){if(busy||n<0||n>=panels.length||n===cur)return;
+ if(cur<0){cur=n;cam={x:C[n][0],y:C[n][1],s:1};camT(cam);setDone(cum[n]);placeTruck(cum[n]);activate(n);return;}
+ busy=true;const from={...cam},to={x:C[n][0],y:C[n][1],s:1},L0=cum[cur],L1=cum[n];
+ const dist=Math.hypot(to.x-from.x,to.y-from.y);const zoomOut=Math.max(.16,Math.min(.55,1400/(dist+1600)));
+ panels[cur].classList.remove('go');
+ const dur=1900,t0=performance.now();cur=n;
+ (function step(t){let k=Math.min((t-t0)/dur,1),e=ease(k);
+  const s=k<.5?1+(zoomOut-1)*ease(k*2):zoomOut+(1-zoomOut)*ease((k-.5)*2);
+  cam={x:from.x+(to.x-from.x)*e,y:from.y+(to.y-from.y)*e,s};camT(cam);
+  const L=L0+(L1-L0)*e;setDone(L);placeTruck(L);
+  if(k<1)requestAnimationFrame(step);else{busy=false;activate(n);}})(t0);}
+const next=()=>go(cur+1),prev=()=>go(cur-1);
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();next();}else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}
+ else if(e.key==='Home')go(0);else if(e.key==='End')go(panels.length-1);else if(e.key==='f'||e.key==='F'){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(_){}}});
+document.addEventListener('click',e=>{if(e.target.closest('a,button'))return;(e.clientX<innerWidth*.25)?prev():next();});
+let sx=null;addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)(dx<0?next:prev)();sx=null;});
+const hh=parseInt(location.hash.slice(1));go(hh>0&&hh<=panels.length?hh-1:0);
+})();
+</script>
+</body>
+</html>
