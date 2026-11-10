@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GreenFork — Fresh Meal Kits, Delivered Weekly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;overflow:hidden}
+.slide{position:absolute;inset:0;visibility:hidden;overflow:hidden;display:flex;flex-direction:column;padding:80px 96px}
+.slide.active{visibility:visible}.slide.entering{z-index:3}
+#ov{position:absolute;inset:0;z-index:30;pointer-events:none;overflow:hidden}
+.frozen [data-a]{animation:none!important;opacity:1!important}
+[data-a]{opacity:0}
+.slide.go [data-a]{animation:var(--ad,.9s) var(--ae,cubic-bezier(.2,.8,.2,1)) both;animation-delay:calc(var(--d,0)*1ms)}
+.slide.go [data-a=up]{animation-name:a-up}.slide.go [data-a=fade]{animation-name:a-fade}.slide.go [data-a=pop]{animation-name:a-pop}
+.slide.go [data-a=left]{animation-name:a-left}.slide.go [data-a=right]{animation-name:a-right}.slide.go [data-a=wipe]{animation-name:a-wipe}
+.slide.go [data-a=rise]{animation-name:a-rise}.slide.go [data-a=zoom]{animation-name:a-zoom}
+@keyframes a-up{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:none}}
+@keyframes a-fade{from{opacity:0}to{opacity:1}}
+@keyframes a-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes a-left{from{opacity:0;transform:translateX(-70px)}to{opacity:1;transform:none}}
+@keyframes a-right{from{opacity:0;transform:translateX(70px)}to{opacity:1;transform:none}}
+@keyframes a-wipe{from{opacity:1;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-rise{from{opacity:1;clip-path:inset(100% 0 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-zoom{from{opacity:0;transform:scale(1.12)}to{opacity:1;transform:none}}
+.row{display:flex;gap:var(--gap,28px)}.col{display:flex;flex-direction:column;gap:var(--gap,0)}
+.g2,.g3,.g4,.g5,.g6{display:grid;gap:var(--gap,28px)}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g5{grid-template-columns:repeat(5,1fr)}.g6{grid-template-columns:repeat(6,1fr)}
+.f1{flex:1;min-width:0}.mta{margin-top:auto;margin-bottom:auto}.ctr{text-align:center}.ac{align-items:center}.jc{justify-content:center}.jb{justify-content:space-between}.ae{align-items:flex-end}
+.abs{position:absolute}.fill{position:absolute;inset:0}.rel{position:relative}.ph{background-size:cover;background-position:center}
+.h1{font-size:120px;line-height:.98}.h2{font-size:70px;line-height:1.04}.h3{font-size:32px;line-height:1.15}.p{font-size:24px;line-height:1.5}.sm{font-size:17px;line-height:1.5}
+.k{font-size:15px;letter-spacing:.22em;text-transform:uppercase;font-weight:700}.num{font-size:92px;line-height:1}
+.bar{height:14px;background:var(--barbg,rgba(128,128,128,.25));border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--bar,currentColor);border-radius:inherit;transition:width 1.4s cubic-bezier(.3,1,.4,1) .5s}.slide.go .bar i{width:var(--w)}
+.dr{stroke-dasharray:var(--len,2000);stroke-dashoffset:var(--len,2000)}.slide.go .dr{transition:stroke-dashoffset 1.8s cubic-bezier(.5,0,.2,1) .4s;stroke-dashoffset:0}
+#pg{position:fixed;right:16px;top:12px;font:600 13px/1 system-ui,sans-serif;letter-spacing:.08em;color:var(--hint,#888);z-index:50}
+#hint{position:fixed;left:16px;top:12px;font:12px/1 system-ui,sans-serif;color:var(--hint,#888);z-index:50;opacity:.8}
+.note{position:absolute;left:96px;bottom:26px;font-size:13px;opacity:.55;letter-spacing:.04em}
+
+.num{white-space:nowrap}.g4 .num,.g5 .num{font-size:70px}
+
+:root{--bg:#f2f8e9;--gr:#2f8f4e;--dk:#143d24;--li:#c8f169;--to:#ff6b3d;--fb:linear-gradient(160deg,#c8f169,#2f8f4e);--hint:#a9bf9a}
+body{background:#143d24;font-family:Inter,sans-serif;color:var(--dk)}
+.slide{background:var(--bg)}.slide.gr{background:var(--gr);color:#fff}.slide.dk{background:var(--dk);color:#fff}
+.h1,.h2,.h3,.num{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.03em}
+.h2 b,.h1 b{color:var(--gr)}.gr .h2 b,.gr .h1 b,.dk .h2 b,.dk .h1 b{color:var(--li)}
+.k{color:var(--to);font-weight:600}.gr .k,.dk .k{color:var(--li)}
+.p{color:#47614f}.gr .p,.dk .p{color:#dff2e2}
+.card{background:#fff;border-radius:28px;padding:28px;color:var(--dk)}.card .p{color:#47614f}
+.plate{border-radius:50%;border:16px solid #fff;box-shadow:0 30px 60px rgba(20,61,36,.25)}
+.chip{display:inline-block;background:var(--li);color:var(--dk);border-radius:99px;padding:6px 14px;font-weight:600;font-size:16px}
+</style></head><body>
+<div id="stage">
+<section class="slide gr" style="padding:0">
+  <div class="abs ph plate" data-a="pop" style="right:110px;top:150px;width:600px;height:600px;background-image:url('https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1400&q=80'),var(--fb)"></div>
+  <div class="col jc" style="height:100%;padding:0 96px;width:880px">
+    <div class="k" data-a="fade">MEAL KITS · DELIVERED WEEKLY ACROSS THE MIDWEST</div>
+    <div class="h1" data-a="up" style="margin-top:18px;font-size:160px">Green<b>Fork</b></div>
+    <p class="p" data-a="up" style="margin-top:14px;font-size:32px">Dinner, figured out. In 25 minutes.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">THE 5 P.M. PROBLEM</div>
+  <div class="h2" data-a="up" style="margin-top:16px;width:1200px">“What’s for dinner?” gets asked <b>365 times a year.</b></div>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="h3">No plan</div><p class="sm p" style="margin-top:6px">So it’s takeout again.</p></div>
+    <div class="card" data-a="up"><div class="h3">No time</div><p class="sm p" style="margin-top:6px">Shopping eats the evening.</p></div>
+    <div class="card" data-a="up"><div class="h3">Too much waste</div><p class="sm p" style="margin-top:6px">Half a bunch of cilantro, every week.</p></div>
+  </div>
+</section>
+<section class="slide dk">
+  <div class="k" data-a="fade">HOW IT WORKS</div>
+  <div class="h2" data-a="up" style="margin-top:16px">Pick. Unpack. <b>Plate.</b></div>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="num" style="color:var(--gr)">1</div><div class="h3">Pick your meals</div><p class="sm p">24 recipes change every week.</p></div>
+    <div class="card" data-a="up"><div class="num" style="color:var(--gr)">2</div><div class="h3">Get the box</div><p class="sm p">Pre-portioned, chilled, at your door.</p></div>
+    <div class="card" data-a="up"><div class="num" style="color:var(--gr)">3</div><div class="h3">Cook in 25</div><p class="sm p">Six steps, one pan for most.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">THIS WEEK’S MENU</div>
+  <div class="h2" data-a="up" style="margin-top:16px">Something for <b>every fork.</b></div>
+  <div class="g4 mta">
+    <div class="card" data-a="up"><span class="chip">20 min</span><div class="h3" style="margin:12px 0 6px">Lemon herb salmon</div><p class="sm p">Farro, snap peas.</p></div>
+    <div class="card" data-a="up"><span class="chip">Veggie</span><div class="h3" style="margin:12px 0 6px">Harissa cauliflower bowls</div><p class="sm p">Chickpeas, yogurt.</p></div>
+    <div class="card" data-a="up"><span class="chip">Family</span><div class="h3" style="margin:12px 0 6px">Sheet-pan chicken fajitas</div><p class="sm p">Peppers, lime crema.</p></div>
+    <div class="card" data-a="up"><span class="chip">High protein</span><div class="h3" style="margin:12px 0 6px">Steak &amp; sweet potato</div><p class="sm p">Chimichurri, greens.</p></div>
+  </div>
+  <div class="note">Sample menu</div>
+</section>
+<section class="slide gr">
+  <div class="k" data-a="fade">PLANS</div>
+  <div class="h2" data-a="up" style="margin-top:16px">Skip or cancel <b>any week.</b></div>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="h3">For two</div><div class="num" style="margin:8px 0">$10.99</div><p class="sm p">per serving · 3 meals a week</p></div>
+    <div class="card" data-a="up"><div class="h3">For four</div><div class="num" style="margin:8px 0">$8.99</div><p class="sm p">per serving · 4 meals a week</p></div>
+    <div class="card" data-a="up"><div class="h3">Ready-made</div><div class="num" style="margin:8px 0">$11.49</div><p class="sm p">per meal · heat and eat</p></div>
+  </div>
+  <div class="note">Illustrative pricing · fictional company</div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">LESS WASTE</div>
+  <div class="h2" data-a="up" style="margin-top:16px">Good for dinner. <b>Better for the bin.</b></div>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="num">−38%</div><p class="sm p">food waste vs. grocery shopping</p><div class="bar" style="margin-top:14px;--bar:#2f8f4e"><i style="--w:62%"></i></div></div>
+    <div class="card" data-a="up"><div class="num">100%</div><p class="sm p">curbside-recyclable packaging</p><div class="bar" style="margin-top:14px;--bar:#2f8f4e"><i style="--w:100%"></i></div></div>
+    <div class="card" data-a="up"><div class="num">150 mi</div><p class="sm p">average distance from farm to box</p><div class="bar" style="margin-top:14px;--bar:#2f8f4e"><i style="--w:40%"></i></div></div>
+  </div>
+  <div class="note">Illustrative figures</div>
+</section>
+<section class="slide dk">
+  <div class="k" data-a="fade">BY THE NUMBERS</div>
+  <div class="h2" data-a="up" style="margin-top:16px">Tables we’ve <b>set.</b></div>
+  <div class="g4 mta">
+    <div class="card" data-a="pop"><div class="num"><span class="count" data-to="9">0</span>M</div><p class="sm p">meals delivered</p></div>
+    <div class="card" data-a="pop"><div class="num"><span class="count" data-to="210">0</span>K</div><p class="sm p">active households</p></div>
+    <div class="card" data-a="pop"><div class="num"><span class="count" data-to="25">0</span> min</div><p class="sm p">average cook time</p></div>
+    <div class="card" data-a="pop"><div class="num">4.8★</div><p class="sm p">recipe rating</p></div>
+  </div>
+  <div class="note">Illustrative figures</div>
+</section>
+<section class="slide gr" style="padding:0">
+  <div class="abs ph plate" data-a="pop" style="left:110px;top:170px;width:560px;height:560px;background-image:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80'),var(--fb)"></div>
+  <div class="col jc" style="height:100%;padding:0 96px 0 780px">
+    <div class="k" data-a="fade">FIRST BOX 50% OFF</div>
+    <div class="h1" data-a="up" style="margin-top:14px">Dinner’s <b>on.</b></div>
+    <p class="h3" data-a="up" style="margin-top:22px">[greenfork.com] · [(312) 000-0000]</p>
+  </div>
+  <div class="note">Concept deck · fictional company</div>
+</section>
+<div id="ov"></div></div>
+<div id="pg"></div><div id="hint">← → · click · swipe · F fullscreen</div>
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const stage=$('#stage'),ov=$('#ov'),slides=$$('.slide');
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform='translate(-50%,-50%) scale('+s+')';}
+addEventListener('resize',fit);fit();
+slides.forEach(s=>$$('[data-a]',s).forEach((e,i)=>{if(!e.style.getPropertyValue('--d'))e.style.setProperty('--d',120+i*110);}));
+const D=window.DECK={};
+const X=window.X={$,$$,stage,ov,slides,N:slides.length,
+ ease:k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2,
+ raf(dur,fn,end){const t0=performance.now();(function f(){const k=Math.min((performance.now()-t0)/dur,1);fn(k);if(k<1)requestAnimationFrame(f);else if(end)end();})();},
+ el(html,p){const d=document.createElement('div');d.innerHTML=html.trim();const e=d.firstElementChild;(p||ov).appendChild(e);return e;},
+ anim(e,kf,o){return e.animate(kf,Object.assign({duration:700,fill:'forwards',easing:'cubic-bezier(.6,0,.3,1)'},o)).finished;},
+ wait:ms=>new Promise(r=>setTimeout(r,ms)),rnd:(a,b)=>a+Math.random()*(b-a)};
+let cur=-1,busy=false,wd;
+function countUp(sl){$$('.count',sl).forEach(c=>{const to=parseFloat(c.dataset.to),dec=+(c.dataset.dec||0),t0=performance.now()+500;
+ (function f(){let p=Math.min(Math.max((performance.now()-t0)/1500,0),1);p=1-Math.pow(1-p,3);c.textContent=(to*p).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});if(p<1)requestAnimationFrame(f);})();});}
+function activate(sl,i){sl.classList.add('active');sl.classList.remove('go');void sl.offsetWidth;sl.classList.add('go');countUp(sl);if(D.onShow)D.onShow(sl,i);}
+function go(n){
+ if(busy||n<0||n>=slides.length||n===cur)return;
+ const from=slides[cur],to=slides[n],fwd=n>cur,prev=cur;cur=n;
+ try{history.replaceState(null,'','#'+(n+1));}catch(e){}
+ const pg=$('#pg');if(pg&&!D.noPg)pg.textContent=(n+1)+' / '+slides.length;
+ if(D.onNav)D.onNav(n,prev);
+ if(!from){activate(to,n);return;}
+ busy=true;let fin=false;
+ const show=()=>{to.classList.add('entering');activate(to,n);};
+ const hide=()=>{from.classList.remove('active','go');};
+ const done=()=>{if(fin)return;fin=true;clearTimeout(wd);hide();if(!to.classList.contains('active'))activate(to,n);
+  [from,to].forEach(s=>{s.getAnimations().forEach(a=>a.cancel());s.style.clipPath='';s.style.transform='';s.style.opacity='';s.style.filter='';});
+  to.classList.remove('entering');if(!D.keepOv)ov.innerHTML='';busy=false;};
+ wd=setTimeout(done,6000);
+ if(D.transition){try{const r=D.transition({from,to,fwd,show,hide,done,n,prev});if(r&&r.catch)r.catch(e=>{console.error(e);done();});}catch(e){console.error(e);done();}}else{show();done();}
+}
+X.go=go;X.cur=()=>cur;
+X.start=function(){
+ addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input'))return;
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();go(cur+1);}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();go(cur-1);}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);
+  else if(e.key==='f'||e.key==='F'){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(_){}}});
+ document.addEventListener('click',e=>{if(e.target.closest('a,button,input,label,.ix'))return;(e.clientX<innerWidth*.25)?go(cur-1):go(cur+1);});
+ let sx=null;addEventListener('touchstart',e=>{sx=e.target.closest('input,.ix')?null:e.touches[0].clientX;},{passive:true});
+ addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)go(cur+(dx<0?1:-1));sx=null;});
+ const h=parseInt(location.hash.slice(1));go(h>0&&h<=slides.length?h-1:0);
+};
+})();
+</script>
+<script>
+(function(){
+const {wait}=X;const E='cubic-bezier(.65,0,.3,1)';
+DECK.transition=async({from,to,fwd,show,done})=>{const s=fwd?1:-1;
+ from.style.transformOrigin=to.style.transformOrigin='50% 260%';show();
+ const a=from.animate([{transform:'rotate(0)'},{transform:`rotate(${-38*s}deg)`}],{duration:1000,fill:'forwards',easing:E});
+ const b=to.animate([{transform:`rotate(${38*s}deg)`},{transform:'rotate(0)'}],{duration:1000,fill:'forwards',easing:E});
+ await wait(1030);done();a.cancel();b.cancel();from.style.transformOrigin=to.style.transformOrigin='';};
+})();
+X.start();
+</script></body></html>

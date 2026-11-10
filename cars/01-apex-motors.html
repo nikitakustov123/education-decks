@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apex Motors — Performance Dealership</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;700;800;900&family=Saira:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;overflow:hidden}
+.slide{position:absolute;inset:0;visibility:hidden;overflow:hidden;display:flex;flex-direction:column;padding:80px 96px}
+.slide.active{visibility:visible}.slide.entering{z-index:3}
+#ov{position:absolute;inset:0;z-index:30;pointer-events:none;overflow:hidden}
+.frozen [data-a]{animation:none!important;opacity:1!important}
+[data-a]{opacity:0}
+.slide.go [data-a]{animation:var(--ad,.9s) var(--ae,cubic-bezier(.2,.8,.2,1)) both;animation-delay:calc(var(--d,0)*1ms)}
+.slide.go [data-a=up]{animation-name:a-up}.slide.go [data-a=fade]{animation-name:a-fade}.slide.go [data-a=pop]{animation-name:a-pop}
+.slide.go [data-a=left]{animation-name:a-left}.slide.go [data-a=right]{animation-name:a-right}.slide.go [data-a=wipe]{animation-name:a-wipe}
+.slide.go [data-a=rise]{animation-name:a-rise}.slide.go [data-a=zoom]{animation-name:a-zoom}
+@keyframes a-up{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:none}}
+@keyframes a-fade{from{opacity:0}to{opacity:1}}
+@keyframes a-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes a-left{from{opacity:0;transform:translateX(-70px)}to{opacity:1;transform:none}}
+@keyframes a-right{from{opacity:0;transform:translateX(70px)}to{opacity:1;transform:none}}
+@keyframes a-wipe{from{opacity:1;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-rise{from{opacity:1;clip-path:inset(100% 0 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-zoom{from{opacity:0;transform:scale(1.12)}to{opacity:1;transform:none}}
+.row{display:flex;gap:var(--gap,28px)}.col{display:flex;flex-direction:column;gap:var(--gap,0)}
+.g2,.g3,.g4,.g5,.g6{display:grid;gap:var(--gap,28px)}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g5{grid-template-columns:repeat(5,1fr)}.g6{grid-template-columns:repeat(6,1fr)}
+.f1{flex:1;min-width:0}.mta{margin-top:auto;margin-bottom:auto}.ctr{text-align:center}.ac{align-items:center}.jc{justify-content:center}.jb{justify-content:space-between}.ae{align-items:flex-end}
+.abs{position:absolute}.fill{position:absolute;inset:0}.rel{position:relative}.ph{background-size:cover;background-position:center}
+.h1{font-size:120px;line-height:.98}.h2{font-size:70px;line-height:1.04}.h3{font-size:32px;line-height:1.15}.p{font-size:24px;line-height:1.5}.sm{font-size:17px;line-height:1.5}
+.k{font-size:15px;letter-spacing:.22em;text-transform:uppercase;font-weight:700}.num{font-size:92px;line-height:1}
+.bar{height:14px;background:var(--barbg,rgba(128,128,128,.25));border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--bar,currentColor);border-radius:inherit;transition:width 1.4s cubic-bezier(.3,1,.4,1) .5s}.slide.go .bar i{width:var(--w)}
+.dr{stroke-dasharray:var(--len,2000);stroke-dashoffset:var(--len,2000)}.slide.go .dr{transition:stroke-dashoffset 1.8s cubic-bezier(.5,0,.2,1) .4s;stroke-dashoffset:0}
+#pg{position:fixed;right:16px;top:12px;font:600 13px/1 system-ui,sans-serif;letter-spacing:.08em;color:var(--hint,#888);z-index:50}
+#hint{position:fixed;left:16px;top:12px;font:12px/1 system-ui,sans-serif;color:var(--hint,#888);z-index:50;opacity:.8}
+.note{position:absolute;left:96px;bottom:26px;font-size:13px;opacity:.55;letter-spacing:.04em}
+
+.num{white-space:nowrap}.g4 .num,.g5 .num{font-size:70px}
+
+:root{--bg:#0d0d0f;--rd:#e10600;--tx:#f2f2f2;--mu:#9a9aa2;--fb:linear-gradient(160deg,#3a3a40,#0d0d0f);--hint:#555}
+body{background:#000;font-family:Saira,sans-serif;color:var(--tx)}
+.slide{background:var(--bg);background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,transparent 2px 8px),repeating-linear-gradient(-45deg,rgba(255,255,255,.025) 0 2px,transparent 2px 8px)}
+.slide.rd{background:var(--rd)}
+.h1,.h2,.h3,.num,.k{font-family:'Saira Condensed',sans-serif;font-weight:800;text-transform:uppercase;font-style:italic}
+.h1{font-size:170px;line-height:.86}.h2{font-size:88px;line-height:.95}.h3{font-size:36px}
+.h2 b,.h1 b{color:var(--rd)}.rd .h2 b{color:#0d0d0f}
+.k{color:var(--rd);font-size:20px}.rd .k{color:#0d0d0f}
+.p{color:var(--mu)}.rd .p{color:#ffd9d7}
+.card{background:#17171b;padding:28px;border-left:6px solid var(--rd);transform:skewX(-6deg)}.card>*{transform:skewX(6deg)}
+.rd .card{background:#0d0d0f}
+.streak{position:absolute;left:-200px;width:2000px;height:76px;transform:skewX(-20deg)}
+.spec{border-top:2px solid #2a2a30;padding:14px 0;display:flex;justify-content:space-between;font-size:22px}
+#nd{transform-origin:200px 200px;transform:rotate(-120deg);transition:transform 2s cubic-bezier(.3,1.4,.4,1) .5s}.slide.go #nd{transform:rotate(95deg)}
+</style></head><body>
+<div id="stage">
+<section class="slide" style="padding:0">
+  <div class="fill ph" data-a="zoom" style="background-image:linear-gradient(90deg,rgba(13,13,15,.96) 35%,rgba(13,13,15,.2)),url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=80'),var(--fb)"></div>
+  <div class="col jc rel" style="height:100%;padding:0 96px">
+    <div class="k" data-a="left">Performance dealership · Scottsdale, Arizona</div>
+    <div class="h1" data-a="left" style="margin-top:20px">Apex<br><b>Motors</b></div>
+    <p class="p" data-a="up" style="margin-top:26px;font-size:30px;color:#fff">Drive something that drives you back.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="left">01 / Who we are</div>
+  <div class="h2" data-a="left" style="margin-top:14px">Built by drivers, <b>for drivers.</b></div>
+  <p class="p" data-a="up" style="margin-top:20px;width:860px">We buy, inspect and sell performance cars — and we track-test every one before it reaches the floor.</p>
+  <div class="g3 mta" style="--gap:36px">
+    <div class="card" data-a="up"><div><div class="num"><span class="count" data-to="140">0</span>+</div><p class="sm p">cars in the showroom</p></div></div>
+    <div class="card" data-a="up"><div><div class="num"><span class="count" data-to="212">0</span></div><p class="sm p">point inspection on every car</p></div></div>
+    <div class="card" data-a="up"><div><div class="num">7 days</div><p class="sm p">to return it, no questions</p></div></div>
+  </div>
+  <div class="note">Illustrative figures · fictional dealership</div>
+</section>
+<section class="slide">
+  <div class="k" data-a="left">02 / On the floor</div>
+  <div class="h2" data-a="left" style="margin-top:14px">Three ways to <b>go fast.</b></div>
+  <div class="g3 mta" style="--gap:30px">
+    <div data-a="up"><div class="ph" style="height:230px;background-image:url('https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=1400&q=80'),var(--fb)"></div><div class="h3" style="margin-top:16px">Supercars</div><p class="sm p">Mid-engine exotics, under 15k miles.</p><p class="h3" style="color:var(--rd)">from $189,000</p></div>
+    <div data-a="up"><div class="ph" style="height:230px;background-image:url('https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=1400&q=80'),var(--fb)"></div><div class="h3" style="margin-top:16px">Muscle</div><p class="sm p">American V8s, stock and tuned.</p><p class="h3" style="color:var(--rd)">from $42,000</p></div>
+    <div data-a="up"><div class="ph" style="height:230px;background-image:url('https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=1400&q=80'),var(--fb)"></div><div class="h3" style="margin-top:16px">Sport coupes</div><p class="sm p">Daily-drivable and track-ready.</p><p class="h3" style="color:var(--rd)">from $58,000</p></div>
+  </div>
+  <div class="note">Illustrative pricing</div>
+</section>
+<section class="slide">
+  <div class="row" style="height:100%;--gap:60px">
+    <div class="f1 col jc">
+      <div class="k" data-a="left">03 / Featured build</div>
+      <div class="h2" data-a="left" style="margin-top:14px">The numbers <b>that matter.</b></div>
+      <div style="margin-top:26px">
+        <div class="spec" data-a="up"><span class="p">Power</span><b>640 hp</b></div>
+        <div class="spec" data-a="up"><span class="p">0–60 mph</span><b>2.9 s</b></div>
+        <div class="spec" data-a="up"><span class="p">Top speed</span><b>202 mph</b></div>
+        <div class="spec" data-a="up"><span class="p">Weight</span><b>3,350 lb</b></div>
+      </div>
+    </div>
+    <svg data-a="fade" viewBox="0 0 400 400" style="width:520px;align-self:center"><circle cx="200" cy="200" r="180" fill="#17171b" stroke="#2a2a30" stroke-width="10"/><path d="M200 200 m-150 0 a150 150 0 1 1 300 0" fill="none" stroke="#f2f2f2" stroke-width="6" stroke-dasharray="4 22"/><path d="M335 135 A150 150 0 0 1 350 200" fill="none" stroke="#e10600" stroke-width="14"/><g id="nd"><path d="M196 200 L200 60 L204 200Z" fill="#e10600"/></g><circle cx="200" cy="200" r="18" fill="#e10600"/><text x="200" y="300" text-anchor="middle" fill="#f2f2f2" font-family="Saira Condensed" font-weight="800" font-style="italic" font-size="44">RPM ×1000</text></svg>
+  </div>
+  <div class="note">Sample specification</div>
+</section>
+<section class="slide rd">
+  <div class="k" data-a="left">04 / The Apex inspection</div>
+  <div class="h2" data-a="left" style="margin-top:14px">212 points. <b>Zero guesses.</b></div>
+  <div class="g4 mta" style="--gap:30px">
+    <div class="card" data-a="up"><div><div class="h3">Drivetrain</div><p class="sm p">Compression, leak-down and fluid analysis.</p></div></div>
+    <div class="card" data-a="up"><div><div class="h3">Chassis</div><p class="sm p">Alignment, bushings and paint-depth scan.</p></div></div>
+    <div class="card" data-a="up"><div><div class="h3">History</div><p class="sm p">Title, service records and ownership.</p></div></div>
+    <div class="card" data-a="up"><div><div class="h3">Track test</div><p class="sm p">Ten laps with a data logger.</p></div></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="left">05 / Ownership</div>
+  <div class="h2" data-a="left" style="margin-top:14px">More than <b>a set of keys.</b></div>
+  <div class="g3 mta" style="--gap:36px">
+    <div class="card" data-a="up"><div><div class="h3">Track days</div><p class="sm p">Four owner events a year with coaching.</p></div></div>
+    <div class="card" data-a="up"><div><div class="h3">Service bay</div><p class="sm p">Factory-trained techs, loaner included.</p></div></div>
+    <div class="card" data-a="up"><div><div class="h3">Buy-back</div><p class="sm p">A written offer whenever you are ready to trade up.</p></div></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="left">06 / Finance</div>
+  <div class="h2" data-a="left" style="margin-top:14px">Fast approval. <b>Clear terms.</b></div>
+  <div class="g3 mta" style="--gap:36px">
+    <div data-a="up"><div class="num" style="color:var(--rd)">30 min</div><p class="p">typical credit decision</p></div>
+    <div data-a="up"><div class="num" style="color:var(--rd)">14</div><p class="p">lenders compared for you</p></div>
+    <div data-a="up"><div class="num" style="color:var(--rd)">$0</div><p class="p">dealer add-ons you did not ask for</p></div>
+  </div>
+  <div class="note">Illustrative figures. Financing subject to credit approval.</div>
+</section>
+<section class="slide" style="padding:0">
+  <div class="fill ph" data-a="zoom" style="background-image:linear-gradient(rgba(13,13,15,.6),rgba(13,13,15,.95)),url('https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&w=1400&q=80'),var(--fb)"></div>
+  <div class="col jc rel" style="height:100%;padding:0 96px">
+    <div class="k" data-a="left">Next lap</div>
+    <div class="h1" data-a="left" style="margin-top:14px">Book a<br><b>test drive.</b></div>
+    <p class="h3" data-a="up" style="margin-top:30px">[apexmotors.com] · [(480) 000-0000]</p>
+  </div>
+  <div class="note">Concept deck · fictional company</div>
+</section>
+<div id="ov"></div></div>
+<div id="pg"></div><div id="hint">← → · click · swipe · F fullscreen</div>
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const stage=$('#stage'),ov=$('#ov'),slides=$$('.slide');
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform='translate(-50%,-50%) scale('+s+')';}
+addEventListener('resize',fit);fit();
+slides.forEach(s=>$$('[data-a]',s).forEach((e,i)=>{if(!e.style.getPropertyValue('--d'))e.style.setProperty('--d',120+i*110);}));
+const D=window.DECK={};
+const X=window.X={$,$$,stage,ov,slides,N:slides.length,
+ ease:k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2,
+ raf(dur,fn,end){const t0=performance.now();(function f(){const k=Math.min((performance.now()-t0)/dur,1);fn(k);if(k<1)requestAnimationFrame(f);else if(end)end();})();},
+ el(html,p){const d=document.createElement('div');d.innerHTML=html.trim();const e=d.firstElementChild;(p||ov).appendChild(e);return e;},
+ anim(e,kf,o){return e.animate(kf,Object.assign({duration:700,fill:'forwards',easing:'cubic-bezier(.6,0,.3,1)'},o)).finished;},
+ wait:ms=>new Promise(r=>setTimeout(r,ms)),rnd:(a,b)=>a+Math.random()*(b-a)};
+let cur=-1,busy=false,wd;
+function countUp(sl){$$('.count',sl).forEach(c=>{const to=parseFloat(c.dataset.to),dec=+(c.dataset.dec||0),t0=performance.now()+500;
+ (function f(){let p=Math.min(Math.max((performance.now()-t0)/1500,0),1);p=1-Math.pow(1-p,3);c.textContent=(to*p).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});if(p<1)requestAnimationFrame(f);})();});}
+function activate(sl,i){sl.classList.add('active');sl.classList.remove('go');void sl.offsetWidth;sl.classList.add('go');countUp(sl);if(D.onShow)D.onShow(sl,i);}
+function go(n){
+ if(busy||n<0||n>=slides.length||n===cur)return;
+ const from=slides[cur],to=slides[n],fwd=n>cur,prev=cur;cur=n;
+ try{history.replaceState(null,'','#'+(n+1));}catch(e){}
+ const pg=$('#pg');if(pg&&!D.noPg)pg.textContent=(n+1)+' / '+slides.length;
+ if(D.onNav)D.onNav(n,prev);
+ if(!from){activate(to,n);return;}
+ busy=true;let fin=false;
+ const show=()=>{to.classList.add('entering');activate(to,n);};
+ const hide=()=>{from.classList.remove('active','go');};
+ const done=()=>{if(fin)return;fin=true;clearTimeout(wd);hide();if(!to.classList.contains('active'))activate(to,n);
+  [from,to].forEach(s=>{s.getAnimations().forEach(a=>a.cancel());s.style.clipPath='';s.style.transform='';s.style.opacity='';s.style.filter='';});
+  to.classList.remove('entering');if(!D.keepOv)ov.innerHTML='';busy=false;};
+ wd=setTimeout(done,6000);
+ if(D.transition){try{const r=D.transition({from,to,fwd,show,hide,done,n,prev});if(r&&r.catch)r.catch(e=>{console.error(e);done();});}catch(e){console.error(e);done();}}else{show();done();}
+}
+X.go=go;X.cur=()=>cur;
+X.start=function(){
+ addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input'))return;
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();go(cur+1);}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();go(cur-1);}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);
+  else if(e.key==='f'||e.key==='F'){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(_){}}});
+ document.addEventListener('click',e=>{if(e.target.closest('a,button,input,label,.ix'))return;(e.clientX<innerWidth*.25)?go(cur-1):go(cur+1);});
+ let sx=null;addEventListener('touchstart',e=>{sx=e.target.closest('input,.ix')?null:e.touches[0].clientX;},{passive:true});
+ addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)go(cur+(dx<0?1:-1));sx=null;});
+ const h=parseInt(location.hash.slice(1));go(h>0&&h<=slides.length?h-1:0);
+};
+})();
+</script>
+<script>
+(function(){
+const {el,wait}=X;
+DECK.transition=async({fwd,show,hide,done})=>{const s=[],c=['#e10600','#0d0d0f','#f2f2f2','#e10600','#17171b'];const a=fwd?-130:130;
+ for(let i=0;i<12;i++){const e=el(`<div class="streak" style="top:${i*75}px;background:${c[i%5]}"></div>`);
+  e.animate([{transform:`translateX(${a}%) skewX(-20deg)`},{transform:'translateX(0) skewX(-20deg)'}],{duration:330,delay:Math.random()*260,fill:'both',easing:'cubic-bezier(.7,0,.3,1)'});s.push(e);}
+ await wait(640);hide();show();
+ s.forEach(e=>e.animate([{transform:'translateX(0) skewX(-20deg)'},{transform:`translateX(${-a}%) skewX(-20deg)`}],{duration:330,delay:Math.random()*260,fill:'both',easing:'cubic-bezier(.7,0,.3,1)'}));
+ await wait(640);done();};
+})();
+X.start();
+</script></body></html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sakura Bento — Fresh Japanese, Fast</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;overflow:hidden}
+.slide{position:absolute;inset:0;visibility:hidden;overflow:hidden;display:flex;flex-direction:column;padding:80px 96px}
+.slide.active{visibility:visible}.slide.entering{z-index:3}
+#ov{position:absolute;inset:0;z-index:30;pointer-events:none;overflow:hidden}
+.frozen [data-a]{animation:none!important;opacity:1!important}
+[data-a]{opacity:0}
+.slide.go [data-a]{animation:var(--ad,.9s) var(--ae,cubic-bezier(.2,.8,.2,1)) both;animation-delay:calc(var(--d,0)*1ms)}
+.slide.go [data-a=up]{animation-name:a-up}.slide.go [data-a=fade]{animation-name:a-fade}.slide.go [data-a=pop]{animation-name:a-pop}
+.slide.go [data-a=left]{animation-name:a-left}.slide.go [data-a=right]{animation-name:a-right}.slide.go [data-a=wipe]{animation-name:a-wipe}
+.slide.go [data-a=rise]{animation-name:a-rise}.slide.go [data-a=zoom]{animation-name:a-zoom}
+@keyframes a-up{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:none}}
+@keyframes a-fade{from{opacity:0}to{opacity:1}}
+@keyframes a-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes a-left{from{opacity:0;transform:translateX(-70px)}to{opacity:1;transform:none}}
+@keyframes a-right{from{opacity:0;transform:translateX(70px)}to{opacity:1;transform:none}}
+@keyframes a-wipe{from{opacity:1;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-rise{from{opacity:1;clip-path:inset(100% 0 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-zoom{from{opacity:0;transform:scale(1.12)}to{opacity:1;transform:none}}
+.row{display:flex;gap:var(--gap,28px)}.col{display:flex;flex-direction:column;gap:var(--gap,0)}
+.g2,.g3,.g4,.g5,.g6{display:grid;gap:var(--gap,28px)}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g5{grid-template-columns:repeat(5,1fr)}.g6{grid-template-columns:repeat(6,1fr)}
+.f1{flex:1;min-width:0}.mta{margin-top:auto;margin-bottom:auto}.ctr{text-align:center}.ac{align-items:center}.jc{justify-content:center}.jb{justify-content:space-between}.ae{align-items:flex-end}
+.abs{position:absolute}.fill{position:absolute;inset:0}.rel{position:relative}.ph{background-size:cover;background-position:center}
+.h1{font-size:120px;line-height:.98}.h2{font-size:70px;line-height:1.04}.h3{font-size:32px;line-height:1.15}.p{font-size:24px;line-height:1.5}.sm{font-size:17px;line-height:1.5}
+.k{font-size:15px;letter-spacing:.22em;text-transform:uppercase;font-weight:700}.num{font-size:92px;line-height:1}
+.bar{height:14px;background:var(--barbg,rgba(128,128,128,.25));border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--bar,currentColor);border-radius:inherit;transition:width 1.4s cubic-bezier(.3,1,.4,1) .5s}.slide.go .bar i{width:var(--w)}
+.dr{stroke-dasharray:var(--len,2000);stroke-dashoffset:var(--len,2000)}.slide.go .dr{transition:stroke-dashoffset 1.8s cubic-bezier(.5,0,.2,1) .4s;stroke-dashoffset:0}
+#pg{position:fixed;right:16px;top:12px;font:600 13px/1 system-ui,sans-serif;letter-spacing:.08em;color:var(--hint,#888);z-index:50}
+#hint{position:fixed;left:16px;top:12px;font:12px/1 system-ui,sans-serif;color:var(--hint,#888);z-index:50;opacity:.8}
+.note{position:absolute;left:96px;bottom:26px;font-size:13px;opacity:.55;letter-spacing:.04em}
+
+.num{white-space:nowrap}.g4 .num,.g5 .num{font-size:70px}
+
+:root{--bg:#fbf9f4;--ink:#1c1c1c;--rd:#d7263d;--pk:#f6c1cc;--fb:linear-gradient(160deg,#f6c1cc,#d7263d);--hint:#b8b2a6}
+body{background:#e6e1d6;font-family:'Zen Kaku Gothic New',sans-serif;color:var(--ink)}
+.slide{background:var(--bg)}.slide.rd{background:var(--rd);color:#fff}.slide.bk{background:var(--ink);color:#fff}
+.h1,.h2,.num{font-family:'Shippori Mincho',serif;font-weight:700}
+.h1{font-size:150px}.h2{font-size:80px}.h3{font-size:28px;font-weight:700}
+.h2 b,.h1 b{color:var(--rd)}.rd .h2 b,.rd .h1 b{color:var(--ink)}.bk .h2 b,.bk .h1 b{color:var(--pk)}
+.k{color:var(--rd);font-weight:700}.rd .k{color:#fff}.bk .k{color:var(--pk)}
+.p{color:#5e5a52}.rd .p,.bk .p{color:#f3e4e6}
+.sun{position:absolute;border-radius:50%;background:var(--rd)}
+.bx{border:3px solid var(--ink);padding:26px;background:#fff;color:var(--ink)}.bx .p{color:#5e5a52}
+.bento{display:grid;grid-template-columns:1.3fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:10px;background:var(--ink);padding:10px;border-radius:18px}
+.bento>div{background:#fff;border-radius:10px;padding:22px;color:var(--ink)}
+.sh{position:absolute;top:0;width:800px;height:900px;background:linear-gradient(#fdfaf2,#f3ecdc);background-size:auto;box-shadow:inset 0 0 0 14px #5a3b25}
+.sh::before{content:"";position:absolute;inset:14px;background:linear-gradient(#5a3b25,#5a3b25) 0 0/100% 5px repeat-y,repeating-linear-gradient(90deg,transparent 0 188px,#5a3b25 188px 193px),repeating-linear-gradient(transparent 0 213px,#5a3b25 213px 218px)}
+.pt{position:absolute;width:26px;height:26px;background:var(--pk);border-radius:80% 0 80% 0}
+</style></head><body>
+<div id="stage">
+<section class="slide" style="padding:0">
+  <div class="sun" data-a="pop" style="right:160px;top:170px;width:560px;height:560px"></div>
+  <div class="col jc rel" style="height:100%;padding:0 96px;width:950px">
+    <div class="k" data-a="fade">FRESH JAPANESE, FAST · SEATTLE, WASHINGTON</div>
+    <div class="h1" data-a="up" style="margin-top:18px;line-height:1">Sakura<br><b>Bento</b></div>
+    <p class="p" data-a="up" style="margin-top:20px;font-size:30px">A balanced lunch in a box, ready in four minutes.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">THE IDEA</div>
+  <div class="h2" data-a="up" style="margin-top:16px;width:1200px">Lunch shouldn’t be <b>fast or good.</b> Pick both.</div>
+  <div class="g3 mta">
+    <div class="bx" data-a="up"><div class="num">4 min</div><p class="sm p">average order to hand-off</p></div>
+    <div class="bx" data-a="up"><div class="num">5</div><p class="sm p">parts in every box: rice, protein, pickles, greens, treat</p></div>
+    <div class="bx" data-a="up"><div class="num">$13</div><p class="sm p">average bento price</p></div>
+  </div>
+  <div class="note">Illustrative figures · fictional company</div>
+</section>
+<section class="slide rd">
+  <div class="row" style="height:100%;--gap:70px">
+    <div class="f1 col jc"><div class="k" data-a="fade">BUILD A BOX</div><div class="h2" data-a="up" style="margin-top:16px">Five compartments. <b>Endless lunches.</b></div><p class="p" data-a="up" style="margin-top:18px">Guests choose a main, we fill the rest with what’s best that day.</p></div>
+    <div class="bento" data-a="right" style="width:760px;height:520px;align-self:center">
+      <div style="grid-row:span 2"><div class="h3">Main</div><p class="sm p" style="color:#5e5a52;margin-top:8px">Chicken katsu · salmon teriyaki · miso eggplant · beef sukiyaki</p></div>
+      <div><div class="h3">Rice</div><p class="sm p" style="color:#5e5a52">White, brown or sushi</p></div>
+      <div><div class="h3">Pickles</div><p class="sm p" style="color:#5e5a52">Made in house</p></div>
+      <div><div class="h3">Greens</div><p class="sm p" style="color:#5e5a52">Sesame salad</p></div>
+      <div><div class="h3">Treat</div><p class="sm p" style="color:#5e5a52">Mochi of the day</p></div>
+    </div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">BEST SELLERS</div>
+  <div class="h2" data-a="up" style="margin-top:16px">The boxes people <b>queue for.</b></div>
+  <div class="g4 mta">
+    <div class="bx" data-a="up"><div class="h3">Katsu Classic</div><p class="sm p" style="margin:6px 0 12px">Crisp chicken, tonkatsu sauce.</p><b style="color:var(--rd);font-size:26px">$12.50</b></div>
+    <div class="bx" data-a="up"><div class="h3">Salmon Teriyaki</div><p class="sm p" style="margin:6px 0 12px">Glazed to order.</p><b style="color:var(--rd);font-size:26px">$14.50</b></div>
+    <div class="bx" data-a="up"><div class="h3">Garden Box</div><p class="sm p" style="margin:6px 0 12px">Miso eggplant, tofu, all plants.</p><b style="color:var(--rd);font-size:26px">$11.50</b></div>
+    <div class="bx" data-a="up"><div class="h3">Kids Bento</div><p class="sm p" style="margin:6px 0 12px">Smaller, milder, with fruit.</p><b style="color:var(--rd);font-size:26px">$8.00</b></div>
+  </div>
+  <div class="note">Sample menu and prices</div>
+</section>
+<section class="slide bk">
+  <div class="k" data-a="fade">MADE TODAY</div>
+  <div class="h2" data-a="up" style="margin-top:16px">Fresh is a <b>schedule,</b> not a slogan.</div>
+  <div class="g4 mta">
+    <div data-a="up"><div class="num" style="color:var(--pk)">05:30</div><div class="h3">Rice on</div><p class="sm p">Cooked in small batches all day.</p></div>
+    <div data-a="up"><div class="num" style="color:var(--pk)">07:00</div><div class="h3">Fish in</div><p class="sm p">Delivered every morning.</p></div>
+    <div data-a="up"><div class="num" style="color:var(--pk)">11:00</div><div class="h3">Doors open</div><p class="sm p">Fried and grilled to order.</p></div>
+    <div data-a="up"><div class="num" style="color:var(--pk)">20:00</div><div class="h3">Nothing kept</div><p class="sm p">Unsold boxes go to food banks.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">GROWTH</div>
+  <div class="h2" data-a="up" style="margin-top:16px">Small boxes, <b>big appetite.</b></div>
+  <div class="g4 mta">
+    <div class="bx" data-a="pop"><div class="num"><span class="count" data-to="14">0</span></div><p class="sm p">locations in the Northwest</p></div>
+    <div class="bx" data-a="pop"><div class="num"><span class="count" data-to="6200">0</span></div><p class="sm p">boxes served daily</p></div>
+    <div class="bx" data-a="pop"><div class="num"><span class="count" data-to="41">0</span>%</div><p class="sm p">of orders placed in the app</p></div>
+    <div class="bx" data-a="pop"><div class="num">4.7★</div><p class="sm p">average rating</p></div>
+  </div>
+  <div class="note">Illustrative figures</div>
+</section>
+<section class="slide rd">
+  <div class="k" data-a="fade">FOR OFFICES</div>
+  <div class="h2" data-a="up" style="margin-top:16px">Team lunch, <b>already sorted.</b></div>
+  <div class="g3 mta">
+    <div class="bx" data-a="up"><div class="h3">Individually boxed</div><p class="sm p" style="margin-top:6px">Labelled with names and allergens.</p></div>
+    <div class="bx" data-a="up"><div class="h3">10 to 1,000</div><p class="sm p" style="margin-top:6px">Order by 9 a.m. for same-day lunch.</p></div>
+    <div class="bx" data-a="up"><div class="h3">Weekly plans</div><p class="sm p" style="margin-top:6px">Rotating menu, one monthly invoice.</p></div>
+  </div>
+</section>
+<section class="slide bk" style="padding:0">
+  <div class="sun" data-a="pop" style="left:520px;top:170px;width:560px;height:560px"></div>
+  <div class="col jc ac ctr rel" style="height:100%;color:#fff">
+    <div class="k" data-a="fade" style="color:#fff">ORDER AHEAD · SKIP THE LINE</div>
+    <div class="h1" data-a="up" style="margin-top:10px;font-size:110px">Itadakimasu.</div>
+    <p class="h3" data-a="up" style="margin-top:14px">[sakurabento.com] · [(206) 000-0000]</p>
+  </div>
+  <div class="note">Concept deck · fictional company</div>
+</section>
+<div id="ov"></div></div>
+<div id="pg"></div><div id="hint">← → · click · swipe · F fullscreen</div>
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const stage=$('#stage'),ov=$('#ov'),slides=$$('.slide');
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform='translate(-50%,-50%) scale('+s+')';}
+addEventListener('resize',fit);fit();
+slides.forEach(s=>$$('[data-a]',s).forEach((e,i)=>{if(!e.style.getPropertyValue('--d'))e.style.setProperty('--d',120+i*110);}));
+const D=window.DECK={};
+const X=window.X={$,$$,stage,ov,slides,N:slides.length,
+ ease:k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2,
+ raf(dur,fn,end){const t0=performance.now();(function f(){const k=Math.min((performance.now()-t0)/dur,1);fn(k);if(k<1)requestAnimationFrame(f);else if(end)end();})();},
+ el(html,p){const d=document.createElement('div');d.innerHTML=html.trim();const e=d.firstElementChild;(p||ov).appendChild(e);return e;},
+ anim(e,kf,o){return e.animate(kf,Object.assign({duration:700,fill:'forwards',easing:'cubic-bezier(.6,0,.3,1)'},o)).finished;},
+ wait:ms=>new Promise(r=>setTimeout(r,ms)),rnd:(a,b)=>a+Math.random()*(b-a)};
+let cur=-1,busy=false,wd;
+function countUp(sl){$$('.count',sl).forEach(c=>{const to=parseFloat(c.dataset.to),dec=+(c.dataset.dec||0),t0=performance.now()+500;
+ (function f(){let p=Math.min(Math.max((performance.now()-t0)/1500,0),1);p=1-Math.pow(1-p,3);c.textContent=(to*p).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});if(p<1)requestAnimationFrame(f);})();});}
+function activate(sl,i){sl.classList.add('active');sl.classList.remove('go');void sl.offsetWidth;sl.classList.add('go');countUp(sl);if(D.onShow)D.onShow(sl,i);}
+function go(n){
+ if(busy||n<0||n>=slides.length||n===cur)return;
+ const from=slides[cur],to=slides[n],fwd=n>cur,prev=cur;cur=n;
+ try{history.replaceState(null,'','#'+(n+1));}catch(e){}
+ const pg=$('#pg');if(pg&&!D.noPg)pg.textContent=(n+1)+' / '+slides.length;
+ if(D.onNav)D.onNav(n,prev);
+ if(!from){activate(to,n);return;}
+ busy=true;let fin=false;
+ const show=()=>{to.classList.add('entering');activate(to,n);};
+ const hide=()=>{from.classList.remove('active','go');};
+ const done=()=>{if(fin)return;fin=true;clearTimeout(wd);hide();if(!to.classList.contains('active'))activate(to,n);
+  [from,to].forEach(s=>{s.getAnimations().forEach(a=>a.cancel());s.style.clipPath='';s.style.transform='';s.style.opacity='';s.style.filter='';});
+  to.classList.remove('entering');if(!D.keepOv)ov.innerHTML='';busy=false;};
+ wd=setTimeout(done,6000);
+ if(D.transition){try{const r=D.transition({from,to,fwd,show,hide,done,n,prev});if(r&&r.catch)r.catch(e=>{console.error(e);done();});}catch(e){console.error(e);done();}}else{show();done();}
+}
+X.go=go;X.cur=()=>cur;
+X.start=function(){
+ addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input'))return;
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();go(cur+1);}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();go(cur-1);}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);
+  else if(e.key==='f'||e.key==='F'){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(_){}}});
+ document.addEventListener('click',e=>{if(e.target.closest('a,button,input,label,.ix'))return;(e.clientX<innerWidth*.25)?go(cur-1):go(cur+1);});
+ let sx=null;addEventListener('touchstart',e=>{sx=e.target.closest('input,.ix')?null:e.touches[0].clientX;},{passive:true});
+ addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)go(cur+(dx<0?1:-1));sx=null;});
+ const h=parseInt(location.hash.slice(1));go(h>0&&h<=slides.length?h-1:0);
+};
+})();
+</script>
+<script>
+(function(){
+const {el,wait}=X;const E='cubic-bezier(.7,0,.2,1)';
+DECK.transition=async({show,hide,done})=>{
+ const l=el('<div class="sh" style="left:0"></div>'),r=el('<div class="sh" style="left:800px"></div>');
+ l.animate([{transform:'translateX(-100%)'},{transform:'none'}],{duration:600,fill:'both',easing:E});
+ r.animate([{transform:'translateX(100%)'},{transform:'none'}],{duration:600,fill:'both',easing:E});
+ const ps=[];for(let i=0;i<18;i++){const p=el(`<div class="pt" style="left:${Math.random()*1600}px;top:-40px"></div>`);
+  p.animate([{transform:'translate(0,0) rotate(0)'},{transform:`translate(${-150+Math.random()*300}px,980px) rotate(${360+Math.random()*360}deg)`}],{duration:1300+Math.random()*500,delay:300+Math.random()*400,fill:'both'});ps.push(p);}
+ await wait(900);hide();show();
+ l.animate([{transform:'none'},{transform:'translateX(-100%)'}],{duration:650,fill:'both',easing:E});
+ r.animate([{transform:'none'},{transform:'translateX(100%)'}],{duration:650,fill:'both',easing:E});
+ await wait(1300);done();};
+})();
+X.start();
+</script></body></html>

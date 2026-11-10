@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sugar Bloom — Custom Cakes & Pastry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Chewy&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;overflow:hidden}
+.slide{position:absolute;inset:0;visibility:hidden;overflow:hidden;display:flex;flex-direction:column;padding:80px 96px}
+.slide.active{visibility:visible}.slide.entering{z-index:3}
+#ov{position:absolute;inset:0;z-index:30;pointer-events:none;overflow:hidden}
+.frozen [data-a]{animation:none!important;opacity:1!important}
+[data-a]{opacity:0}
+.slide.go [data-a]{animation:var(--ad,.9s) var(--ae,cubic-bezier(.2,.8,.2,1)) both;animation-delay:calc(var(--d,0)*1ms)}
+.slide.go [data-a=up]{animation-name:a-up}.slide.go [data-a=fade]{animation-name:a-fade}.slide.go [data-a=pop]{animation-name:a-pop}
+.slide.go [data-a=left]{animation-name:a-left}.slide.go [data-a=right]{animation-name:a-right}.slide.go [data-a=wipe]{animation-name:a-wipe}
+.slide.go [data-a=rise]{animation-name:a-rise}.slide.go [data-a=zoom]{animation-name:a-zoom}
+@keyframes a-up{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:none}}
+@keyframes a-fade{from{opacity:0}to{opacity:1}}
+@keyframes a-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes a-left{from{opacity:0;transform:translateX(-70px)}to{opacity:1;transform:none}}
+@keyframes a-right{from{opacity:0;transform:translateX(70px)}to{opacity:1;transform:none}}
+@keyframes a-wipe{from{opacity:1;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-rise{from{opacity:1;clip-path:inset(100% 0 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-zoom{from{opacity:0;transform:scale(1.12)}to{opacity:1;transform:none}}
+.row{display:flex;gap:var(--gap,28px)}.col{display:flex;flex-direction:column;gap:var(--gap,0)}
+.g2,.g3,.g4,.g5,.g6{display:grid;gap:var(--gap,28px)}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g5{grid-template-columns:repeat(5,1fr)}.g6{grid-template-columns:repeat(6,1fr)}
+.f1{flex:1;min-width:0}.mta{margin-top:auto;margin-bottom:auto}.ctr{text-align:center}.ac{align-items:center}.jc{justify-content:center}.jb{justify-content:space-between}.ae{align-items:flex-end}
+.abs{position:absolute}.fill{position:absolute;inset:0}.rel{position:relative}.ph{background-size:cover;background-position:center}
+.h1{font-size:120px;line-height:.98}.h2{font-size:70px;line-height:1.04}.h3{font-size:32px;line-height:1.15}.p{font-size:24px;line-height:1.5}.sm{font-size:17px;line-height:1.5}
+.k{font-size:15px;letter-spacing:.22em;text-transform:uppercase;font-weight:700}.num{font-size:92px;line-height:1}
+.bar{height:14px;background:var(--barbg,rgba(128,128,128,.25));border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--bar,currentColor);border-radius:inherit;transition:width 1.4s cubic-bezier(.3,1,.4,1) .5s}.slide.go .bar i{width:var(--w)}
+.dr{stroke-dasharray:var(--len,2000);stroke-dashoffset:var(--len,2000)}.slide.go .dr{transition:stroke-dashoffset 1.8s cubic-bezier(.5,0,.2,1) .4s;stroke-dashoffset:0}
+#pg{position:fixed;right:16px;top:12px;font:600 13px/1 system-ui,sans-serif;letter-spacing:.08em;color:var(--hint,#888);z-index:50}
+#hint{position:fixed;left:16px;top:12px;font:12px/1 system-ui,sans-serif;color:var(--hint,#888);z-index:50;opacity:.8}
+.note{position:absolute;left:96px;bottom:26px;font-size:13px;opacity:.55;letter-spacing:.04em}
+
+.num{white-space:nowrap}.g4 .num,.g5 .num{font-size:70px}
+
+:root{--bg:#fff4f6;--pk:#ff8fab;--mi:#9be3c9;--ch:#5b3427;--bu:#ffe7a3;--fb:linear-gradient(160deg,#ffd0dc,#ff8fab);--hint:#d9b6bf}
+body{background:#ffd9e2;font-family:Nunito,sans-serif;color:var(--ch)}
+.slide{background:var(--bg)}.slide.pk{background:var(--pk);color:#fff}.slide.mi{background:var(--mi)}
+.h1,.h2,.h3,.num{font-family:Chewy,cursive;font-weight:400;letter-spacing:.01em}
+.h1{font-size:160px}.h2{font-size:88px}.h3{font-size:34px}
+.h2 b,.h1 b{color:var(--pk);font-weight:400}.pk .h2 b,.pk .h1 b{color:var(--ch)}.mi .h2 b{color:#fff}
+.k{color:var(--pk);font-weight:800}.pk .k{color:var(--bu)}.mi .k{color:var(--ch)}
+.p{color:#7d5a52}.pk .p{color:#fff}
+.card{background:#fff;border-radius:32px;padding:28px;color:var(--ch);box-shadow:0 10px 0 rgba(91,52,39,.08)}.card .p{color:#7d5a52}
+.sp{position:absolute;width:34px;height:10px;border-radius:9px}
+.dr{position:absolute;top:0;width:164px;border-radius:0 0 82px 82px;background:var(--pk)}
+.cake{position:absolute}
+</style></head><body>
+<div id="stage">
+<section class="slide pk" style="padding:0">
+  <i class="sp" style="left:980px;top:140px;background:#ffe7a3;transform:rotate(30deg)"></i><i class="sp" style="left:1380px;top:240px;background:#9be3c9;transform:rotate(-40deg)"></i><i class="sp" style="left:1120px;top:700px;background:#fff;transform:rotate(70deg)"></i><i class="sp" style="left:1440px;top:620px;background:#ffe7a3;transform:rotate(10deg)"></i>
+  <svg class="cake" data-a="pop" style="right:170px;top:230px;width:440px" viewBox="0 0 220 220"><rect x="20" y="120" width="180" height="80" rx="14" fill="#5b3427"/><rect x="45" y="60" width="130" height="70" rx="14" fill="#ffe7a3"/><path d="M20 134q15 26 30 0t30 0 30 0 30 0 30 0 30 0v-14H20z" fill="#fff"/><path d="M45 74q13 22 26 0t26 0 26 0 26 0 26 0v-14H45z" fill="#9be3c9"/><rect x="106" y="24" width="8" height="38" fill="#fff"/><circle cx="110" cy="18" r="9" fill="#ffb703"/></svg>
+  <div class="col jc rel" style="height:100%;padding:0 96px;width:900px">
+    <div class="k" data-a="fade">CUSTOM CAKES &amp; PASTRY · CHARLESTON, SOUTH CAROLINA</div>
+    <div class="h1" data-a="up" style="margin-top:14px;line-height:.95">Sugar<br><b>Bloom</b></div>
+    <p class="p" data-a="up" style="margin-top:16px;font-size:32px">Baked from scratch. Decorated with joy.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">HELLO!</div>
+  <div class="h2" data-a="up" style="margin-top:12px;width:1150px">A little bakery with <b>a big oven.</b></div>
+  <p class="p" data-a="up" style="margin-top:14px;width:820px;font-size:26px">We make celebration cakes, wedding tiers and a morning pastry case that sells out by ten.</p>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="num">4 a.m.</div><p class="sm p">the ovens go on</p></div>
+    <div class="card" data-a="up"><div class="num">100%</div><p class="sm p">real butter, never mixes</p></div>
+    <div class="card" data-a="up"><div class="num">2014</div><p class="sm p">baking for Charleston since</p></div>
+  </div>
+  <div class="note">Illustrative details · fictional bakery</div>
+</section>
+<section class="slide mi">
+  <div class="k" data-a="fade">WHAT WE BAKE</div>
+  <div class="h2" data-a="up" style="margin-top:12px">Four ways to <b>sweeten the day.</b></div>
+  <div class="g4 mta">
+    <div class="card" data-a="up"><div class="h3">🎂 Celebration cakes</div><p class="sm p" style="margin-top:6px">Birthdays, showers, just because.</p></div>
+    <div class="card" data-a="up"><div class="h3">💍 Wedding tiers</div><p class="sm p" style="margin-top:6px">Tastings by appointment.</p></div>
+    <div class="card" data-a="up"><div class="h3">🧁 Cupcakes &amp; minis</div><p class="sm p" style="margin-top:6px">By the dozen, mixed flavors.</p></div>
+    <div class="card" data-a="up"><div class="h3">🥐 Morning case</div><p class="sm p" style="margin-top:6px">Croissants, buns, scones.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">FLAVORS</div>
+  <div class="h2" data-a="up" style="margin-top:12px">Pick a cake, <b>then a filling.</b></div>
+  <div class="g3 mta">
+    <div class="card" data-a="up" style="border-top:14px solid #ffe7a3"><div class="h3">Vanilla bean</div><p class="sm p" style="margin-top:6px">with strawberry jam and Swiss buttercream</p></div>
+    <div class="card" data-a="up" style="border-top:14px solid #5b3427"><div class="h3">Dark chocolate</div><p class="sm p" style="margin-top:6px">with salted caramel and ganache</p></div>
+    <div class="card" data-a="up" style="border-top:14px solid #ff8fab"><div class="h3">Pink lemonade</div><p class="sm p" style="margin-top:6px">with lemon curd and raspberry</p></div>
+    <div class="card" data-a="up" style="border-top:14px solid #9be3c9"><div class="h3">Pistachio</div><p class="sm p" style="margin-top:6px">with honey cream and orange zest</p></div>
+    <div class="card" data-a="up" style="border-top:14px solid #f4a259"><div class="h3">Carrot &amp; pecan</div><p class="sm p" style="margin-top:6px">with brown-butter cream cheese</p></div>
+    <div class="card" data-a="up" style="border-top:14px solid #c9b6ff"><div class="h3">Coconut</div><p class="sm p" style="margin-top:6px">with passion fruit and toasted flakes</p></div>
+  </div>
+</section>
+<section class="slide pk">
+  <div class="k" data-a="fade">ORDERING</div>
+  <div class="h2" data-a="up" style="margin-top:12px">From idea to <b>icing.</b></div>
+  <div class="g4 mta">
+    <div class="card" data-a="up"><div class="num" style="color:var(--pk)">1</div><div class="h3">Dream</div><p class="sm p">Send a date, guest count and a picture or two.</p></div>
+    <div class="card" data-a="up"><div class="num" style="color:var(--pk)">2</div><div class="h3">Sketch</div><p class="sm p">We reply with a design and quote in 48 hours.</p></div>
+    <div class="card" data-a="up"><div class="num" style="color:var(--pk)">3</div><div class="h3">Taste</div><p class="sm p">Tasting box for wedding and large orders.</p></div>
+    <div class="card" data-a="up"><div class="num" style="color:var(--pk)">4</div><div class="h3">Celebrate</div><p class="sm p">Pickup or white-glove delivery.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">PRICING</div>
+  <div class="h2" data-a="up" style="margin-top:12px">Sweet, and <b>straightforward.</b></div>
+  <div class="g4 mta">
+    <div class="card" data-a="up"><div class="h3">6-inch cake</div><div class="num" style="margin:6px 0">$58</div><p class="sm p">serves 8–10</p></div>
+    <div class="card" data-a="up"><div class="h3">8-inch cake</div><div class="num" style="margin:6px 0">$84</div><p class="sm p">serves 16–20</p></div>
+    <div class="card" data-a="up"><div class="h3">Cupcakes</div><div class="num" style="margin:6px 0">$42</div><p class="sm p">per dozen</p></div>
+    <div class="card" data-a="up"><div class="h3">Wedding tiers</div><div class="num" style="margin:6px 0">$7.50</div><p class="sm p">per slice, from</p></div>
+  </div>
+  <div class="note">Illustrative prices</div>
+</section>
+<section class="slide mi">
+  <div class="k" data-a="fade">HAPPY CRUMBS</div>
+  <div class="h2" data-a="up" style="margin-top:12px">Celebrations <b>we’ve iced.</b></div>
+  <div class="g4 mta">
+    <div class="card" data-a="pop"><div class="num"><span class="count" data-to="18000">0</span></div><p class="sm p">custom cakes baked</p></div>
+    <div class="card" data-a="pop"><div class="num"><span class="count" data-to="640">0</span></div><p class="sm p">weddings</p></div>
+    <div class="card" data-a="pop"><div class="num"><span class="count" data-to="99">0</span>%</div><p class="sm p">on-time deliveries</p></div>
+    <div class="card" data-a="pop"><div class="num">4.9★</div><p class="sm p">customer rating</p></div>
+  </div>
+  <div class="note">Illustrative figures</div>
+</section>
+<section class="slide pk" style="padding:0">
+  <i class="sp" style="left:220px;top:160px;background:#ffe7a3;transform:rotate(30deg)"></i><i class="sp" style="left:1340px;top:200px;background:#9be3c9;transform:rotate(-40deg)"></i><i class="sp" style="left:300px;top:700px;background:#fff;transform:rotate(70deg)"></i><i class="sp" style="left:1260px;top:680px;background:#ffe7a3;transform:rotate(10deg)"></i>
+  <div class="col jc ac ctr" style="height:100%">
+    <div class="k" data-a="fade">ORDER 7 DAYS AHEAD</div>
+    <div class="h1" data-a="up" style="margin-top:10px">Let’s bake <b>your day.</b></div>
+    <p class="h3" data-a="up" style="margin-top:20px">[sugarbloombakery.com] · [(843) 000-0000]</p>
+  </div>
+  <div class="note" style="color:#fff">Concept deck · fictional bakery</div>
+</section>
+<div id="ov"></div></div>
+<div id="pg"></div><div id="hint">← → · click · swipe · F fullscreen</div>
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const stage=$('#stage'),ov=$('#ov'),slides=$$('.slide');
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform='translate(-50%,-50%) scale('+s+')';}
+addEventListener('resize',fit);fit();
+slides.forEach(s=>$$('[data-a]',s).forEach((e,i)=>{if(!e.style.getPropertyValue('--d'))e.style.setProperty('--d',120+i*110);}));
+const D=window.DECK={};
+const X=window.X={$,$$,stage,ov,slides,N:slides.length,
+ ease:k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2,
+ raf(dur,fn,end){const t0=performance.now();(function f(){const k=Math.min((performance.now()-t0)/dur,1);fn(k);if(k<1)requestAnimationFrame(f);else if(end)end();})();},
+ el(html,p){const d=document.createElement('div');d.innerHTML=html.trim();const e=d.firstElementChild;(p||ov).appendChild(e);return e;},
+ anim(e,kf,o){return e.animate(kf,Object.assign({duration:700,fill:'forwards',easing:'cubic-bezier(.6,0,.3,1)'},o)).finished;},
+ wait:ms=>new Promise(r=>setTimeout(r,ms)),rnd:(a,b)=>a+Math.random()*(b-a)};
+let cur=-1,busy=false,wd;
+function countUp(sl){$$('.count',sl).forEach(c=>{const to=parseFloat(c.dataset.to),dec=+(c.dataset.dec||0),t0=performance.now()+500;
+ (function f(){let p=Math.min(Math.max((performance.now()-t0)/1500,0),1);p=1-Math.pow(1-p,3);c.textContent=(to*p).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});if(p<1)requestAnimationFrame(f);})();});}
+function activate(sl,i){sl.classList.add('active');sl.classList.remove('go');void sl.offsetWidth;sl.classList.add('go');countUp(sl);if(D.onShow)D.onShow(sl,i);}
+function go(n){
+ if(busy||n<0||n>=slides.length||n===cur)return;
+ const from=slides[cur],to=slides[n],fwd=n>cur,prev=cur;cur=n;
+ try{history.replaceState(null,'','#'+(n+1));}catch(e){}
+ const pg=$('#pg');if(pg&&!D.noPg)pg.textContent=(n+1)+' / '+slides.length;
+ if(D.onNav)D.onNav(n,prev);
+ if(!from){activate(to,n);return;}
+ busy=true;let fin=false;
+ const show=()=>{to.classList.add('entering');activate(to,n);};
+ const hide=()=>{from.classList.remove('active','go');};
+ const done=()=>{if(fin)return;fin=true;clearTimeout(wd);hide();if(!to.classList.contains('active'))activate(to,n);
+  [from,to].forEach(s=>{s.getAnimations().forEach(a=>a.cancel());s.style.clipPath='';s.style.transform='';s.style.opacity='';s.style.filter='';});
+  to.classList.remove('entering');if(!D.keepOv)ov.innerHTML='';busy=false;};
+ wd=setTimeout(done,6000);
+ if(D.transition){try{const r=D.transition({from,to,fwd,show,hide,done,n,prev});if(r&&r.catch)r.catch(e=>{console.error(e);done();});}catch(e){console.error(e);done();}}else{show();done();}
+}
+X.go=go;X.cur=()=>cur;
+X.start=function(){
+ addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input'))return;
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();go(cur+1);}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();go(cur-1);}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);
+  else if(e.key==='f'||e.key==='F'){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(_){}}});
+ document.addEventListener('click',e=>{if(e.target.closest('a,button,input,label,.ix'))return;(e.clientX<innerWidth*.25)?go(cur-1):go(cur+1);});
+ let sx=null;addEventListener('touchstart',e=>{sx=e.target.closest('input,.ix')?null:e.touches[0].clientX;},{passive:true});
+ addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)go(cur+(dx<0?1:-1));sx=null;});
+ const h=parseInt(location.hash.slice(1));go(h>0&&h<=slides.length?h-1:0);
+};
+})();
+</script>
+<script>
+(function(){
+const {el,wait}=X;const C=['#ff8fab','#ffb3c6','#ff8fab','#ffc2d1','#ff8fab','#ffb3c6','#ff8fab','#ffc2d1','#ff8fab','#ffb3c6'];
+DECK.transition=async({show,hide,done})=>{const d=[];
+ C.forEach((c,i)=>{const e=el(`<div class="dr" style="left:${i*160-2}px;height:1100px;background:${c}"></div>`),dl=Math.random()*380,du=620+Math.random()*320;
+  e.animate([{transform:'translateY(-1110px)'},{transform:'translateY(0)'}],{duration:du,delay:dl,fill:'both',easing:'cubic-bezier(.5,0,.4,1)'});d.push([e,dl,du]);});
+ await wait(1350);hide();show();
+ d.forEach(([e,dl,du])=>e.animate([{transform:'translateY(0)'},{transform:'translateY(1000px)'}],{duration:du,delay:dl*.7,fill:'both',easing:'cubic-bezier(.6,0,.7,.4)'}));
+ await wait(1250);done();};
+})();
+X.start();
+</script></body></html>

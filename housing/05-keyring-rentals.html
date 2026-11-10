@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keyring — Property Management, Simplified</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;overflow:hidden}
+.slide{position:absolute;inset:0;visibility:hidden;overflow:hidden;display:flex;flex-direction:column;padding:80px 96px}
+.slide.active{visibility:visible}.slide.entering{z-index:3}
+#ov{position:absolute;inset:0;z-index:30;pointer-events:none;overflow:hidden}
+.frozen [data-a]{animation:none!important;opacity:1!important}
+[data-a]{opacity:0}
+.slide.go [data-a]{animation:var(--ad,.9s) var(--ae,cubic-bezier(.2,.8,.2,1)) both;animation-delay:calc(var(--d,0)*1ms)}
+.slide.go [data-a=up]{animation-name:a-up}.slide.go [data-a=fade]{animation-name:a-fade}.slide.go [data-a=pop]{animation-name:a-pop}
+.slide.go [data-a=left]{animation-name:a-left}.slide.go [data-a=right]{animation-name:a-right}.slide.go [data-a=wipe]{animation-name:a-wipe}
+.slide.go [data-a=rise]{animation-name:a-rise}.slide.go [data-a=zoom]{animation-name:a-zoom}
+@keyframes a-up{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:none}}
+@keyframes a-fade{from{opacity:0}to{opacity:1}}
+@keyframes a-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes a-left{from{opacity:0;transform:translateX(-70px)}to{opacity:1;transform:none}}
+@keyframes a-right{from{opacity:0;transform:translateX(70px)}to{opacity:1;transform:none}}
+@keyframes a-wipe{from{opacity:1;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-rise{from{opacity:1;clip-path:inset(100% 0 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-zoom{from{opacity:0;transform:scale(1.12)}to{opacity:1;transform:none}}
+.row{display:flex;gap:var(--gap,28px)}.col{display:flex;flex-direction:column;gap:var(--gap,0)}
+.g2,.g3,.g4,.g5,.g6{display:grid;gap:var(--gap,28px)}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g5{grid-template-columns:repeat(5,1fr)}.g6{grid-template-columns:repeat(6,1fr)}
+.f1{flex:1;min-width:0}.mta{margin-top:auto}.ctr{text-align:center}.ac{align-items:center}.jc{justify-content:center}.jb{justify-content:space-between}.ae{align-items:flex-end}
+.abs{position:absolute}.fill{position:absolute;inset:0}.rel{position:relative}.ph{background-size:cover;background-position:center}
+.h1{font-size:120px;line-height:.98}.h2{font-size:70px;line-height:1.04}.h3{font-size:32px;line-height:1.15}.p{font-size:24px;line-height:1.5}.sm{font-size:17px;line-height:1.5}
+.k{font-size:15px;letter-spacing:.22em;text-transform:uppercase;font-weight:700}.num{font-size:92px;line-height:1}
+.bar{height:14px;background:var(--barbg,rgba(128,128,128,.25));border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--bar,currentColor);border-radius:inherit;transition:width 1.4s cubic-bezier(.3,1,.4,1) .5s}.slide.go .bar i{width:var(--w)}
+.dr{stroke-dasharray:var(--len,2000);stroke-dashoffset:var(--len,2000)}.slide.go .dr{transition:stroke-dashoffset 1.8s cubic-bezier(.5,0,.2,1) .4s;stroke-dashoffset:0}
+#pg{position:fixed;right:16px;top:12px;font:600 13px/1 system-ui,sans-serif;letter-spacing:.08em;color:var(--hint,#888);z-index:50}
+#hint{position:fixed;left:16px;top:12px;font:12px/1 system-ui,sans-serif;color:var(--hint,#888);z-index:50;opacity:.8}
+.note{position:absolute;left:96px;bottom:26px;font-size:13px;opacity:.55;letter-spacing:.04em}
+
+:root{--bg:#f4f3ff;--ink:#1b1340;--in:#5b3df5;--co:#ff6b4a;--fb:linear-gradient(160deg,#b9aefc,#5b3df5);--hint:#a39fc4}
+body{background:#dedbf5;font-family:Outfit,sans-serif;color:var(--ink)}
+.slide{background:var(--bg)}.slide.in{background:var(--in);color:#fff}.slide.co{background:var(--co);color:#fff}
+.h1,.h2,.h3,.num{font-weight:800;letter-spacing:-.035em}
+.h2 b,.h1 b{color:var(--in)}.in .h2 b,.in .h1 b{color:#ffd0c4}.co .h2 b{color:var(--ink)}
+.k{font-family:'DM Mono',monospace;color:var(--co);letter-spacing:.12em}.in .k,.co .k{color:#fff}
+.p{color:#544e78}.in .p,.co .p{color:#e9e5ff}
+.card{background:#fff;border-radius:26px;padding:28px;color:var(--ink);box-shadow:0 18px 40px rgba(27,19,64,.1)}
+.card .p{color:#544e78}
+.pill{font:500 14px 'DM Mono';padding:6px 12px;border-radius:99px;background:#e9e5ff;color:var(--in)}
+.slat{position:absolute;left:0;width:1600px;height:91px;background:linear-gradient(#6f55ff,#4a2fe0);border-bottom:2px solid #2d1aa8;backface-visibility:hidden}
+#ov{perspective:1800px}
+.row2{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;padding:16px 0;border-bottom:1px solid #e9e5ff;font-size:18px;align-items:center}
+</style></head><body>
+<div id="stage">
+<section class="slide in" style="padding:0">
+  <div class="abs ph" data-a="zoom" style="right:0;top:0;width:720px;height:900px;border-radius:120px 0 0 120px;background-image:url('https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=1400&q=80'),var(--fb)"></div>
+  <div class="col jc" style="height:100%;padding:0 96px;width:900px">
+    <div class="k" data-a="fade">// property management for small landlords</div>
+    <div class="h1" data-a="up" style="margin-top:26px;font-size:150px">Keyring</div>
+    <p class="p" data-a="up" style="margin-top:20px;font-size:34px;color:#fff">Own the property.<br>Skip the 2 a.m. phone calls.</p>
+    <div class="row" data-a="up" style="margin-top:34px;--gap:12px"><span class="pill">Leasing</span><span class="pill">Rent collection</span><span class="pill">Maintenance</span></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">// the problem</div>
+  <div class="h2" data-a="up" style="margin-top:20px;width:1200px">Being a landlord is <b>four jobs</b> nobody trained you for.</div>
+  <div class="g4 mta">
+    <div class="card" data-a="up"><div class="num" style="font-size:60px;color:var(--co)">01</div><div class="h3" style="margin:10px 0 6px">Marketer</div><p class="sm p">Photos, listings, showings.</p></div>
+    <div class="card" data-a="up"><div class="num" style="font-size:60px;color:var(--co)">02</div><div class="h3" style="margin:10px 0 6px">Screener</div><p class="sm p">Applications and fair-housing rules.</p></div>
+    <div class="card" data-a="up"><div class="num" style="font-size:60px;color:var(--co)">03</div><div class="h3" style="margin:10px 0 6px">Accountant</div><p class="sm p">Rent, deposits, year-end forms.</p></div>
+    <div class="card" data-a="up"><div class="num" style="font-size:60px;color:var(--co)">04</div><div class="h3" style="margin:10px 0 6px">Plumber-finder</div><p class="sm p">Usually on a holiday weekend.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">// what we handle</div>
+  <div class="h2" data-a="up" style="margin-top:20px">Everything between <b>“for rent” and “renewed.”</b></div>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="h3">Find</div><p class="sm p" style="margin-top:8px">Pro photos, listings on every major site, self-guided tours.</p></div>
+    <div class="card" data-a="up"><div class="h3">Screen</div><p class="sm p" style="margin-top:8px">Income, credit and rental history checked the same way for everyone.</p></div>
+    <div class="card" data-a="up"><div class="h3">Collect</div><p class="sm p" style="margin-top:8px">Autopay rent, deposited to you by the 5th.</p></div>
+    <div class="card" data-a="up"><div class="h3">Fix</div><p class="sm p" style="margin-top:8px">24/7 line and vetted local trades.</p></div>
+    <div class="card" data-a="up"><div class="h3">Report</div><p class="sm p" style="margin-top:8px">Monthly statement and tax-ready year-end pack.</p></div>
+    <div class="card" data-a="up"><div class="h3">Renew</div><p class="sm p" style="margin-top:8px">Market-rate review 90 days before lease end.</p></div>
+  </div>
+</section>
+<section class="slide in">
+  <div class="row" style="height:100%;--gap:70px">
+    <div class="f1 col jc"><div class="k" data-a="fade">// owner dashboard</div><div class="h2" data-a="up" style="margin-top:20px">Your whole portfolio <b>on one screen.</b></div><p class="p" data-a="up" style="margin-top:22px">Rent status, open repairs and cash flow — updated live, readable in a minute.</p></div>
+    <div class="card" data-a="right" style="width:720px;align-self:center">
+      <div class="row jb ac"><span class="h3">Portfolio</span><span class="pill">sample data</span></div>
+      <div class="row2" style="color:#8a84b0;font:500 13px 'DM Mono';margin-top:10px"><span>UNIT</span><span>RENT</span><span>STATUS</span><span>LEASE</span></div>
+      <div class="row2"><span>14 Maple St</span><span>$2,150</span><span style="color:#17a673">● Paid</span><span>Aug ’27</span></div>
+      <div class="row2"><span>Unit 3B, Oak Ct</span><span>$1,640</span><span style="color:#17a673">● Paid</span><span>Jan ’28</span></div>
+      <div class="row2"><span>9 Birch Ave</span><span>$2,480</span><span style="color:var(--co)">● Due</span><span>May ’27</span></div>
+      <div class="row2"><span>221 Elm Rd</span><span>$1,890</span><span style="color:var(--in)">● Listing</span><span>—</span></div>
+      <div class="bar" style="margin-top:22px;--bar:#5b3df5"><i style="--w:75%"></i></div><p class="sm p" style="margin-top:8px">75% of this month collected</p>
+    </div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">// results</div>
+  <div class="h2" data-a="up" style="margin-top:20px">Fewer empty months. <b>Fewer headaches.</b></div>
+  <div class="g4 mta">
+    <div class="card" data-a="up"><div class="num"><span class="count" data-to="19">0</span> days</div><p class="sm p" style="margin-top:8px">average time to lease</p></div>
+    <div class="card" data-a="up"><div class="num"><span class="count" data-to="98.7" data-dec="1">0</span>%</div><p class="sm p" style="margin-top:8px">rent collected on time</p></div>
+    <div class="card" data-a="up"><div class="num"><span class="count" data-to="4">0</span> hr</div><p class="sm p" style="margin-top:8px">average repair response</p></div>
+    <div class="card" data-a="up"><div class="num"><span class="count" data-to="6400">0</span></div><p class="sm p" style="margin-top:8px">homes under management</p></div>
+  </div>
+  <div class="note">Illustrative figures for a fictional company.</div>
+</section>
+<section class="slide co">
+  <div class="k" data-a="fade">// pricing</div>
+  <div class="h2" data-a="up" style="margin-top:20px">One flat fee. <b>No markups.</b></div>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="h3">Lease-only</div><div class="num" style="margin:12px 0">½ mo</div><p class="sm p">One-time. We find and place the tenant.</p></div>
+    <div class="card" data-a="up" style="outline:5px solid var(--ink)"><div class="h3">Full service</div><div class="num" style="margin:12px 0">7%</div><p class="sm p">Of collected rent. Everything on the previous slides.</p></div>
+    <div class="card" data-a="up"><div class="h3">Portfolio 10+</div><div class="num" style="margin:12px 0">5.5%</div><p class="sm p">Plus a dedicated manager and quarterly review.</p></div>
+  </div>
+  <div class="note">Illustrative pricing.</div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">// switching is easy</div>
+  <div class="h2" data-a="up" style="margin-top:20px">Onboard in <b>ten days.</b></div>
+  <div class="g4 mta" style="--gap:20px">
+    <div class="card" data-a="up"><span class="pill">Day 1</span><div class="h3" style="margin:14px 0 6px">Walk-through</div><p class="sm p">Condition report with photos.</p></div>
+    <div class="card" data-a="up"><span class="pill">Day 3</span><div class="h3" style="margin:14px 0 6px">Paperwork</div><p class="sm p">Agreement, leases and deposits moved over.</p></div>
+    <div class="card" data-a="up"><span class="pill">Day 6</span><div class="h3" style="margin:14px 0 6px">Tenant hello</div><p class="sm p">New portal and autopay set up.</p></div>
+    <div class="card" data-a="up"><span class="pill">Day 10</span><div class="h3" style="margin:14px 0 6px">You relax</div><p class="sm p">First statement on the 5th.</p></div>
+  </div>
+</section>
+<section class="slide in">
+  <div class="col jc" style="height:100%">
+    <div class="k" data-a="fade">// next step</div>
+    <div class="h1" data-a="up" style="margin-top:24px">Hand us <b>the keys.</b></div>
+    <p class="p" data-a="up" style="margin-top:26px;font-size:28px">Free rental analysis for your property in 24 hours.</p>
+    <p class="h3" data-a="up" style="margin-top:28px">[keyring.rent] · [(555) 000-0000]</p>
+  </div>
+  <div class="note">Concept deck · fictional company</div>
+</section>
+<div id="ov"></div></div>
+<div id="pg"></div><div id="hint">← → · click · swipe · F fullscreen</div>
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const stage=$('#stage'),ov=$('#ov'),slides=$$('.slide');
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform='translate(-50%,-50%) scale('+s+')';}
+addEventListener('resize',fit);fit();
+slides.forEach(s=>$$('[data-a]',s).forEach((e,i)=>{if(!e.style.getPropertyValue('--d'))e.style.setProperty('--d',120+i*110);}));
+const D=window.DECK={};
+const X=window.X={$,$$,stage,ov,slides,N:slides.length,
+ ease:k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2,
+ raf(dur,fn,end){const t0=performance.now();(function f(){const k=Math.min((performance.now()-t0)/dur,1);fn(k);if(k<1)requestAnimationFrame(f);else if(end)end();})();},
+ el(html,p){const d=document.createElement('div');d.innerHTML=html.trim();const e=d.firstElementChild;(p||ov).appendChild(e);return e;},
+ anim(e,kf,o){return e.animate(kf,Object.assign({duration:700,fill:'forwards',easing:'cubic-bezier(.6,0,.3,1)'},o)).finished;},
+ wait:ms=>new Promise(r=>setTimeout(r,ms)),rnd:(a,b)=>a+Math.random()*(b-a)};
+let cur=-1,busy=false,wd;
+function countUp(sl){$$('.count',sl).forEach(c=>{const to=parseFloat(c.dataset.to),dec=+(c.dataset.dec||0),t0=performance.now()+500;
+ (function f(){let p=Math.min(Math.max((performance.now()-t0)/1500,0),1);p=1-Math.pow(1-p,3);c.textContent=(to*p).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});if(p<1)requestAnimationFrame(f);})();});}
+function activate(sl,i){sl.classList.add('active');sl.classList.remove('go');void sl.offsetWidth;sl.classList.add('go');countUp(sl);if(D.onShow)D.onShow(sl,i);}
+function go(n){
+ if(busy||n<0||n>=slides.length||n===cur)return;
+ const from=slides[cur],to=slides[n],fwd=n>cur,prev=cur;cur=n;
+ try{history.replaceState(null,'','#'+(n+1));}catch(e){}
+ const pg=$('#pg');if(pg&&!D.noPg)pg.textContent=(n+1)+' / '+slides.length;
+ if(D.onNav)D.onNav(n,prev);
+ if(!from){activate(to,n);return;}
+ busy=true;let fin=false;
+ const show=()=>{to.classList.add('entering');activate(to,n);};
+ const hide=()=>{from.classList.remove('active','go');};
+ const done=()=>{if(fin)return;fin=true;clearTimeout(wd);hide();if(!to.classList.contains('active'))activate(to,n);
+  [from,to].forEach(s=>{s.getAnimations().forEach(a=>a.cancel());s.style.clipPath='';s.style.transform='';s.style.opacity='';s.style.filter='';});
+  to.classList.remove('entering');if(!D.keepOv)ov.innerHTML='';busy=false;};
+ wd=setTimeout(done,6000);
+ if(D.transition){try{const r=D.transition({from,to,fwd,show,hide,done,n,prev});if(r&&r.catch)r.catch(e=>{console.error(e);done();});}catch(e){console.error(e);done();}}else{show();done();}
+}
+X.go=go;X.cur=()=>cur;
+X.start=function(){
+ addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input'))return;
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();go(cur+1);}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();go(cur-1);}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);
+  else if(e.key==='f'||e.key==='F'){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(_){}}});
+ document.addEventListener('click',e=>{if(e.target.closest('a,button,input,label,.ix'))return;(e.clientX<innerWidth*.25)?go(cur-1):go(cur+1);});
+ let sx=null;addEventListener('touchstart',e=>{sx=e.target.closest('input,.ix')?null:e.touches[0].clientX;},{passive:true});
+ addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)go(cur+(dx<0?1:-1));sx=null;});
+ const h=parseInt(location.hash.slice(1));go(h>0&&h<=slides.length?h-1:0);
+};
+})();
+</script>
+<script>
+(function(){
+const {el,wait}=X;
+DECK.transition=async({show,hide,done})=>{const s=[];
+ for(let i=0;i<10;i++){const e=el(`<div class="slat" style="top:${i*90}px"></div>`);e.animate([{transform:'rotateX(90deg)'},{transform:'rotateX(0)'}],{duration:420,delay:i*45,fill:'both'});s.push(e);}
+ await wait(900);hide();show();
+ s.forEach((e,i)=>e.animate([{transform:'rotateX(0)'},{transform:'rotateX(-90deg)'}],{duration:420,delay:i*45,fill:'both'}));
+ await wait(900);done();};
+})();
+X.start();
+</script></body></html>

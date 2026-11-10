@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ember & Oak — Wood-Fired Steakhouse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;overflow:hidden}
+.slide{position:absolute;inset:0;visibility:hidden;overflow:hidden;display:flex;flex-direction:column;padding:80px 96px}
+.slide.active{visibility:visible}.slide.entering{z-index:3}
+#ov{position:absolute;inset:0;z-index:30;pointer-events:none;overflow:hidden}
+.frozen [data-a]{animation:none!important;opacity:1!important}
+[data-a]{opacity:0}
+.slide.go [data-a]{animation:var(--ad,.9s) var(--ae,cubic-bezier(.2,.8,.2,1)) both;animation-delay:calc(var(--d,0)*1ms)}
+.slide.go [data-a=up]{animation-name:a-up}.slide.go [data-a=fade]{animation-name:a-fade}.slide.go [data-a=pop]{animation-name:a-pop}
+.slide.go [data-a=left]{animation-name:a-left}.slide.go [data-a=right]{animation-name:a-right}.slide.go [data-a=wipe]{animation-name:a-wipe}
+.slide.go [data-a=rise]{animation-name:a-rise}.slide.go [data-a=zoom]{animation-name:a-zoom}
+@keyframes a-up{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:none}}
+@keyframes a-fade{from{opacity:0}to{opacity:1}}
+@keyframes a-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes a-left{from{opacity:0;transform:translateX(-70px)}to{opacity:1;transform:none}}
+@keyframes a-right{from{opacity:0;transform:translateX(70px)}to{opacity:1;transform:none}}
+@keyframes a-wipe{from{opacity:1;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-rise{from{opacity:1;clip-path:inset(100% 0 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-zoom{from{opacity:0;transform:scale(1.12)}to{opacity:1;transform:none}}
+.row{display:flex;gap:var(--gap,28px)}.col{display:flex;flex-direction:column;gap:var(--gap,0)}
+.g2,.g3,.g4,.g5,.g6{display:grid;gap:var(--gap,28px)}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g5{grid-template-columns:repeat(5,1fr)}.g6{grid-template-columns:repeat(6,1fr)}
+.f1{flex:1;min-width:0}.mta{margin-top:auto;margin-bottom:auto}.ctr{text-align:center}.ac{align-items:center}.jc{justify-content:center}.jb{justify-content:space-between}.ae{align-items:flex-end}
+.abs{position:absolute}.fill{position:absolute;inset:0}.rel{position:relative}.ph{background-size:cover;background-position:center}
+.h1{font-size:120px;line-height:.98}.h2{font-size:70px;line-height:1.04}.h3{font-size:32px;line-height:1.15}.p{font-size:24px;line-height:1.5}.sm{font-size:17px;line-height:1.5}
+.k{font-size:15px;letter-spacing:.22em;text-transform:uppercase;font-weight:700}.num{font-size:92px;line-height:1}
+.bar{height:14px;background:var(--barbg,rgba(128,128,128,.25));border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--bar,currentColor);border-radius:inherit;transition:width 1.4s cubic-bezier(.3,1,.4,1) .5s}.slide.go .bar i{width:var(--w)}
+.dr{stroke-dasharray:var(--len,2000);stroke-dashoffset:var(--len,2000)}.slide.go .dr{transition:stroke-dashoffset 1.8s cubic-bezier(.5,0,.2,1) .4s;stroke-dashoffset:0}
+#pg{position:fixed;right:16px;top:12px;font:600 13px/1 system-ui,sans-serif;letter-spacing:.08em;color:var(--hint,#888);z-index:50}
+#hint{position:fixed;left:16px;top:12px;font:12px/1 system-ui,sans-serif;color:var(--hint,#888);z-index:50;opacity:.8}
+.note{position:absolute;left:96px;bottom:26px;font-size:13px;opacity:.55;letter-spacing:.04em}
+
+.num{white-space:nowrap}.g4 .num,.g5 .num{font-size:70px}
+
+:root{--bg:#141110;--em:#ff6a1f;--go:#f2b25c;--tx:#f3e9dc;--fb:linear-gradient(160deg,#5a2a12,#141110);--hint:#5b4a40}
+body{background:#080605;font-family:Lora,serif;color:var(--tx)}
+.slide{background:radial-gradient(ellipse at 50% 120%,rgba(255,106,31,.28),transparent 60%),var(--bg)}
+.h1,.h2,.h3,.num{font-family:Cinzel,serif;font-weight:700;letter-spacing:.02em}
+.h1{font-size:140px}.h2{font-size:74px}.h3{font-size:30px}
+.h2 i,.h1 i{font-style:normal;color:var(--em)}
+.k{color:var(--go);font-family:Cinzel}
+.p{color:#b9a898}
+.card{border:1px solid rgba(242,178,92,.35);padding:30px;background:rgba(255,255,255,.03)}
+.mn{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px dotted rgba(242,178,92,.5);padding:16px 0;font-size:26px}
+.mn b{font-family:Cinzel;color:var(--go)}
+.fl{position:absolute;bottom:-40px;width:150px;height:1100px;border-radius:50% 50% 0 0/22% 22% 0 0;background:linear-gradient(#ffe08a,#ff9d2e 22%,#ff5a1f 55%,#7a1505);transform-origin:50% 100%}
+</style></head><body>
+<div id="stage">
+<section class="slide" style="padding:0">
+  <div class="fill ph" data-a="zoom" style="background-image:linear-gradient(rgba(20,17,16,.55),rgba(20,17,16,.95)),url('https://images.unsplash.com/photo-1515668236457-83c3b8764839?auto=format&fit=crop&w=1400&q=80'),var(--fb)"></div>
+  <div class="col jc ac ctr rel" style="height:100%">
+    <div class="k" data-a="fade">Wood-fired steakhouse · Nashville, Tennessee</div>
+    <div class="h1" data-a="up" style="margin-top:22px">Ember <i>&amp;</i> Oak</div>
+    <p class="p" data-a="up" style="margin-top:18px;font-size:30px;font-style:italic">Fire, time and very good beef.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">Our story</div>
+  <div class="h2" data-a="up" style="margin-top:18px;width:1200px">One hearth. <i>Nothing to hide behind.</i></div>
+  <p class="p" data-a="up" style="margin-top:20px;width:880px;font-size:26px">Every cut is cooked over white oak in an open kitchen you can see from any table. No gas, no shortcuts, no heat lamps.</p>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="num">45</div><p class="sm p">days of dry-aging, in house</p></div>
+    <div class="card" data-a="up"><div class="num">900°F</div><p class="sm p">at the hearth</p></div>
+    <div class="card" data-a="up"><div class="num">3</div><p class="sm p">family ranches supply all our beef</p></div>
+  </div>
+  <div class="note">Illustrative details · fictional restaurant</div>
+</section>
+<section class="slide">
+  <div class="row" style="height:100%;--gap:80px">
+    <div class="f1 col jc"><div class="k" data-a="fade">From the hearth</div><div class="h2" data-a="up" style="margin-top:18px">The <i>cuts.</i></div>
+      <div data-a="up" style="margin-top:26px">
+        <div class="mn"><span>Bone-in ribeye, 22 oz</span><b>$78</b></div>
+        <div class="mn"><span>Dry-aged New York strip</span><b>$64</b></div>
+        <div class="mn"><span>Filet, oak-smoked butter</span><b>$59</b></div>
+        <div class="mn"><span>Porterhouse for two</span><b>$145</b></div>
+        <div class="mn"><span>Ember-roasted half chicken</span><b>$34</b></div>
+      </div></div>
+    <div class="ph" data-a="right" style="width:560px;height:660px;align-self:center;background-image:url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=1400&q=80'),var(--fb)"></div>
+  </div>
+  <div class="note">Sample menu and prices</div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">Alongside</div>
+  <div class="h2" data-a="up" style="margin-top:18px">Sides that <i>earn their seat.</i></div>
+  <div class="g4 mta">
+    <div class="card" data-a="up"><div class="h3">Coal-baked potato</div><p class="sm p" style="margin-top:8px">Cultured butter, chives.</p></div>
+    <div class="card" data-a="up"><div class="h3">Charred broccolini</div><p class="sm p" style="margin-top:8px">Lemon and chili.</p></div>
+    <div class="card" data-a="up"><div class="h3">Skillet cornbread</div><p class="sm p" style="margin-top:8px">Sorghum glaze.</p></div>
+    <div class="card" data-a="up"><div class="h3">Creamed greens</div><p class="sm p" style="margin-top:8px">Smoked onion crumb.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">The cellar</div>
+  <div class="h2" data-a="up" style="margin-top:18px">Bourbon country, <i>poured properly.</i></div>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="num">220</div><p class="sm p">American whiskeys behind the bar</p></div>
+    <div class="card" data-a="up"><div class="num">400+</div><p class="sm p">wines, heavy on big reds</p></div>
+    <div class="card" data-a="up"><div class="num">1</div><p class="sm p">barrel of our own single-cask bourbon each year</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">Private dining</div>
+  <div class="h2" data-a="up" style="margin-top:18px">Your table, <i>your fire.</i></div>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="h3">The Smokehouse</div><p class="sm p" style="margin-top:8px">Up to 14 guests, chef’s counter.</p></div>
+    <div class="card" data-a="up"><div class="h3">The Barrel Room</div><p class="sm p" style="margin-top:8px">Up to 36, whiskey pairing dinners.</p></div>
+    <div class="card" data-a="up"><div class="h3">Full buyout</div><p class="sm p" style="margin-top:8px">120 seated, live band welcome.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">Word of mouth</div>
+  <div class="h2" data-a="up" style="margin-top:18px;width:1250px">“The best steak in town <i>is also the simplest.</i>”</div>
+  <p class="p" data-a="up" style="margin-top:14px;font-style:italic">— Sample review, for layout only</p>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="num"><span class="count" data-to="4.8" data-dec="1">0</span>★</div><p class="sm p">average guest rating</p></div>
+    <div class="card" data-a="up"><div class="num"><span class="count" data-to="62">0</span>%</div><p class="sm p">of guests are regulars</p></div>
+    <div class="card" data-a="up"><div class="num"><span class="count" data-to="11">0</span> yrs</div><p class="sm p">the fire has never gone out</p></div>
+  </div>
+  <div class="note">Illustrative figures</div>
+</section>
+<section class="slide" style="padding:0">
+  <div class="fill ph" data-a="zoom" style="background-image:linear-gradient(rgba(20,17,16,.6),rgba(20,17,16,.95)),url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1400&q=80'),var(--fb)"></div>
+  <div class="col jc ac ctr rel" style="height:100%">
+    <div class="k" data-a="fade">Dinner nightly from 5 p.m.</div>
+    <div class="h1" data-a="up" style="margin-top:18px;font-size:120px">Pull up <i>a chair.</i></div>
+    <p class="h3" data-a="up" style="margin-top:24px">[emberandoak.com] · [(615) 000-0000]</p>
+  </div>
+  <div class="note">Concept deck · fictional restaurant</div>
+</section>
+<div id="ov"></div></div>
+<div id="pg"></div><div id="hint">← → · click · swipe · F fullscreen</div>
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const stage=$('#stage'),ov=$('#ov'),slides=$$('.slide');
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform='translate(-50%,-50%) scale('+s+')';}
+addEventListener('resize',fit);fit();
+slides.forEach(s=>$$('[data-a]',s).forEach((e,i)=>{if(!e.style.getPropertyValue('--d'))e.style.setProperty('--d',120+i*110);}));
+const D=window.DECK={};
+const X=window.X={$,$$,stage,ov,slides,N:slides.length,
+ ease:k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2,
+ raf(dur,fn,end){const t0=performance.now();(function f(){const k=Math.min((performance.now()-t0)/dur,1);fn(k);if(k<1)requestAnimationFrame(f);else if(end)end();})();},
+ el(html,p){const d=document.createElement('div');d.innerHTML=html.trim();const e=d.firstElementChild;(p||ov).appendChild(e);return e;},
+ anim(e,kf,o){return e.animate(kf,Object.assign({duration:700,fill:'forwards',easing:'cubic-bezier(.6,0,.3,1)'},o)).finished;},
+ wait:ms=>new Promise(r=>setTimeout(r,ms)),rnd:(a,b)=>a+Math.random()*(b-a)};
+let cur=-1,busy=false,wd;
+function countUp(sl){$$('.count',sl).forEach(c=>{const to=parseFloat(c.dataset.to),dec=+(c.dataset.dec||0),t0=performance.now()+500;
+ (function f(){let p=Math.min(Math.max((performance.now()-t0)/1500,0),1);p=1-Math.pow(1-p,3);c.textContent=(to*p).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});if(p<1)requestAnimationFrame(f);})();});}
+function activate(sl,i){sl.classList.add('active');sl.classList.remove('go');void sl.offsetWidth;sl.classList.add('go');countUp(sl);if(D.onShow)D.onShow(sl,i);}
+function go(n){
+ if(busy||n<0||n>=slides.length||n===cur)return;
+ const from=slides[cur],to=slides[n],fwd=n>cur,prev=cur;cur=n;
+ try{history.replaceState(null,'','#'+(n+1));}catch(e){}
+ const pg=$('#pg');if(pg&&!D.noPg)pg.textContent=(n+1)+' / '+slides.length;
+ if(D.onNav)D.onNav(n,prev);
+ if(!from){activate(to,n);return;}
+ busy=true;let fin=false;
+ const show=()=>{to.classList.add('entering');activate(to,n);};
+ const hide=()=>{from.classList.remove('active','go');};
+ const done=()=>{if(fin)return;fin=true;clearTimeout(wd);hide();if(!to.classList.contains('active'))activate(to,n);
+  [from,to].forEach(s=>{s.getAnimations().forEach(a=>a.cancel());s.style.clipPath='';s.style.transform='';s.style.opacity='';s.style.filter='';});
+  to.classList.remove('entering');if(!D.keepOv)ov.innerHTML='';busy=false;};
+ wd=setTimeout(done,6000);
+ if(D.transition){try{const r=D.transition({from,to,fwd,show,hide,done,n,prev});if(r&&r.catch)r.catch(e=>{console.error(e);done();});}catch(e){console.error(e);done();}}else{show();done();}
+}
+X.go=go;X.cur=()=>cur;
+X.start=function(){
+ addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input'))return;
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();go(cur+1);}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();go(cur-1);}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);
+  else if(e.key==='f'||e.key==='F'){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(_){}}});
+ document.addEventListener('click',e=>{if(e.target.closest('a,button,input,label,.ix'))return;(e.clientX<innerWidth*.25)?go(cur-1):go(cur+1);});
+ let sx=null;addEventListener('touchstart',e=>{sx=e.target.closest('input,.ix')?null:e.touches[0].clientX;},{passive:true});
+ addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)go(cur+(dx<0?1:-1));sx=null;});
+ const h=parseInt(location.hash.slice(1));go(h>0&&h<=slides.length?h-1:0);
+};
+})();
+</script>
+<script>
+(function(){
+const {el,wait}=X;
+DECK.transition=async({show,hide,done})=>{const f=[];
+ for(let i=0;i<14;i++){const e=el(`<div class="fl" style="left:${i*120-40}px"></div>`),d=Math.random()*260;
+  e.animate([{transform:'scaleY(0) scaleX(.6)'},{transform:'scaleY(.7) scaleX(1.2)',offset:.6},{transform:'scaleY(1.05) scaleX(1.3)'}],{duration:700,delay:d,fill:'both',easing:'ease-in'});f.push([e,d]);}
+ await wait(1050);hide();show();
+ f.forEach(([e,d])=>e.animate([{transform:'scaleY(1.05) scaleX(1.3)',opacity:1},{transform:'scaleY(.5) scaleX(.8)',opacity:.9,offset:.6},{transform:'scaleY(0) scaleX(.3)',opacity:0}],{duration:750,delay:d,fill:'both',easing:'ease-out'}));
+ await wait(1100);done();};
+})();
+X.start();
+</script></body></html>

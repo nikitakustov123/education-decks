@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DriveEasy — Certified Used Cars</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;overflow:hidden}
+.slide{position:absolute;inset:0;visibility:hidden;overflow:hidden;display:flex;flex-direction:column;padding:80px 96px}
+.slide.active{visibility:visible}.slide.entering{z-index:3}
+#ov{position:absolute;inset:0;z-index:30;pointer-events:none;overflow:hidden}
+.frozen [data-a]{animation:none!important;opacity:1!important}
+[data-a]{opacity:0}
+.slide.go [data-a]{animation:var(--ad,.9s) var(--ae,cubic-bezier(.2,.8,.2,1)) both;animation-delay:calc(var(--d,0)*1ms)}
+.slide.go [data-a=up]{animation-name:a-up}.slide.go [data-a=fade]{animation-name:a-fade}.slide.go [data-a=pop]{animation-name:a-pop}
+.slide.go [data-a=left]{animation-name:a-left}.slide.go [data-a=right]{animation-name:a-right}.slide.go [data-a=wipe]{animation-name:a-wipe}
+.slide.go [data-a=rise]{animation-name:a-rise}.slide.go [data-a=zoom]{animation-name:a-zoom}
+@keyframes a-up{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:none}}
+@keyframes a-fade{from{opacity:0}to{opacity:1}}
+@keyframes a-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes a-left{from{opacity:0;transform:translateX(-70px)}to{opacity:1;transform:none}}
+@keyframes a-right{from{opacity:0;transform:translateX(70px)}to{opacity:1;transform:none}}
+@keyframes a-wipe{from{opacity:1;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-rise{from{opacity:1;clip-path:inset(100% 0 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-zoom{from{opacity:0;transform:scale(1.12)}to{opacity:1;transform:none}}
+.row{display:flex;gap:var(--gap,28px)}.col{display:flex;flex-direction:column;gap:var(--gap,0)}
+.g2,.g3,.g4,.g5,.g6{display:grid;gap:var(--gap,28px)}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g5{grid-template-columns:repeat(5,1fr)}.g6{grid-template-columns:repeat(6,1fr)}
+.f1{flex:1;min-width:0}.mta{margin-top:auto;margin-bottom:auto}.ctr{text-align:center}.ac{align-items:center}.jc{justify-content:center}.jb{justify-content:space-between}.ae{align-items:flex-end}
+.abs{position:absolute}.fill{position:absolute;inset:0}.rel{position:relative}.ph{background-size:cover;background-position:center}
+.h1{font-size:120px;line-height:.98}.h2{font-size:70px;line-height:1.04}.h3{font-size:32px;line-height:1.15}.p{font-size:24px;line-height:1.5}.sm{font-size:17px;line-height:1.5}
+.k{font-size:15px;letter-spacing:.22em;text-transform:uppercase;font-weight:700}.num{font-size:92px;line-height:1}
+.bar{height:14px;background:var(--barbg,rgba(128,128,128,.25));border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--bar,currentColor);border-radius:inherit;transition:width 1.4s cubic-bezier(.3,1,.4,1) .5s}.slide.go .bar i{width:var(--w)}
+.dr{stroke-dasharray:var(--len,2000);stroke-dashoffset:var(--len,2000)}.slide.go .dr{transition:stroke-dashoffset 1.8s cubic-bezier(.5,0,.2,1) .4s;stroke-dashoffset:0}
+#pg{position:fixed;right:16px;top:12px;font:600 13px/1 system-ui,sans-serif;letter-spacing:.08em;color:var(--hint,#888);z-index:50}
+#hint{position:fixed;left:16px;top:12px;font:12px/1 system-ui,sans-serif;color:var(--hint,#888);z-index:50;opacity:.8}
+.note{position:absolute;left:96px;bottom:26px;font-size:13px;opacity:.55;letter-spacing:.04em}
+
+.num{white-space:nowrap}.g4 .num,.g5 .num{font-size:70px}
+
+:root{--bg:#eef6ff;--bl:#1565ff;--ye:#ffc93c;--ink:#10243e;--fb:linear-gradient(160deg,#9cc4ff,#1565ff);--hint:#90a6c4}
+body{background:#cfdff5;font-family:Poppins,sans-serif;color:var(--ink)}
+.slide{background:var(--bg)}.slide.bl{background:var(--bl);color:#fff}.slide.ye{background:var(--ye)}
+.h1,.h2,.h3,.num{font-weight:800;letter-spacing:-.03em}
+.h2 b,.h1 b{color:var(--bl)}.bl .h2 b,.bl .h1 b{color:var(--ye)}.ye .h2 b{color:#fff;-webkit-text-stroke:0}
+.k{color:var(--bl)}.bl .k{color:var(--ye)}.ye .k{color:var(--ink)}
+.p{color:#4d627f}.bl .p{color:#dbe8ff}.ye .p{color:#4a3b0c}
+.card{background:#fff;border-radius:24px;padding:28px;color:var(--ink);box-shadow:0 8px 0 rgba(16,36,62,.1)}.card .p{color:#4d627f}
+.tick{width:44px;height:44px;border-radius:50%;background:#19c37d;color:#fff;display:grid;place-items:center;font-weight:800;font-size:22px;flex:none}
+.gd{position:absolute;inset:0;background:repeating-linear-gradient(180deg,#e9eef5 0 144px,#b9c4d4 144px 150px);box-shadow:inset 0 -30px 0 #ffc93c}
+.gd::after{content:"";position:absolute;left:740px;bottom:50px;width:120px;height:22px;border-radius:11px;background:#10243e}
+.car{position:absolute}
+.tag{background:var(--ye);border-radius:14px;padding:8px 16px;font-weight:700;display:inline-block}
+</style></head><body>
+<div id="stage">
+<section class="slide bl" style="padding:0">
+  <svg class="car" data-a="right" style="right:70px;bottom:120px;width:720px" viewBox="0 0 720 300"><path d="M40 210 Q50 150 150 140 L230 70 Q250 50 290 50 H450 Q490 50 520 80 L580 140 Q680 150 690 210 V240 H40Z" fill="#ffc93c"/><path d="M250 80 H350 V140 H190Z M370 80 H450 Q470 80 490 100 L530 140 H370Z" fill="#cfe3ff"/><circle cx="190" cy="240" r="52" fill="#10243e"/><circle cx="190" cy="240" r="22" fill="#eef6ff"/><circle cx="540" cy="240" r="52" fill="#10243e"/><circle cx="540" cy="240" r="22" fill="#eef6ff"/></svg>
+  <div class="abs" style="left:0;right:0;bottom:0;height:130px;background:#0f4fd0"></div>
+  <div class="col jc rel" style="height:100%;padding:0 96px;width:900px">
+    <div class="k" data-a="fade">Certified used cars · 22 stores across Texas</div>
+    <div class="h1" data-a="up" style="margin-top:24px;font-size:140px">Drive<b>Easy</b></div>
+    <p class="p" data-a="up" style="margin-top:14px;font-size:32px;color:#fff">Used cars, without the used-car feeling.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">The old way</div>
+  <div class="h2" data-a="up" style="margin-top:18px">Nobody enjoys <b>buying a used car.</b></div>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="h3">😬 Haggling</div><p class="sm p" style="margin-top:8px">Hours of back-and-forth for a price you still doubt.</p></div>
+    <div class="card" data-a="up"><div class="h3">🤷 Mystery history</div><p class="sm p" style="margin-top:8px">What happened before you? Hard to know.</p></div>
+    <div class="card" data-a="up"><div class="h3">😩 No way back</div><p class="sm p" style="margin-top:8px">Drive off the lot and it is yours, problems and all.</p></div>
+  </div>
+</section>
+<section class="slide ye">
+  <div class="k" data-a="fade">The DriveEasy way</div>
+  <div class="h2" data-a="up" style="margin-top:18px">Three promises on <b style="color:var(--bl)">every car.</b></div>
+  <div class="g3 mta">
+    <div class="card" data-a="pop"><div class="num" style="color:var(--bl)">1</div><div class="h3">One fair price</div><p class="sm p" style="margin-top:6px">On the windshield and online. No negotiating.</p></div>
+    <div class="card" data-a="pop"><div class="num" style="color:var(--bl)">2</div><div class="h3">150-point check</div><p class="sm p" style="margin-top:6px">And a free history report you can keep.</p></div>
+    <div class="card" data-a="pop"><div class="num" style="color:var(--bl)">3</div><div class="h3">7-day returns</div><p class="sm p" style="margin-top:6px">Change your mind? Bring it back. Full refund.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="row" style="height:100%;--gap:70px">
+    <div class="f1 col jc"><div class="k" data-a="fade">Certified means</div><div class="h2" data-a="up" style="margin-top:18px">Checked before <b>you check it.</b></div><p class="p" data-a="up" style="margin-top:18px">Cars that fail any safety item are not sold on our lots.</p></div>
+    <div class="col jc" style="width:640px;--gap:16px">
+      <div class="card row ac" data-a="right" style="--gap:18px;padding:20px 24px"><span class="tick">✓</span><div><div class="h3" style="font-size:26px">Engine &amp; transmission</div><p class="sm p">Road test and diagnostic scan</p></div></div>
+      <div class="card row ac" data-a="right" style="--gap:18px;padding:20px 24px"><span class="tick">✓</span><div><div class="h3" style="font-size:26px">Brakes &amp; tires</div><p class="sm p">At least half their life remaining</p></div></div>
+      <div class="card row ac" data-a="right" style="--gap:18px;padding:20px 24px"><span class="tick">✓</span><div><div class="h3" style="font-size:26px">No frame or flood damage</div><p class="sm p">Verified by history report and inspection</p></div></div>
+      <div class="card row ac" data-a="right" style="--gap:18px;padding:20px 24px"><span class="tick">✓</span><div><div class="h3" style="font-size:26px">Deep clean</div><p class="sm p">Inside and out, every car</p></div></div>
+    </div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">How it works</div>
+  <div class="h2" data-a="up" style="margin-top:18px">Online, in store, <b>or both.</b></div>
+  <div class="g4 mta">
+    <div class="card" data-a="up"><span class="tag">1</span><div class="h3" style="margin:12px 0 6px">Browse</div><p class="sm p">9,000 cars with real photos.</p></div>
+    <div class="card" data-a="up"><span class="tag">2</span><div class="h3" style="margin:12px 0 6px">Pre-qualify</div><p class="sm p">See your payment in two minutes.</p></div>
+    <div class="card" data-a="up"><span class="tag">3</span><div class="h3" style="margin:12px 0 6px">Test drive</div><p class="sm p">At a store or in your driveway.</p></div>
+    <div class="card" data-a="up"><span class="tag">4</span><div class="h3" style="margin:12px 0 6px">Drive home</div><p class="sm p">Paperwork in under an hour.</p></div>
+  </div>
+  <div class="note">Financing subject to credit approval.</div>
+</section>
+<section class="slide bl">
+  <div class="k" data-a="fade">By the numbers</div>
+  <div class="h2" data-a="up" style="margin-top:18px">Texans who <b>drove easy.</b></div>
+  <div class="g4 mta">
+    <div class="card" data-a="up"><div class="num"><span class="count" data-to="410">0</span>K</div><p class="sm p">cars sold since 2009</p></div>
+    <div class="card" data-a="up"><div class="num"><span class="count" data-to="22">0</span></div><p class="sm p">stores statewide</p></div>
+    <div class="card" data-a="up"><div class="num"><span class="count" data-to="48">0</span> min</div><p class="sm p">average purchase time</p></div>
+    <div class="card" data-a="up"><div class="num">4.8★</div><p class="sm p">customer rating</p></div>
+  </div>
+  <div class="note">Illustrative figures · fictional company</div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">Selling or trading?</div>
+  <div class="h2" data-a="up" style="margin-top:18px">A real offer in <b>five minutes.</b></div>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="h3">Tell us about it</div><p class="sm p" style="margin-top:6px">Plate or VIN, mileage, condition.</p></div>
+    <div class="card" data-a="up"><div class="h3">Get your number</div><p class="sm p" style="margin-top:6px">Good for seven days, whether or not you buy from us.</p></div>
+    <div class="card" data-a="up"><div class="h3">Get paid</div><p class="sm p" style="margin-top:6px">Check on the spot or credit toward your next car.</p></div>
+  </div>
+</section>
+<section class="slide ye">
+  <div class="col jc" style="height:100%">
+    <div class="k" data-a="fade">Ready when you are</div>
+    <div class="h1" data-a="up" style="margin-top:20px">Find your <b style="color:var(--bl)">next car.</b></div>
+    <p class="p" data-a="up" style="margin-top:20px;font-size:28px">Shop 9,000 certified cars from your couch.</p>
+    <p class="h3" data-a="up" style="margin-top:24px">[driveeasy.com] · [(800) 000-0000]</p>
+  </div>
+  <div class="note">Concept deck · fictional company</div>
+</section>
+<div id="ov"></div></div>
+<div id="pg"></div><div id="hint">← → · click · swipe · F fullscreen</div>
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const stage=$('#stage'),ov=$('#ov'),slides=$$('.slide');
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform='translate(-50%,-50%) scale('+s+')';}
+addEventListener('resize',fit);fit();
+slides.forEach(s=>$$('[data-a]',s).forEach((e,i)=>{if(!e.style.getPropertyValue('--d'))e.style.setProperty('--d',120+i*110);}));
+const D=window.DECK={};
+const X=window.X={$,$$,stage,ov,slides,N:slides.length,
+ ease:k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2,
+ raf(dur,fn,end){const t0=performance.now();(function f(){const k=Math.min((performance.now()-t0)/dur,1);fn(k);if(k<1)requestAnimationFrame(f);else if(end)end();})();},
+ el(html,p){const d=document.createElement('div');d.innerHTML=html.trim();const e=d.firstElementChild;(p||ov).appendChild(e);return e;},
+ anim(e,kf,o){return e.animate(kf,Object.assign({duration:700,fill:'forwards',easing:'cubic-bezier(.6,0,.3,1)'},o)).finished;},
+ wait:ms=>new Promise(r=>setTimeout(r,ms)),rnd:(a,b)=>a+Math.random()*(b-a)};
+let cur=-1,busy=false,wd;
+function countUp(sl){$$('.count',sl).forEach(c=>{const to=parseFloat(c.dataset.to),dec=+(c.dataset.dec||0),t0=performance.now()+500;
+ (function f(){let p=Math.min(Math.max((performance.now()-t0)/1500,0),1);p=1-Math.pow(1-p,3);c.textContent=(to*p).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});if(p<1)requestAnimationFrame(f);})();});}
+function activate(sl,i){sl.classList.add('active');sl.classList.remove('go');void sl.offsetWidth;sl.classList.add('go');countUp(sl);if(D.onShow)D.onShow(sl,i);}
+function go(n){
+ if(busy||n<0||n>=slides.length||n===cur)return;
+ const from=slides[cur],to=slides[n],fwd=n>cur,prev=cur;cur=n;
+ try{history.replaceState(null,'','#'+(n+1));}catch(e){}
+ const pg=$('#pg');if(pg&&!D.noPg)pg.textContent=(n+1)+' / '+slides.length;
+ if(D.onNav)D.onNav(n,prev);
+ if(!from){activate(to,n);return;}
+ busy=true;let fin=false;
+ const show=()=>{to.classList.add('entering');activate(to,n);};
+ const hide=()=>{from.classList.remove('active','go');};
+ const done=()=>{if(fin)return;fin=true;clearTimeout(wd);hide();if(!to.classList.contains('active'))activate(to,n);
+  [from,to].forEach(s=>{s.getAnimations().forEach(a=>a.cancel());s.style.clipPath='';s.style.transform='';s.style.opacity='';s.style.filter='';});
+  to.classList.remove('entering');if(!D.keepOv)ov.innerHTML='';busy=false;};
+ wd=setTimeout(done,6000);
+ if(D.transition){try{const r=D.transition({from,to,fwd,show,hide,done,n,prev});if(r&&r.catch)r.catch(e=>{console.error(e);done();});}catch(e){console.error(e);done();}}else{show();done();}
+}
+X.go=go;X.cur=()=>cur;
+X.start=function(){
+ addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input'))return;
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();go(cur+1);}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();go(cur-1);}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);
+  else if(e.key==='f'||e.key==='F'){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(_){}}});
+ document.addEventListener('click',e=>{if(e.target.closest('a,button,input,label,.ix'))return;(e.clientX<innerWidth*.25)?go(cur-1):go(cur+1);});
+ let sx=null;addEventListener('touchstart',e=>{sx=e.target.closest('input,.ix')?null:e.touches[0].clientX;},{passive:true});
+ addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)go(cur+(dx<0?1:-1));sx=null;});
+ const h=parseInt(location.hash.slice(1));go(h>0&&h<=slides.length?h-1:0);
+};
+})();
+</script>
+<script>
+(function(){
+const {el,anim}=X;
+DECK.transition=async({show,hide,done})=>{const g=el('<div class="gd"></div>');
+ await anim(g,[{transform:'translateY(-100%)'},{transform:'none'}],{duration:700,easing:'cubic-bezier(.5,0,.3,1)'});
+ await anim(g,[{transform:'none'},{transform:'translateY(-14px)'},{transform:'none'}],{duration:220});hide();show();
+ await anim(g,[{transform:'none'},{transform:'translateY(-100%)'}],{duration:800,easing:'cubic-bezier(.7,0,.5,1)'});done();};
+})();
+X.start();
+</script></body></html>

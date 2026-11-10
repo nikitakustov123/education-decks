@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Heritage Classics — Restored American Automobiles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Bebas+Neue&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;overflow:hidden}
+.slide{position:absolute;inset:0;visibility:hidden;overflow:hidden;display:flex;flex-direction:column;padding:80px 96px}
+.slide.active{visibility:visible}.slide.entering{z-index:3}
+#ov{position:absolute;inset:0;z-index:30;pointer-events:none;overflow:hidden}
+.frozen [data-a]{animation:none!important;opacity:1!important}
+[data-a]{opacity:0}
+.slide.go [data-a]{animation:var(--ad,.9s) var(--ae,cubic-bezier(.2,.8,.2,1)) both;animation-delay:calc(var(--d,0)*1ms)}
+.slide.go [data-a=up]{animation-name:a-up}.slide.go [data-a=fade]{animation-name:a-fade}.slide.go [data-a=pop]{animation-name:a-pop}
+.slide.go [data-a=left]{animation-name:a-left}.slide.go [data-a=right]{animation-name:a-right}.slide.go [data-a=wipe]{animation-name:a-wipe}
+.slide.go [data-a=rise]{animation-name:a-rise}.slide.go [data-a=zoom]{animation-name:a-zoom}
+@keyframes a-up{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:none}}
+@keyframes a-fade{from{opacity:0}to{opacity:1}}
+@keyframes a-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes a-left{from{opacity:0;transform:translateX(-70px)}to{opacity:1;transform:none}}
+@keyframes a-right{from{opacity:0;transform:translateX(70px)}to{opacity:1;transform:none}}
+@keyframes a-wipe{from{opacity:1;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-rise{from{opacity:1;clip-path:inset(100% 0 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-zoom{from{opacity:0;transform:scale(1.12)}to{opacity:1;transform:none}}
+.row{display:flex;gap:var(--gap,28px)}.col{display:flex;flex-direction:column;gap:var(--gap,0)}
+.g2,.g3,.g4,.g5,.g6{display:grid;gap:var(--gap,28px)}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g5{grid-template-columns:repeat(5,1fr)}.g6{grid-template-columns:repeat(6,1fr)}
+.f1{flex:1;min-width:0}.mta{margin-top:auto;margin-bottom:auto}.ctr{text-align:center}.ac{align-items:center}.jc{justify-content:center}.jb{justify-content:space-between}.ae{align-items:flex-end}
+.abs{position:absolute}.fill{position:absolute;inset:0}.rel{position:relative}.ph{background-size:cover;background-position:center}
+.h1{font-size:120px;line-height:.98}.h2{font-size:70px;line-height:1.04}.h3{font-size:32px;line-height:1.15}.p{font-size:24px;line-height:1.5}.sm{font-size:17px;line-height:1.5}
+.k{font-size:15px;letter-spacing:.22em;text-transform:uppercase;font-weight:700}.num{font-size:92px;line-height:1}
+.bar{height:14px;background:var(--barbg,rgba(128,128,128,.25));border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--bar,currentColor);border-radius:inherit;transition:width 1.4s cubic-bezier(.3,1,.4,1) .5s}.slide.go .bar i{width:var(--w)}
+.dr{stroke-dasharray:var(--len,2000);stroke-dashoffset:var(--len,2000)}.slide.go .dr{transition:stroke-dashoffset 1.8s cubic-bezier(.5,0,.2,1) .4s;stroke-dashoffset:0}
+#pg{position:fixed;right:16px;top:12px;font:600 13px/1 system-ui,sans-serif;letter-spacing:.08em;color:var(--hint,#888);z-index:50}
+#hint{position:fixed;left:16px;top:12px;font:12px/1 system-ui,sans-serif;color:var(--hint,#888);z-index:50;opacity:.8}
+.note{position:absolute;left:96px;bottom:26px;font-size:13px;opacity:.55;letter-spacing:.04em}
+
+.num{white-space:nowrap}.g4 .num,.g5 .num{font-size:70px}
+
+:root{--bg:#f6ecd4;--tl:#2a9d8f;--ch:#c1121f;--ink:#2b2118;--fb:linear-gradient(160deg,#8ecdc4,#c1121f);--hint:#b3a17f}
+body{background:#1c1510;font-family:Lato,sans-serif;color:var(--ink)}
+#stage{background:#1c1510}
+.slide{background:var(--bg)}.slide.tl{background:var(--tl);color:#fff}.slide.ch{background:var(--ch);color:#fff}
+.h1{font-family:Pacifico,cursive;font-size:150px;line-height:1.05;color:var(--ch);text-shadow:5px 5px 0 var(--ink)}
+.h2{font-family:'Bebas Neue',sans-serif;font-size:96px;letter-spacing:.02em;line-height:.95}
+.h3,.num{font-family:'Bebas Neue',sans-serif;letter-spacing:.03em}.h3{font-size:40px}
+.h2 b{font-family:Pacifico;font-weight:400;color:var(--ch);font-size:.8em}.tl .h2 b,.ch .h2 b{color:#ffd166}
+.k{font-family:'Bebas Neue';font-size:24px;letter-spacing:.3em;color:var(--tl)}.tl .k,.ch .k{color:#ffd166}
+.p{color:#5c4c3a}.tl .p,.ch .p{color:#fff3da}
+.chk{position:absolute;left:0;right:0;height:44px;background:repeating-conic-gradient(var(--ink) 0 25%,var(--bg) 0 50%) 0 0/44px 44px}
+.card{background:#fff;border:4px solid var(--ink);border-radius:26px;padding:26px;box-shadow:8px 8px 0 var(--ink);color:var(--ink)}.card .p{color:#5c4c3a}
+.bdg{width:190px;height:190px;border-radius:50%;background:var(--ch);color:#fff;display:grid;place-items:center;text-align:center;border:6px double #fff;box-shadow:0 0 0 6px var(--ch);font-family:'Bebas Neue';font-size:30px;line-height:1}
+.ph{border:4px solid var(--ink);border-radius:26px}
+</style></head><body>
+<div id="stage">
+<section class="slide" style="padding:0">
+  <div class="chk" style="top:0"></div><div class="chk" style="bottom:0"></div>
+  <div class="abs ph" data-a="zoom" style="right:90px;top:150px;width:640px;height:600px;background-image:url('https://images.unsplash.com/photo-1541348263662-e068662d82af?auto=format&fit=crop&w=1400&q=80'),var(--fb)"></div>
+  <div class="abs bdg" data-a="pop" style="right:640px;top:560px;transform:rotate(-12deg)">EST.<br><span style="font-size:64px">1968</span></div>
+  <div class="col jc" style="height:100%;padding:0 96px;width:900px">
+    <div class="k" data-a="fade">Restored American automobiles · Detroit, Michigan</div>
+    <div class="h1" data-a="up" style="margin-top:10px">Heritage<br>Classics</div>
+    <p class="p" data-a="up" style="margin-top:20px;font-size:30px">Chrome, restored. Stories, included.</p>
+  </div>
+</section>
+<section class="slide tl">
+  <div class="k" data-a="fade">Our story</div>
+  <div class="h2" data-a="up" style="margin-top:14px">Three generations. <b>One garage.</b></div>
+  <p class="p" data-a="up" style="margin-top:20px;width:900px;font-size:26px">Grandpa Ray opened the shop in 1968 to keep his neighbors’ cars running. We still answer the same phone number — and still road-test every car ourselves.</p>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="num"><span class="count" data-to="58">0</span> yrs</div><p class="sm p">in the same building</p></div>
+    <div class="card" data-a="up"><div class="num"><span class="count" data-to="1900">0</span>+</div><p class="sm p">cars restored and sold</p></div>
+    <div class="card" data-a="up"><div class="num">22</div><p class="sm p">craftspeople on the floor</p></div>
+  </div>
+  <div class="note">Illustrative figures · fictional company</div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">On the showroom floor</div>
+  <div class="h2" data-a="up" style="margin-top:14px">Pick your <b>decade.</b></div>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="num" style="color:var(--tl)">’50s</div><div class="h3">Cruisers</div><p class="sm p">Fins, chrome and bench seats.</p><p class="h3" style="color:var(--ch)">from $48,000</p></div>
+    <div class="card" data-a="up"><div class="num" style="color:var(--tl)">’60s</div><div class="h3">Muscle</div><p class="sm p">Big-block coupes and convertibles.</p><p class="h3" style="color:var(--ch)">from $65,000</p></div>
+    <div class="card" data-a="up"><div class="num" style="color:var(--tl)">’70s</div><div class="h3">Trucks &amp; wagons</div><p class="sm p">Honest, simple and endlessly useful.</p><p class="h3" style="color:var(--ch)">from $32,000</p></div>
+  </div>
+  <div class="note">Illustrative pricing</div>
+</section>
+<section class="slide ch">
+  <div class="k" data-a="fade">The restoration</div>
+  <div class="h2" data-a="up" style="margin-top:14px">1,400 hours, <b>frame up.</b></div>
+  <div class="g5 mta" style="--gap:16px">
+    <div class="card" data-a="up"><div class="h3">1 · Teardown</div><p class="sm p">Every part bagged and tagged.</p></div>
+    <div class="card" data-a="up"><div class="h3">2 · Metal</div><p class="sm p">Rust cut out, panels hand-fitted.</p></div>
+    <div class="card" data-a="up"><div class="h3">3 · Paint</div><p class="sm p">Factory colors, matched by eye.</p></div>
+    <div class="card" data-a="up"><div class="h3">4 · Driveline</div><p class="sm p">Engine and gearbox rebuilt in-house.</p></div>
+    <div class="card" data-a="up"><div class="h3">5 · Trim</div><p class="sm p">Upholstery stitched to original patterns.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">What comes with the car</div>
+  <div class="h2" data-a="up" style="margin-top:14px">The <b>paperwork</b> matters too.</div>
+  <div class="g2 mta">
+    <div class="card" data-a="up"><div class="h3">Photo-documented build book</div><p class="sm p">Every stage of the restoration, bound.</p></div>
+    <div class="card" data-a="up"><div class="h3">Ownership history</div><p class="sm p">Titles and records as far back as we can trace.</p></div>
+    <div class="card" data-a="up"><div class="h3">12-month warranty</div><p class="sm p">On our mechanical and paint work.</p></div>
+    <div class="card" data-a="up"><div class="h3">Enclosed delivery</div><p class="sm p">Anywhere in the lower 48 states.</p></div>
+  </div>
+</section>
+<section class="slide tl">
+  <div class="k" data-a="fade">Beyond sales</div>
+  <div class="h2" data-a="up" style="margin-top:14px">We keep them <b>on the road.</b></div>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="h3">Consignment</div><p class="sm p">We photograph, list and sell your classic.</p></div>
+    <div class="card" data-a="up"><div class="h3">Service club</div><p class="sm p">Spring wake-up and winter storage.</p></div>
+    <div class="card" data-a="up"><div class="h3">Sunday cruise</div><p class="sm p">First Sunday of the month. Coffee is on us.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">Owners say</div>
+  <div class="h2" data-a="up" style="margin-top:14px;width:1250px">“It drives like my dad’s did the day he <b>brought it home.</b>”</div>
+  <p class="p" data-a="up" style="margin-top:20px">— Sample testimonial, for layout only</p>
+  <div class="row mta ac" style="--gap:40px"><div class="bdg" data-a="pop" style="background:var(--tl);box-shadow:0 0 0 6px var(--tl)">4.9 ★<br>RATING</div><div class="bdg" data-a="pop">38%<br>REPEAT<br>BUYERS</div><div class="bdg" data-a="pop" style="background:var(--ink);box-shadow:0 0 0 6px var(--ink)">46<br>STATES</div></div>
+  <div class="note">Illustrative figures</div>
+</section>
+<section class="slide ch" style="padding:0">
+  <div class="chk" style="top:0"></div><div class="chk" style="bottom:0"></div>
+  <div class="col jc ac ctr" style="height:100%">
+    <div class="k" data-a="fade">Come on by</div>
+    <div class="h1" data-a="pop" style="color:#ffd166;margin-top:10px">Take a Sunday drive.</div>
+    <p class="h3" data-a="up" style="margin-top:30px">[heritageclassics.com] · [(313) 000-0000]</p>
+  </div>
+  <div class="note" style="bottom:60px">Concept deck · fictional company</div>
+</section>
+<div id="ov"></div></div>
+<div id="pg"></div><div id="hint">← → · click · swipe · F fullscreen</div>
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const stage=$('#stage'),ov=$('#ov'),slides=$$('.slide');
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform='translate(-50%,-50%) scale('+s+')';}
+addEventListener('resize',fit);fit();
+slides.forEach(s=>$$('[data-a]',s).forEach((e,i)=>{if(!e.style.getPropertyValue('--d'))e.style.setProperty('--d',120+i*110);}));
+const D=window.DECK={};
+const X=window.X={$,$$,stage,ov,slides,N:slides.length,
+ ease:k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2,
+ raf(dur,fn,end){const t0=performance.now();(function f(){const k=Math.min((performance.now()-t0)/dur,1);fn(k);if(k<1)requestAnimationFrame(f);else if(end)end();})();},
+ el(html,p){const d=document.createElement('div');d.innerHTML=html.trim();const e=d.firstElementChild;(p||ov).appendChild(e);return e;},
+ anim(e,kf,o){return e.animate(kf,Object.assign({duration:700,fill:'forwards',easing:'cubic-bezier(.6,0,.3,1)'},o)).finished;},
+ wait:ms=>new Promise(r=>setTimeout(r,ms)),rnd:(a,b)=>a+Math.random()*(b-a)};
+let cur=-1,busy=false,wd;
+function countUp(sl){$$('.count',sl).forEach(c=>{const to=parseFloat(c.dataset.to),dec=+(c.dataset.dec||0),t0=performance.now()+500;
+ (function f(){let p=Math.min(Math.max((performance.now()-t0)/1500,0),1);p=1-Math.pow(1-p,3);c.textContent=(to*p).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});if(p<1)requestAnimationFrame(f);})();});}
+function activate(sl,i){sl.classList.add('active');sl.classList.remove('go');void sl.offsetWidth;sl.classList.add('go');countUp(sl);if(D.onShow)D.onShow(sl,i);}
+function go(n){
+ if(busy||n<0||n>=slides.length||n===cur)return;
+ const from=slides[cur],to=slides[n],fwd=n>cur,prev=cur;cur=n;
+ try{history.replaceState(null,'','#'+(n+1));}catch(e){}
+ const pg=$('#pg');if(pg&&!D.noPg)pg.textContent=(n+1)+' / '+slides.length;
+ if(D.onNav)D.onNav(n,prev);
+ if(!from){activate(to,n);return;}
+ busy=true;let fin=false;
+ const show=()=>{to.classList.add('entering');activate(to,n);};
+ const hide=()=>{from.classList.remove('active','go');};
+ const done=()=>{if(fin)return;fin=true;clearTimeout(wd);hide();if(!to.classList.contains('active'))activate(to,n);
+  [from,to].forEach(s=>{s.getAnimations().forEach(a=>a.cancel());s.style.clipPath='';s.style.transform='';s.style.opacity='';s.style.filter='';});
+  to.classList.remove('entering');if(!D.keepOv)ov.innerHTML='';busy=false;};
+ wd=setTimeout(done,6000);
+ if(D.transition){try{const r=D.transition({from,to,fwd,show,hide,done,n,prev});if(r&&r.catch)r.catch(e=>{console.error(e);done();});}catch(e){console.error(e);done();}}else{show();done();}
+}
+X.go=go;X.cur=()=>cur;
+X.start=function(){
+ addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input'))return;
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();go(cur+1);}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();go(cur-1);}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);
+  else if(e.key==='f'||e.key==='F'){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(_){}}});
+ document.addEventListener('click',e=>{if(e.target.closest('a,button,input,label,.ix'))return;(e.clientX<innerWidth*.25)?go(cur-1):go(cur+1);});
+ let sx=null;addEventListener('touchstart',e=>{sx=e.target.closest('input,.ix')?null:e.touches[0].clientX;},{passive:true});
+ addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)go(cur+(dx<0?1:-1));sx=null;});
+ const h=parseInt(location.hash.slice(1));go(h>0&&h<=slides.length?h-1:0);
+};
+})();
+</script>
+<script>
+(function(){
+DECK.transition=({from,to,show,hide,done})=>{
+ X.raf(650,k=>{from.style.clipPath=`circle(${(1-X.ease(k))*950}px at 50% 50%)`;},()=>{hide();show();to.style.clipPath='circle(0px at 50% 50%)';
+  X.raf(750,k=>{to.style.clipPath=`circle(${X.ease(k)*950}px at 50% 50%)`;},done);});};
+})();
+X.start();
+</script></body></html>
