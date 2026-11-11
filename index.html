@@ -19,12 +19,19 @@ a.card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(0,0,0,.45)}
 .card h2{font-size:28px;font-weight:800;letter-spacing:-.02em;margin:14px 0 10px}
 .card span{font-size:15px;opacity:.85;line-height:1.5;display:block}
 .card .go{position:absolute;right:24px;bottom:22px;font-weight:800;font-size:22px}
+.tabs{display:inline-flex;gap:6px;background:#181c26;border-radius:999px;padding:6px;margin-bottom:8px}
+.tabs button{font:600 16px Inter,Arial,sans-serif;color:#9aa3b8;background:none;border:0;border-radius:999px;padding:12px 22px;cursor:pointer}
+.tabs button.on{background:#eef1f6;color:#0d0f14}
+div.card{border-radius:20px;padding:28px;min-height:220px;position:relative}
+.card .act{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.card .act a{font-weight:700;font-size:14px;text-decoration:none;border-radius:999px;padding:10px 16px;border:2px solid transparent}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Presentation Portfolio</h1>
   <p class="sub">Interactive presentations, each with its own visual style and custom animated transitions. Use ← → keys, click or swipe.</p>
+  <div class="tabs"><button data-t="html" class="on">Play in the browser (HTML)</button><button data-t="pptx">PowerPoint files (.pptx)</button></div>
+  <div id="t-html">
   <h2 class="sec" style="margin-top:20px">Education sales decks</h2><p class="sub" style="margin:0 0 28px">Sales presentations for the U.S. education market.</p>
   <div class="grid">
     <a class="card" href="01-ivy-and-ink-admissions.html" style="background:#14261d;color:#efe6d2;border:1px solid #c9a24a"><div class="n" style="color:#c9a24a">01 · DARK ACADEMIA</div><h2>Ivy &amp; Ink</h2><span>College admissions mentorship. Signature: rotating wheel of American education pioneers.</span><div class="go" style="color:#ead08a">→</div></a>
@@ -74,6 +81,26 @@ a.card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(0,0,0,.45)}
     <a class="card" href="food/04-greenfork.html" style="background:#2f8f4e;color:#ffffff"><div class="n" style="color:#c8f169">29 · FRESH GREEN</div><h2>GreenFork</h2><span>Meal-kit delivery. Signature: lazy-susan rotation.</span><div class="go" style="color:#c8f169">→</div></a>
     <a class="card" href="food/05-sugar-bloom-bakery.html" style="background:#ff8fab;color:#ffffff"><div class="n" style="color:#5b3427">30 · CANDY PASTEL</div><h2>Sugar Bloom</h2><span>Custom cakes and pastry. Signature: dripping frosting.</span><div class="go" style="color:#5b3427">→</div></a>
   </div>
+  </div>
+  <div id="t-pptx" hidden>
+  <h2 class="sec">PowerPoint decks</h2><p class="sub" style="margin:0 0 28px">Native .pptx files with Morph transitions, motion paths and looping animations. Best in PowerPoint 2019, 2021 or Microsoft 365; older versions show a simpler transition.</p>
+  <div class="grid">
+    <div class="card pp" style="background:#05060F;color:#F2F4FF"><div class="n" style="color:#FF7A3D">P01 · SPACE TOURISM</div><h2>Orbit Lines</h2><span>Camera flies between Earth, Moon and Mars; a rocket follows an arc.</span><div class="act"><a href="pptx/01-orbit-lines.pptx" download style="background:#FF7A3D;color:#fff">Download .pptx</a><a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fnikitakustov123.github.io%2Feducation-decks%2Fpptx%2F01-orbit-lines.pptx" target="_blank" rel="noopener" style="border:2px solid #FF7A3D;color:#F2F4FF">Open in browser</a></div></div>
+    <div class="card pp" style="background:#F4EFE6;color:#1B1B1B"><div class="n" style="color:#FF5A1F">P02 · BIKE SUBSCRIPTION</div><h2>Spoke &amp; Chain</h2><span>A wheel turns a quarter to each plan and keeps spinning on the cover.</span><div class="act"><a href="pptx/02-spoke-and-chain.pptx" download style="background:#FF5A1F;color:#fff">Download .pptx</a><a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fnikitakustov123.github.io%2Feducation-decks%2Fpptx%2F02-spoke-and-chain.pptx" target="_blank" rel="noopener" style="border:2px solid #FF5A1F;color:#1B1B1B">Open in browser</a></div></div>
+    <div class="card pp" style="background:#F2C230;color:#141414"><div class="n" style="color:#E4572E">P03 · VINYL CLUB</div><h2>Low Tide Records</h2><span>A record spins on every slide while the tonearm swings.</span><div class="act"><a href="pptx/03-low-tide-records.pptx" download style="background:#E4572E;color:#fff">Download .pptx</a><a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fnikitakustov123.github.io%2Feducation-decks%2Fpptx%2F03-low-tide-records.pptx" target="_blank" rel="noopener" style="border:2px solid #E4572E;color:#141414">Open in browser</a></div></div>
+    <div class="card pp" style="background:#E9FBF2;color:#0E3B2E"><div class="n" style="color:#FF6B5E">P04 · FINTECH APP</div><h2>Mint Ledger</h2><span>Cards fly out of a phone screen and grow into feature panels.</span><div class="act"><a href="pptx/04-mint-ledger.pptx" download style="background:#FF6B5E;color:#fff">Download .pptx</a><a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fnikitakustov123.github.io%2Feducation-decks%2Fpptx%2F04-mint-ledger.pptx" target="_blank" rel="noopener" style="border:2px solid #FF6B5E;color:#0E3B2E">Open in browser</a></div></div>
+    <div class="card pp" style="background:#2D2DFF;color:#F5F1E8"><div class="n" style="color:#FF3B30">P05 · DESIGN CONFERENCE</div><h2>KERN</h2><span>Pure typography: letters travel from one headline to the next.</span><div class="act"><a href="pptx/05-kern-conference.pptx" download style="background:#FF3B30;color:#fff">Download .pptx</a><a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fnikitakustov123.github.io%2Feducation-decks%2Fpptx%2F05-kern-conference.pptx" target="_blank" rel="noopener" style="border:2px solid #FF3B30;color:#F5F1E8">Open in browser</a></div></div>
+    <div class="card pp" style="background:#F3EEDD;color:#151515"><div class="n" style="color:#E63946">P06 · ART MUSEUM</div><h2>Chroma</h2><span>Bauhaus circle, square and triangle recompose on every slide.</span><div class="act"><a href="pptx/06-chroma-museum.pptx" download style="background:#E63946;color:#fff">Download .pptx</a><a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fnikitakustov123.github.io%2Feducation-decks%2Fpptx%2F06-chroma-museum.pptx" target="_blank" rel="noopener" style="border:2px solid #E63946;color:#151515">Open in browser</a></div></div>
+    <div class="card pp" style="background:#F9C5A8;color:#3A2416"><div class="n" style="color:#C2410C">P07 · ROOFTOP SOLAR</div><h2>Helio</h2><span>One full day in 8 slides: the sun crosses the sky, night falls, windows light up.</span><div class="act"><a href="pptx/07-helio-solar.pptx" download style="background:#C2410C;color:#fff">Download .pptx</a><a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fnikitakustov123.github.io%2Feducation-decks%2Fpptx%2F07-helio-solar.pptx" target="_blank" rel="noopener" style="border:2px solid #C2410C;color:#3A2416">Open in browser</a></div></div>
+    <div class="card pp" style="background:#0B6AA6;color:#FFFFFF"><div class="n" style="color:#FFB703">P08 · AQUARIUM</div><h2>Fathom</h2><span>A dive: the depth gauge drops, water darkens, fish and bubbles drift.</span><div class="act"><a href="pptx/08-fathom-aquarium.pptx" download style="background:#FFB703;color:#fff">Download .pptx</a><a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fnikitakustov123.github.io%2Feducation-decks%2Fpptx%2F08-fathom-aquarium.pptx" target="_blank" rel="noopener" style="border:2px solid #FFB703;color:#FFFFFF">Open in browser</a></div></div>
+    <div class="card pp" style="background:#FFD166;color:#4A2C17"><div class="n" style="color:#EF476F">P09 · VET MEMBERSHIP</div><h2>Pawprint</h2><span>Paw prints walk across slides step by step; a ball bounces.</span><div class="act"><a href="pptx/09-pawprint-vet.pptx" download style="background:#EF476F;color:#fff">Download .pptx</a><a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fnikitakustov123.github.io%2Feducation-decks%2Fpptx%2F09-pawprint-vet.pptx" target="_blank" rel="noopener" style="border:2px solid #EF476F;color:#4A2C17">Open in browser</a></div></div>
+    <div class="card pp" style="background:#F2ECDD;color:#1A1A1A"><div class="n" style="color:#B3261E">P10 · LOCAL NEWSPAPER</div><h2>The Harbor Ledger</h2><span>Headlines type themselves letter by letter; pages curl over.</span><div class="act"><a href="pptx/10-harbor-ledger.pptx" download style="background:#B3261E;color:#fff">Download .pptx</a><a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fnikitakustov123.github.io%2Feducation-decks%2Fpptx%2F10-harbor-ledger.pptx" target="_blank" rel="noopener" style="border:2px solid #B3261E;color:#1A1A1A">Open in browser</a></div></div>
+  </div>
+  </div>
 </div>
+<script>
+const tb=[...document.querySelectorAll('.tabs button')];function show(t){tb.forEach(b=>b.classList.toggle('on',b.dataset.t===t));document.getElementById('t-html').hidden=t!=='html';document.getElementById('t-pptx').hidden=t!=='pptx';history.replaceState(null,'',t==='pptx'?'#pptx':location.pathname)}
+tb.forEach(b=>b.onclick=()=>show(b.dataset.t));if(location.hash==='#pptx')show('pptx');
+</script>
 </body>
 </html>
