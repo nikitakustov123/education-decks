@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Compass & Co — великие железнодорожные путешествия по Америке</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&amp;family=JetBrains+Mono:ital,wght@0,300..800;1,300..800&amp;display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;overflow:hidden}
+.slide{position:absolute;inset:0;visibility:hidden;overflow:hidden;display:flex;flex-direction:column;padding:80px 96px}
+.slide.active{visibility:visible}.slide.entering{z-index:3}
+#ov{position:absolute;inset:0;z-index:30;pointer-events:none;overflow:hidden}
+.frozen [data-a]{animation:none!important;opacity:1!important}
+[data-a]{opacity:0}
+.slide.go [data-a]{animation:var(--ad,.9s) var(--ae,cubic-bezier(.2,.8,.2,1)) both;animation-delay:calc(var(--d,0)*1ms)}
+.slide.go [data-a=up]{animation-name:a-up}.slide.go [data-a=fade]{animation-name:a-fade}.slide.go [data-a=pop]{animation-name:a-pop}
+.slide.go [data-a=left]{animation-name:a-left}.slide.go [data-a=right]{animation-name:a-right}.slide.go [data-a=wipe]{animation-name:a-wipe}
+.slide.go [data-a=rise]{animation-name:a-rise}.slide.go [data-a=zoom]{animation-name:a-zoom}
+@keyframes a-up{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:none}}
+@keyframes a-fade{from{opacity:0}to{opacity:1}}
+@keyframes a-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes a-left{from{opacity:0;transform:translateX(-70px)}to{opacity:1;transform:none}}
+@keyframes a-right{from{opacity:0;transform:translateX(70px)}to{opacity:1;transform:none}}
+@keyframes a-wipe{from{opacity:1;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-rise{from{opacity:1;clip-path:inset(100% 0 0 0)}to{opacity:1;clip-path:inset(0)}}
+@keyframes a-zoom{from{opacity:0;transform:scale(1.12)}to{opacity:1;transform:none}}
+.row{display:flex;gap:var(--gap,28px)}.col{display:flex;flex-direction:column;gap:var(--gap,0)}
+.g2,.g3,.g4,.g5,.g6{display:grid;gap:var(--gap,28px)}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g5{grid-template-columns:repeat(5,1fr)}.g6{grid-template-columns:repeat(6,1fr)}
+.f1{flex:1;min-width:0}.mta{margin-top:auto;margin-bottom:auto}.ctr{text-align:center}.ac{align-items:center}.jc{justify-content:center}.jb{justify-content:space-between}.ae{align-items:flex-end}
+.abs{position:absolute}.fill{position:absolute;inset:0}.rel{position:relative}.ph{background-size:cover;background-position:center}
+.h1{font-size:120px;line-height:.98}.h2{font-size:70px;line-height:1.04}.h3{font-size:32px;line-height:1.15}.p{font-size:24px;line-height:1.5}.sm{font-size:17px;line-height:1.5}
+.k{font-size:15px;letter-spacing:.22em;text-transform:uppercase;font-weight:700}.num{font-size:92px;line-height:1}
+.bar{height:14px;background:var(--barbg,rgba(128,128,128,.25));border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--bar,currentColor);border-radius:inherit;transition:width 1.4s cubic-bezier(.3,1,.4,1) .5s}.slide.go .bar i{width:var(--w)}
+.dr{stroke-dasharray:var(--len,2000);stroke-dashoffset:var(--len,2000)}.slide.go .dr{transition:stroke-dashoffset 1.8s cubic-bezier(.5,0,.2,1) .4s;stroke-dashoffset:0}
+#pg{position:fixed;right:16px;top:12px;font:600 13px/1 system-ui,sans-serif;letter-spacing:.08em;color:var(--hint,#888);z-index:50}
+#hint{position:fixed;left:16px;top:12px;font:12px/1 system-ui,sans-serif;color:var(--hint,#888);z-index:50;opacity:.8}
+.note{position:absolute;left:96px;bottom:26px;font-size:13px;opacity:.55;letter-spacing:.04em}
+
+.num{white-space:nowrap}.g4 .num,.g5 .num{font-size:70px}
+
+:root{--bg:#111111;--ye:#ffd60a;--tx:#f1f1f1;--mu:#9a9a9a;--fb:linear-gradient(160deg,#444,#111);--hint:#555}
+body{background:#000;font-family:'JetBrains Mono',monospace;color:var(--tx)}
+.slide{background:var(--bg)}.slide.ye{background:var(--ye);color:#111}
+.h1,.h2,.h3,.num{font-family:Oswald,sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.01em}
+.h1{font-size:160px;line-height:.92}.h2{font-size:88px;line-height:.98}.h3{font-size:32px}
+.h2 b,.h1 b{color:var(--ye)}.ye .h2 b{color:#fff;background:#111;padding:0 .12em}
+.k{color:var(--ye)}.ye .k{color:#111}
+.p{color:var(--mu);font-size:21px}.ye .p{color:#3d3400}
+.brd{border:2px solid #333;background:#1a1a1a}
+.rw{display:grid;grid-template-columns:130px 1.5fr 1fr 170px;padding:16px 24px;border-bottom:2px solid #000;font-size:24px;align-items:center}
+.rw b{font-family:Oswald;font-size:30px;letter-spacing:.06em}
+.rw .s{color:var(--ye)}
+.card{background:#1a1a1a;border-top:6px solid var(--ye);padding:26px}.ye .card{background:#111;color:#f1f1f1}.ye .card .p{color:#9a9a9a}
+.flap{position:absolute;width:100px;height:100px;background:#1a1a1a;box-shadow:inset 0 0 0 2px #000,inset 0 50px 0 rgba(255,255,255,.04);display:grid;place-items:center;font:700 54px Oswald;color:var(--ye);backface-visibility:hidden}
+#ov{perspective:1600px}
+.tr{height:10px;background:repeating-linear-gradient(90deg,var(--ye) 0 40px,transparent 40px 60px)}
+</style></head><body>
+<div id="stage">
+<section class="slide" style="padding:0">
+  <div class="fill ph" data-a="zoom" style="background-image:linear-gradient(90deg,rgba(17,17,17,.97) 45%,rgba(17,17,17,.4)),url('https://images.unsplash.com/photo-1494822493217-c9840aba840c?auto=format&fit=crop&w=1400&q=80'),var(--fb)"></div>
+  <div class="col jc rel" style="height:100%;padding:0 96px">
+    <div class="k" data-a="fade">Великие железнодорожные путешествия по Америке · Чикаго, Union Station</div>
+    <div class="h1" data-a="left" style="margin-top:20px">Compass<br><b>&amp; Co.</b></div>
+    <div class="tr" data-a="wipe" style="width:600px;margin:26px 0"></div>
+    <p class="p" data-a="up" style="font-size:28px;color:#fff">Увидеть Америку со скоростью места у окна.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">Платформа 1 — Почему поезд</div>
+  <div class="h2" data-a="left" style="margin-top:14px">Путь — <b>это и есть цель.</b></div>
+  <p class="p" data-a="up" style="margin-top:18px;width:900px">Мы соединяем живописные поезда дальнего следования с отдельными спальными вагонами, отличными отелями и гидами на каждой остановке.</p>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="num">0</div><p class="p">очередей на досмотр</p></div>
+    <div class="card" data-a="up"><div class="num">24/7</div><p class="p">пейзажи за окном</p></div>
+    <div class="card" data-a="up"><div class="num">1</div><p class="p">чемодан, распакованный один раз</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">Отправления</div>
+  <div class="h2" data-a="left" style="margin-top:14px">Идёт <b>посадка.</b></div>
+  <div class="brd mta" data-a="up">
+    <div class="rw" style="color:var(--mu);font-size:16px"><span>ДНЕЙ</span><span>МАРШРУТ</span><span>ПУТЬ</span><span>ОТ</span></div>
+    <div class="rw"><b>08</b><b>Скалистые горы &amp; каньоны</b><span>CHI → DEN → SLC</span><b class="s">$4,900</b></div>
+    <div class="rw"><b>11</b><b>От побережья до побережья</b><span>NYC → CHI → SFO</span><b class="s">$7,400</b></div>
+    <div class="rw"><b>06</b><b>Тихоокеанский звёздный</b><span>SEA → PDX → LAX</span><b class="s">$3,600</b></div>
+    <div class="rw"><b>07</b><b>Южный полумесяц</b><span>NYC → ATL → MSY</span><b class="s">$3,900</b></div>
+    <div class="rw"><b>09</b><b>Северный ледник</b><span>CHI → GPK → SEA</span><b class="s">$5,300</b></div>
+  </div>
+  <div class="note">Маршруты и цены на человека условные · вымышленная компания</div>
+</section>
+<section class="slide ye">
+  <div class="k" data-a="fade">Платформа 2 — На борту</div>
+  <div class="h2" data-a="left" style="margin-top:14px">Отель, <b>который едет.</b></div>
+  <div class="g4 mta">
+    <div class="card" data-a="up"><div class="h3">Отдельное купе</div><p class="p">Постель стелют, пока вы ужинаете.</p></div>
+    <div class="card" data-a="up"><div class="h3">Купольный вагон</div><p class="p">Стеклянная крыша, места закреплены.</p></div>
+    <div class="card" data-a="up"><div class="h3">Вагон-ресторан</div><p class="p">Три раза в день, местная кухня.</p></div>
+    <div class="card" data-a="up"><div class="h3">Гид</div><p class="p">Один гид Compass на 16 гостей.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">Платформа 3 — Вне поезда</div>
+  <div class="h2" data-a="left" style="margin-top:14px">Каждая остановка <b>того стоит.</b></div>
+  <div class="g3 mta">
+    <div class="card" data-a="up"><div class="h3">Нацпарки</div><p class="p">Отдельные автобусы от станции до начала тропы.</p></div>
+    <div class="card" data-a="up"><div class="h3">Лучшие отели</div><p class="p">Исторические железнодорожные отели и городские достопримечательности.</p></div>
+    <div class="card" data-a="up"><div class="h3">Местная кухня</div><p class="p">Ужины с шефами и виноделами.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="k" data-a="fade">Платформа 4 — Результаты</div>
+  <div class="h2" data-a="left" style="margin-top:14px">Вовремя — <b>там, где это важно.</b></div>
+  <div class="g4 mta">
+    <div class="card" data-a="up"><div class="num"><span class="count" data-to="31000">0</span></div><p class="p">гостей перевезено</p></div>
+    <div class="card" data-a="up"><div class="num"><span class="count" data-to="14">0</span></div><p class="p">маршрутов в 38 штатах</p></div>
+    <div class="card" data-a="up"><div class="num"><span class="count" data-to="96">0</span>%</div><p class="p">поехали бы снова</p></div>
+    <div class="card" data-a="up"><div class="num">1989</div><p class="p">первое отправление</p></div>
+  </div>
+  <div class="note">Цифры условные</div>
+</section>
+<section class="slide ye">
+  <div class="k" data-a="fade">В цену входит</div>
+  <div class="h2" data-a="left" style="margin-top:14px">Один билет. <b>И всё включено.</b></div>
+  <div class="g4 mta">
+    <div class="card" data-a="up"><div class="h3">Поезд &amp; спальное место</div></div>
+    <div class="card" data-a="up"><div class="h3">Отели</div></div>
+    <div class="card" data-a="up"><div class="h3">Питание в поезде</div></div>
+    <div class="card" data-a="up"><div class="h3">Экскурсии с гидом</div></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="col jc" style="height:100%">
+    <div class="k" data-a="fade">Последний звонок</div>
+    <div class="h1" data-a="left" style="margin-top:14px">Все <b>на борт.</b></div>
+    <div class="tr" data-a="wipe" style="width:700px;margin:26px 0"></div>
+    <p class="h3" data-a="up">[compassrail.com] · [(312) 000-0000]</p>
+  </div>
+  <div class="note">Концепт · вымышленная компания</div>
+</section>
+<div id="ov"></div></div>
+<div id="pg"></div><div id="hint">← → · клик · свайп · F — полный экран</div>
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const stage=$('#stage'),ov=$('#ov'),slides=$$('.slide');
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform='translate(-50%,-50%) scale('+s+')';}
+addEventListener('resize',fit);fit();
+slides.forEach(s=>$$('[data-a]',s).forEach((e,i)=>{if(!e.style.getPropertyValue('--d'))e.style.setProperty('--d',120+i*110);}));
+const D=window.DECK={};
+const X=window.X={$,$$,stage,ov,slides,N:slides.length,
+ ease:k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2,
+ raf(dur,fn,end){const t0=performance.now();(function f(){const k=Math.min((performance.now()-t0)/dur,1);fn(k);if(k<1)requestAnimationFrame(f);else if(end)end();})();},
+ el(html,p){const d=document.createElement('div');d.innerHTML=html.trim();const e=d.firstElementChild;(p||ov).appendChild(e);return e;},
+ anim(e,kf,o){return e.animate(kf,Object.assign({duration:700,fill:'forwards',easing:'cubic-bezier(.6,0,.3,1)'},o)).finished;},
+ wait:ms=>new Promise(r=>setTimeout(r,ms)),rnd:(a,b)=>a+Math.random()*(b-a)};
+let cur=-1,busy=false,wd;
+function countUp(sl){$$('.count',sl).forEach(c=>{const to=parseFloat(c.dataset.to),dec=+(c.dataset.dec||0),t0=performance.now()+500;
+ (function f(){let p=Math.min(Math.max((performance.now()-t0)/1500,0),1);p=1-Math.pow(1-p,3);c.textContent=(to*p).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});if(p<1)requestAnimationFrame(f);})();});}
+function activate(sl,i){sl.classList.add('active');sl.classList.remove('go');void sl.offsetWidth;sl.classList.add('go');countUp(sl);if(D.onShow)D.onShow(sl,i);}
+function go(n){
+ if(busy||n<0||n>=slides.length||n===cur)return;
+ const from=slides[cur],to=slides[n],fwd=n>cur,prev=cur;cur=n;
+ try{history.replaceState(null,'','#'+(n+1));}catch(e){}
+ const pg=$('#pg');if(pg&&!D.noPg)pg.textContent=(n+1)+' / '+slides.length;
+ if(D.onNav)D.onNav(n,prev);
+ if(!from){activate(to,n);return;}
+ busy=true;let fin=false;
+ const show=()=>{to.classList.add('entering');activate(to,n);};
+ const hide=()=>{from.classList.remove('active','go');};
+ const done=()=>{if(fin)return;fin=true;clearTimeout(wd);hide();if(!to.classList.contains('active'))activate(to,n);
+  [from,to].forEach(s=>{s.getAnimations().forEach(a=>a.cancel());s.style.clipPath='';s.style.transform='';s.style.opacity='';s.style.filter='';});
+  to.classList.remove('entering');if(!D.keepOv)ov.innerHTML='';busy=false;};
+ wd=setTimeout(done,6000);
+ if(D.transition){try{const r=D.transition({from,to,fwd,show,hide,done,n,prev});if(r&&r.catch)r.catch(e=>{console.error(e);done();});}catch(e){console.error(e);done();}}else{show();done();}
+}
+X.go=go;X.cur=()=>cur;
+X.start=function(){
+ addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input'))return;
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();go(cur+1);}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();go(cur-1);}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);
+  else if(e.key==='f'||e.key==='F'){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(_){}}});
+ document.addEventListener('click',e=>{if(e.target.closest('a,button,input,label,.ix'))return;(e.clientX<innerWidth*.25)?go(cur-1):go(cur+1);});
+ let sx=null;addEventListener('touchstart',e=>{sx=e.target.closest('input,.ix')?null:e.touches[0].clientX;},{passive:true});
+ addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)go(cur+(dx<0?1:-1));sx=null;});
+ const h=parseInt(location.hash.slice(1));go(h>0&&h<=slides.length?h-1:0);
+};
+})();
+</script>
+<script>
+(function(){
+const {el,wait}=X;const L='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+DECK.transition=async({show,hide,done})=>{const f=[];
+ for(let c=0;c<16;c++)for(let r=0;r<9;r++){const e=el(`<div class="flap" style="left:${c*100}px;top:${r*100}px">${L[Math.floor(Math.random()*36)]}</div>`);
+  e.animate([{transform:'rotateX(90deg)'},{transform:'rotateX(0)'}],{duration:260,delay:c*38+Math.random()*120,fill:'both'});f.push([e,c]);}
+ await wait(1000);hide();show();
+ f.forEach(([e,c])=>e.animate([{transform:'rotateX(0)'},{transform:'rotateX(-90deg)'}],{duration:260,delay:c*38+Math.random()*120,fill:'both'}));
+ await wait(1000);done();};
+})();
+X.start();
+</script><!-- concept-badge --><div class="concept-badge" role="note" aria-label="Концепт: компания и все цифры вымышлены" style="position:fixed;bottom:12px;right:12px;z-index:2147483000;pointer-events:none;font:600 11px/1.2 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;letter-spacing:.04em;color:#fff;background:rgba(17,17,17,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.18)">Концепт · вымышленная компания</div>
+</body></html>

@@ -8,6 +8,8 @@ Designed and built by **nikitakustov123**.
 
 **Live gallery:** https://nikitakustov123.github.io/education-decks/
 
+**Russian version (Русская версия):** https://nikitakustov123.github.io/education-decks/ru/ — all 30 HTML decks and 10 PowerPoint files translated, with Cyrillic-ready fonts.
+
 ## Viewing
 
 - **In the browser:** open the live gallery and pick a deck. Navigate with the ← → keys, a click or a swipe.
