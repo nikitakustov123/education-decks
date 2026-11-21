@@ -185,7 +185,7 @@ X.start=function(){
 (function(){
 const {anim,$}=X;const tw=$('#tw');for(let i=0;i<126;i++)tw.appendChild(document.createElement('i'));
 setInterval(()=>{const c=tw.children;c[Math.floor(Math.random()*c.length)].classList.toggle('on');},90);
-const F=['LOBBY','ЭТ 03','ЭТ 09','ЭТ 14','ЭТ 26','ЭТ 27','ЭТ 28','PH'];
+const F=['ЛОББИ','ЭТ 03','ЭТ 09','ЭТ 14','ЭТ 26','ЭТ 27','ЭТ 28','ПЕНТ'];
 DECK.onNav=n=>{$('#floor').textContent='▲ '+F[n];};
 DECK.transition=async({from,to,fwd,show,done})=>{show();const a=fwd?-100:100;
  await Promise.all([anim(from,[{transform:'none'},{transform:`translateY(${a}%)`}],{duration:900}),anim(to,[{transform:`translateY(${-a}%)`},{transform:'none'}],{duration:900})]);done();};

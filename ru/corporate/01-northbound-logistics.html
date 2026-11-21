@@ -314,7 +314,7 @@ function setDone(L){const pts=[RP[0]];for(let i=1;i<RP.length;i++){if(L>=cum[i])
 function placeTruck(L){const p=pointAt(L);truck.style.left=p[0]+'px';truck.style.top=p[1]+'px';}
 function activate(i){const p=panels[i];p.classList.remove('go');void p.offsetWidth;p.classList.add('go');
  [...pins.children].forEach((e,k)=>e.classList.toggle('on',k<=i));
- document.getElementById('mini').textContent=`SHEET ${String(i+1).padStart(2,'0')} / ${panels.length}`;history.replaceState(null,'','#'+(i+1));}
+ document.getElementById('mini').textContent=`ЛИСТ ${String(i+1).padStart(2,'0')} / ${panels.length}`;history.replaceState(null,'','#'+(i+1));}
 function go(n){if(busy||n<0||n>=panels.length||n===cur)return;
  if(cur<0){cur=n;cam={x:C[n][0],y:C[n][1],s:1};camT(cam);setDone(cum[n]);placeTruck(cum[n]);activate(n);return;}
  busy=true;const from={...cam},to={x:C[n][0],y:C[n][1],s:1},L0=cum[cur],L1=cum[n];
